@@ -1068,3 +1068,321 @@ input {
     }
 
 }
+
+/* ================================
+   CATALOG
+================================ */
+
+.catalog-header {
+    min-height: 300px;
+
+    display: flex;
+    align-items: flex-end;
+
+    padding: 70px 40px 50px;
+
+    background: #f1f1f1;
+}
+
+.catalog-header > div {
+    max-width: 850px;
+}
+
+.catalog-header h1 {
+    font-size: clamp(48px, 7vw, 84px);
+
+    line-height: .9;
+
+    letter-spacing: -4px;
+
+    margin-bottom: 22px;
+}
+
+.catalog-header p {
+    max-width: 540px;
+
+    color: #666;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+.catalog-container {
+    padding: 0 40px 80px;
+}
+
+
+/* TOOLBAR */
+
+.catalog-toolbar {
+    padding: 28px 0;
+
+    border-bottom: 1px solid #ddd;
+}
+
+.catalog-filters {
+    display: flex;
+
+    align-items: flex-end;
+
+    gap: 15px;
+
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 8px;
+}
+
+.filter-group label {
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: .8px;
+}
+
+.filter-group select {
+    min-width: 180px;
+
+    min-height: 46px;
+
+    padding: 0 38px 0 14px;
+
+    border: 1px solid #bbb;
+
+    background: #fff;
+
+    font-size: 12px;
+
+    cursor: pointer;
+}
+
+.catalog-filter-button {
+    min-height: 46px;
+
+    padding: 0 27px;
+
+    border: 1px solid #000;
+
+    background: #000;
+
+    color: #fff;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: .5px;
+
+    cursor: pointer;
+}
+
+.catalog-filter-button:hover {
+    background: #333;
+}
+
+.catalog-reset {
+    min-height: 46px;
+
+    padding: 0 15px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    text-decoration: underline;
+}
+
+
+/* RESULT */
+
+.catalog-result-header {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 28px 0 20px;
+}
+
+.catalog-result-header p {
+    font-size: 12px;
+
+    color: #666;
+}
+
+.catalog-result-header strong {
+    color: #111;
+}
+
+
+/* EMPTY */
+
+.catalog-empty {
+    grid-column: 1 / -1;
+
+    min-height: 400px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    background: #f5f5f5;
+
+    padding: 40px;
+}
+
+.catalog-empty i {
+    font-size: 38px;
+
+    margin-bottom: 20px;
+}
+
+.catalog-empty h2 {
+    font-size: 24px;
+
+    margin-bottom: 8px;
+}
+
+.catalog-empty p {
+    color: #777;
+
+    font-size: 13px;
+
+    margin-bottom: 25px;
+}
+
+
+/* PAGINATION */
+
+.catalog-pagination {
+    margin-top: 50px;
+
+    padding-top: 25px;
+
+    border-top: 1px solid #ddd;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+.catalog-pagination a,
+.pagination-disabled,
+.pagination-page {
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+.catalog-pagination a {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.catalog-pagination a:hover {
+    text-decoration: underline;
+}
+
+.pagination-disabled {
+    color: #aaa;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+/* ================================
+   CATALOG RESPONSIVE
+================================ */
+
+@media (max-width: 768px) {
+
+    .catalog-header {
+        min-height: 250px;
+
+        padding:
+            55px 18px 35px;
+    }
+
+    .catalog-header h1 {
+        font-size: 52px;
+
+        letter-spacing: -3px;
+    }
+
+    .catalog-container {
+        padding:
+            0 18px 60px;
+    }
+
+    .catalog-filters {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .filter-group select {
+        width: 100%;
+
+        min-width: 0;
+    }
+
+    .catalog-filter-button {
+        width: 100%;
+    }
+
+    .catalog-reset {
+        justify-content: center;
+    }
+
+    .catalog-pagination {
+        flex-wrap: wrap;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .catalog-filters {
+        grid-template-columns: 1fr;
+    }
+
+    .pagination-page {
+        order: 3;
+
+        width: 100%;
+
+        text-align: center;
+    }
+
+}

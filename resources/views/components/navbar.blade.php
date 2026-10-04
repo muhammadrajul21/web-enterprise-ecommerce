@@ -14,31 +14,31 @@
 
         <div class="navbar-menu">
 
-            <a href="#">
+            <a href="{{ route('catalog.preview', ['sort' => 'latest']) }}">
                 NEW ARRIVALS
             </a>
 
-            <a href="#">
+            <a href="{{ route('catalog.preview', ['segment' => 'men']) }}">
                 MEN
             </a>
 
-            <a href="#">
+            <a href="{{ route('catalog.preview', ['segment' => 'women']) }}">
                 WOMEN
             </a>
 
-            <a href="#">
+            <a href="{{ route('catalog.preview', ['segment' => 'unisex']) }}">
                 UNISEX
             </a>
 
-            <a href="#">
+            <a href="{{ route('catalog.preview', ['group' => 'clothing']) }}">
                 CLOTHING
             </a>
 
-            <a href="#">
+            <a href="{{ route('catalog.preview', ['category' => 'footwear']) }}">
                 FOOTWEAR
             </a>
 
-            <a href="#">
+            <a href="{{ route('catalog.preview', ['category' => 'accessories']) }}">
                 ACCESSORIES
             </a>
 

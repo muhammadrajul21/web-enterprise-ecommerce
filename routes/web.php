@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Models\Category;
 use App\Models\Product;
+use App\Models\Segment;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -21,21 +23,20 @@ Route::get('/', function () {
     return match (Auth::user()->role?->name) {
 
         'admin' =>
-            redirect()->route('admin.dashboard'),
+        redirect()->route('admin.dashboard'),
 
         'staff_gudang' =>
-            redirect()->route('staff.dashboard'),
+        redirect()->route('staff.dashboard'),
 
         'owner' =>
-            redirect()->route('owner.dashboard'),
+        redirect()->route('owner.dashboard'),
 
         'customer' =>
-            redirect()->route('customer.account'),
+        redirect()->route('customer.account'),
 
         default =>
-            abort(403, 'Role akun tidak dikenali.'),
+        abort(403, 'Role akun tidak dikenali.'),
     };
-
 })->name('home');
 
 
@@ -57,8 +58,90 @@ Route::get('/home-preview', function () {
         ->get();
 
     return view('public.home', compact('products'));
-
 })->name('home.preview');
+
+
+// ========================
+// CATALOG PREVIEW
+// ========================
+
+Route::get('/catalog-preview', function () {
+
+    $query = Product::with([
+        'segment',
+        'category',
+        'variants',
+        'images',
+    ])
+        ->withMin('variants', 'price')
+        ->where('status', 'active');
+
+    // Filter segment
+    if (request('segment')) {
+        $query->whereHas('segment', function ($q) {
+            $q->where('slug', request('segment'));
+        });
+    }
+
+
+    // Filter group
+    if (request('group') === 'clothing') {
+        $query->whereHas('category', function ($q) {
+            $q->whereIn('slug', [
+                't-shirts',
+                'shirts',
+                'pants',
+                'outerwear',
+            ]);
+        });
+    }
+
+
+    // Filter category
+    if (request('category')) {
+        $query->whereHas('category', function ($q) {
+            $q->where('slug', request('category'));
+        });
+    }
+
+    // Sorting
+    switch (request('sort')) {
+
+        case 'price_low':
+            $query->orderBy('variants_min_price');
+            break;
+
+        case 'price_high':
+            $query->orderByDesc('variants_min_price');
+            break;
+
+        case 'name':
+            $query->orderBy('name');
+            break;
+
+        default:
+            $query->latest();
+            break;
+    }
+
+    $products = $query
+        ->paginate(12)
+        ->withQueryString();
+
+    $segments = Segment::where('is_active', true)
+        ->orderBy('name')
+        ->get();
+
+    $categories = Category::where('is_active', true)
+        ->orderBy('name')
+        ->get();
+
+    return view('public.catalog', compact(
+        'products',
+        'segments',
+        'categories'
+    ));
+})->name('catalog.preview');
 
 
 // ========================
@@ -104,7 +187,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/account', function () {
             return view('customer.account');
         })->name('customer.account');
-
     });
 
 
@@ -119,7 +201,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/dashboard', function () {
                 return view('admin.dashboard');
             })->name('admin.dashboard');
-
         });
 
 
@@ -134,7 +215,6 @@ Route::middleware('auth')->group(function () {
             Route::get('/dashboard', function () {
                 return view('staff.dashboard');
             })->name('staff.dashboard');
-
         });
 
 
@@ -149,7 +229,5 @@ Route::middleware('auth')->group(function () {
             Route::get('/dashboard', function () {
                 return view('owner.dashboard');
             })->name('owner.dashboard');
-
         });
-
 });

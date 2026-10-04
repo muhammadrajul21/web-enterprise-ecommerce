@@ -32,12 +32,16 @@
 
         <div class="hero-actions">
 
-            <a href="#" class="btn-primary-store">
+            <a
+                href="{{ route('catalog.preview', ['segment' => 'men']) }}"
+                class="btn-primary-store">
                 SHOP MEN
                 <i class="bi bi-arrow-right"></i>
             </a>
 
-            <a href="#" class="btn-secondary-store">
+            <a
+                href="{{ route('catalog.preview', ['segment' => 'women']) }}"
+                class="btn-secondary-store">
                 SHOP WOMEN
                 <i class="bi bi-arrow-right"></i>
             </a>
@@ -68,11 +72,10 @@
             </h2>
         </div>
 
-        <a href="#" class="section-link">
+        <a href="{{ route('catalog.preview') }}" class="section-link">
             VIEW ALL
             <i class="bi bi-arrow-right"></i>
         </a>
-
     </div>
 
 
@@ -80,15 +83,15 @@
 
         @forelse($products as $product)
 
-            @include('components.product-card', [
-                'product' => $product
-            ])
+        @include('components.product-card', [
+        'product' => $product
+        ])
 
         @empty
 
-            <div class="empty-product">
-                Belum ada produk tersedia.
-            </div>
+        <div class="empty-product">
+            Belum ada produk tersedia.
+        </div>
 
         @endforelse
 
@@ -123,8 +126,7 @@
         {{-- MEN --}}
 
         <article
-            class="category-card category-men"
-        >
+            class="category-card category-men">
 
             <div class="category-overlay"></div>
 
@@ -134,7 +136,7 @@
                     MEN
                 </h3>
 
-                <a href="#">
+                <a href="{{ route('catalog.preview', ['segment' => 'men']) }}">
                     SHOP NOW
                     <i class="bi bi-arrow-right"></i>
                 </a>
@@ -147,8 +149,7 @@
         {{-- WOMEN --}}
 
         <article
-            class="category-card category-women"
-        >
+            class="category-card category-women">
 
             <div class="category-overlay"></div>
 
@@ -158,7 +159,7 @@
                     WOMEN
                 </h3>
 
-                <a href="#">
+                <a href="{{ route('catalog.preview', ['segment' => 'women']) }}">
                     SHOP NOW
                     <i class="bi bi-arrow-right"></i>
                 </a>
@@ -171,8 +172,7 @@
         {{-- UNISEX --}}
 
         <article
-            class="category-card category-unisex"
-        >
+            class="category-card category-unisex">
 
             <div class="category-overlay"></div>
 
@@ -182,7 +182,7 @@
                     UNISEX
                 </h3>
 
-                <a href="#">
+                <a href="{{ route('catalog.preview', ['segment' => 'unisex']) }}">
                     SHOP NOW
                     <i class="bi bi-arrow-right"></i>
                 </a>

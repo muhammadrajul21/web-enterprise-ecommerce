@@ -14,6 +14,11 @@ class DatabaseSeeder extends Seeder
             SegmentSeeder::class,
             CategorySeeder::class,
             CollectionSeeder::class,
+
+            ProductSeeder::class,
+            ProductVariantSeeder::class,
+            ProductCollectionSeeder::class,
+            ProductImageSeeder::class,
         ]);
     }
 }

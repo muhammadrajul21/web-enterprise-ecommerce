@@ -1,22 +1,24 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Models\Product;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 
 // ========================
-// HOME / REDIRECT BERDASARKAN ROLE
+// HOME / REDIRECT SESUAI ROLE
 // ========================
 
 Route::get('/', function () {
 
-    // Belum login -> arahkan ke login
-    if (!auth()->check()) {
+    // Jika belum login, arahkan ke login
+    if (!Auth::check()) {
         return redirect()->route('login');
     }
 
-    // Sudah login -> arahkan sesuai role
-    return match (auth()->user()->role?->name) {
+    // Jika sudah login, arahkan sesuai role
+    return match (Auth::user()->role?->name) {
 
         'admin' =>
             redirect()->route('admin.dashboard'),
@@ -35,6 +37,28 @@ Route::get('/', function () {
     };
 
 })->name('home');
+
+
+// ========================
+// HOME PREVIEW SAYED
+// ========================
+
+Route::get('/home-preview', function () {
+
+    $products = Product::with([
+        'segment',
+        'category',
+        'variants',
+        'images'
+    ])
+        ->where('status', 'active')
+        ->latest()
+        ->take(4)
+        ->get();
+
+    return view('public.home', compact('products'));
+
+})->name('home.preview');
 
 
 // ========================
@@ -62,7 +86,6 @@ Route::middleware('guest')->group(function () {
 // ========================
 
 Route::middleware('auth')->group(function () {
-
 
     // ========================
     // LOGOUT

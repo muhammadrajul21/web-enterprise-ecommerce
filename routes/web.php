@@ -168,7 +168,6 @@ Route::get('/search-preview', function () {
                 ->orWhereHas('segment', function ($segmentQuery) use ($keyword) {
                     $segmentQuery->where('name', 'like', '%' . $keyword . '%');
                 });
-
         });
     }
 
@@ -181,8 +180,43 @@ Route::get('/search-preview', function () {
         'products',
         'keyword'
     ));
-
 })->name('search.preview');
+
+
+// ========================
+// PRODUCT DETAIL
+// ========================
+
+Route::get('/product/{slug}', function ($slug) {
+
+    $product = Product::with([
+        'segment',
+        'category',
+        'variants',
+        'images',
+        'collections',
+    ])
+        ->where('status', 'active')
+        ->where('slug', $slug)
+        ->firstOrFail();
+
+    $relatedProducts = Product::with([
+        'segment',
+        'category',
+        'variants',
+        'images',
+    ])
+        ->where('status', 'active')
+        ->where('category_id', $product->category_id)
+        ->where('id', '!=', $product->id)
+        ->take(4)
+        ->get();
+
+    return view('public.product-detail', compact(
+        'product',
+        'relatedProducts'
+    ));
+})->name('product.detail');
 
 // ========================
 // GUEST

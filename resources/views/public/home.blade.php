@@ -4,9 +4,20 @@
 
 @section('content')
 
+
+{{-- =========================
+    HERO
+========================= --}}
+
 <section class="hero">
+
+    <div class="hero-overlay"></div>
+
     <div class="hero-content">
-        <p class="hero-label">NEW COLLECTION</p>
+
+        <span class="hero-label">
+            NEW COLLECTION
+        </span>
 
         <h1>
             STYLE FOR
@@ -15,108 +26,304 @@
         </h1>
 
         <p>
-            Temukan koleksi lifestyle untuk aktivitas harian
-            dengan desain modern dan nyaman.
+            Koleksi lifestyle modern untuk aktivitas sehari-hari.
+            Nyaman, sederhana, dan mudah dipadukan.
         </p>
 
         <div class="hero-actions">
-            <a href="#" class="btn-dark">SHOP MEN</a>
-            <a href="#" class="btn-light">SHOP WOMEN</a>
+
+            <a href="#" class="btn-primary-store">
+                SHOP MEN
+                <i class="bi bi-arrow-right"></i>
+            </a>
+
+            <a href="#" class="btn-secondary-store">
+                SHOP WOMEN
+                <i class="bi bi-arrow-right"></i>
+            </a>
+
         </div>
+
     </div>
+
 </section>
 
 
-<section class="section">
+
+{{-- =========================
+    NEW ARRIVALS
+========================= --}}
+
+<section class="store-section">
 
     <div class="section-header">
-        <h2>NEW ARRIVALS</h2>
-        <a href="#">View All →</a>
+
+        <div>
+            <span class="section-small-title">
+                DISCOVER
+            </span>
+
+            <h2>
+                NEW ARRIVALS
+            </h2>
+        </div>
+
+        <a href="#" class="section-link">
+            VIEW ALL
+            <i class="bi bi-arrow-right"></i>
+        </a>
+
     </div>
+
 
     <div class="product-grid">
 
-        <div class="product-card">
-            <div class="product-image">
-                <span>Product Image</span>
+        @forelse($products as $product)
+
+            @include('components.product-card', [
+                'product' => $product
+            ])
+
+        @empty
+
+            <div class="empty-product">
+                Belum ada produk tersedia.
             </div>
 
-            <div class="product-info">
-                <p class="product-badge">NEW</p>
-                <h3>Oversized T-Shirt</h3>
-                <p>Unisex Lifestyle</p>
-                <strong>Rp 199.000</strong>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">
-                <span>Product Image</span>
-            </div>
-
-            <div class="product-info">
-                <p class="product-badge">NEW</p>
-                <h3>Casual Oxford Shirt</h3>
-                <p>Men Lifestyle</p>
-                <strong>Rp 299.000</strong>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">
-                <span>Product Image</span>
-            </div>
-
-            <div class="product-info">
-                <p class="product-badge">BEST SELLER</p>
-                <h3>Relaxed Pants</h3>
-                <p>Unisex Lifestyle</p>
-                <strong>Rp 349.000</strong>
-            </div>
-        </div>
-
-        <div class="product-card">
-            <div class="product-image">
-                <span>Product Image</span>
-            </div>
-
-            <div class="product-info">
-                <p class="product-badge">NEW</p>
-                <h3>Everyday Sneakers</h3>
-                <p>Unisex Footwear</p>
-                <strong>Rp 599.000</strong>
-            </div>
-        </div>
+        @endforelse
 
     </div>
 
 </section>
 
 
-<section class="category-section">
 
-    <div class="category-card">
-        <h2>MEN</h2>
-        <a href="#">SHOP NOW →</a>
+{{-- =========================
+    SHOP BY CATEGORY
+========================= --}}
+
+<section class="category-wrapper">
+
+    <div class="category-heading">
+
+        <span class="section-small-title">
+            EXPLORE
+        </span>
+
+        <h2>
+            SHOP BY CATEGORY
+        </h2>
+
     </div>
 
-    <div class="category-card">
-        <h2>WOMEN</h2>
-        <a href="#">SHOP NOW →</a>
-    </div>
 
-    <div class="category-card">
-        <h2>UNISEX</h2>
-        <a href="#">SHOP NOW →</a>
+    <div class="category-grid">
+
+
+        {{-- MEN --}}
+
+        <article
+            class="category-card category-men"
+        >
+
+            <div class="category-overlay"></div>
+
+            <div class="category-content">
+
+                <h3>
+                    MEN
+                </h3>
+
+                <a href="#">
+                    SHOP NOW
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
+            </div>
+
+        </article>
+
+
+        {{-- WOMEN --}}
+
+        <article
+            class="category-card category-women"
+        >
+
+            <div class="category-overlay"></div>
+
+            <div class="category-content">
+
+                <h3>
+                    WOMEN
+                </h3>
+
+                <a href="#">
+                    SHOP NOW
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
+            </div>
+
+        </article>
+
+
+        {{-- UNISEX --}}
+
+        <article
+            class="category-card category-unisex"
+        >
+
+            <div class="category-overlay"></div>
+
+            <div class="category-content">
+
+                <h3>
+                    UNISEX
+                </h3>
+
+                <a href="#">
+                    SHOP NOW
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
+            </div>
+
+        </article>
+
     </div>
 
 </section>
 
+
+
+{{-- =========================
+    COLLECTION
+========================= --}}
+
+<section class="store-section collection-section">
+
+    <div class="section-header">
+
+        <div>
+
+            <span class="section-small-title">
+                CURATED FOR YOU
+            </span>
+
+            <h2>
+                SHOP COLLECTIONS
+            </h2>
+
+        </div>
+
+    </div>
+
+
+    <div class="collection-grid">
+
+        <a href="#" class="collection-item">
+
+            <span>
+                01
+            </span>
+
+            <div>
+                <h3>
+                    NEW ARRIVALS
+                </h3>
+
+                <p>
+                    Discover our latest products.
+                </p>
+            </div>
+
+            <i class="bi bi-arrow-up-right"></i>
+
+        </a>
+
+
+        <a href="#" class="collection-item">
+
+            <span>
+                02
+            </span>
+
+            <div>
+                <h3>
+                    ESSENTIALS
+                </h3>
+
+                <p>
+                    Everyday wardrobe essentials.
+                </p>
+            </div>
+
+            <i class="bi bi-arrow-up-right"></i>
+
+        </a>
+
+
+        <a href="#" class="collection-item">
+
+            <span>
+                03
+            </span>
+
+            <div>
+                <h3>
+                    BEST SELLER
+                </h3>
+
+                <p>
+                    Customer favourite products.
+                </p>
+            </div>
+
+            <i class="bi bi-arrow-up-right"></i>
+
+        </a>
+
+
+        <a href="#" class="collection-item">
+
+            <span>
+                04
+            </span>
+
+            <div>
+                <h3>
+                    DAILY WEAR
+                </h3>
+
+                <p>
+                    Designed for everyday movement.
+                </p>
+            </div>
+
+            <i class="bi bi-arrow-up-right"></i>
+
+        </a>
+
+    </div>
+
+</section>
+
+
+
+{{-- =========================
+    CAMPAIGN
+========================= --}}
 
 <section class="campaign-section">
 
+    <div class="campaign-overlay"></div>
+
     <div class="campaign-content">
-        <p>DAILY ESSENTIALS</p>
+
+        <span>
+            DAILY ESSENTIALS
+        </span>
 
         <h2>
             MADE FOR
@@ -124,11 +331,22 @@
             EVERYDAY MOVEMENT
         </h2>
 
-        <a href="#" class="btn-dark">
+        <p>
+            Simple pieces designed to keep you comfortable
+            throughout your everyday activities.
+        </p>
+
+        <a href="#" class="btn-primary-store">
+
             EXPLORE COLLECTION
+
+            <i class="bi bi-arrow-right"></i>
+
         </a>
+
     </div>
 
 </section>
+
 
 @endsection

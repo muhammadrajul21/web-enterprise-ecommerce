@@ -143,6 +143,46 @@ Route::get('/catalog-preview', function () {
     ));
 })->name('catalog.preview');
 
+Route::get('/search-preview', function () {
+
+    $keyword = request('q');
+
+    $query = Product::with([
+        'segment',
+        'category',
+        'variants',
+        'images',
+    ])
+        ->where('status', 'active');
+
+    if ($keyword) {
+        $query->where(function ($q) use ($keyword) {
+
+            $q->where('name', 'like', '%' . $keyword . '%')
+                ->orWhere('description', 'like', '%' . $keyword . '%')
+
+                ->orWhereHas('category', function ($categoryQuery) use ($keyword) {
+                    $categoryQuery->where('name', 'like', '%' . $keyword . '%');
+                })
+
+                ->orWhereHas('segment', function ($segmentQuery) use ($keyword) {
+                    $segmentQuery->where('name', 'like', '%' . $keyword . '%');
+                });
+
+        });
+    }
+
+    $products = $query
+        ->latest()
+        ->paginate(12)
+        ->withQueryString();
+
+    return view('public.search', compact(
+        'products',
+        'keyword'
+    ));
+
+})->name('search.preview');
 
 // ========================
 // GUEST

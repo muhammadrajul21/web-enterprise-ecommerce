@@ -46,9 +46,12 @@
 
         <div class="navbar-actions">
 
-            <button class="nav-icon" type="button">
+            <a
+                href="{{ route('search.preview') }}"
+                class="nav-icon"
+                aria-label="Search">
                 <i class="bi bi-search"></i>
-            </button>
+            </a>
 
             <a href="#" class="nav-icon">
                 <i class="bi bi-person"></i>

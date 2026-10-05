@@ -1,0 +1,466 @@
+/* ================================
+   PRODUCT GRID
+================================ */
+
+.product-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+    gap: 10px;
+}
+
+
+/* ================================
+   PRODUCT CARD
+================================ */
+
+.product-card {
+    position: relative;
+
+    min-width: 0;
+}
+
+
+/* ================================
+   PRODUCT IMAGE WRAPPER
+================================ */
+
+.product-image-wrapper {
+    position: relative;
+
+    overflow: hidden;
+
+    background: #f2f2f2;
+}
+
+
+.product-image {
+    position: relative;
+
+    width: 100%;
+
+    aspect-ratio: 4 / 5;
+
+    background: #f1f1f1;
+
+    overflow: hidden;
+}
+
+
+.product-image img {
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+}
+
+
+/* ================================
+   HOVER IMAGE
+================================ */
+
+.product-image-hover {
+    opacity: 0;
+
+    transition:
+        opacity .35s var(--ease);
+}
+
+
+.product-image-main {
+    transition:
+        transform .5s var(--ease);
+}
+
+
+@media (hover: hover) {
+
+    .product-card.has-hover-image:hover
+    .product-image-hover {
+
+        opacity: 1;
+    }
+
+
+    .product-card:not(.has-hover-image):hover
+    .product-image-main {
+
+        transform: scale(1.03);
+    }
+
+}
+
+
+/* ================================
+   IMAGE PLACEHOLDER
+================================ */
+
+.product-image-placeholder {
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 12px;
+
+    padding: 30px;
+
+    color: #777;
+
+    text-align: center;
+}
+
+
+.product-image-placeholder i {
+    font-size: 30px;
+}
+
+
+.product-image-placeholder span {
+    font-size: 13px;
+
+    line-height: 1.4;
+}
+
+
+/* ================================
+   PRODUCT LABEL
+================================ */
+
+.product-label {
+    position: absolute;
+
+    left: 0;
+
+    bottom: 0;
+
+    z-index: 2;
+
+    padding: 7px 10px;
+
+    background: #fff;
+
+    color: #000;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: .2px;
+
+    pointer-events: none;
+}
+
+
+.product-label.is-soldout {
+    background: #000;
+
+    color: #fff;
+}
+
+
+/* ================================
+   WISHLIST
+================================ */
+
+.wishlist-button {
+    position: absolute;
+
+    top: 10px;
+
+    right: 10px;
+
+    z-index: 3;
+
+    width: 40px;
+
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255, 255, 255, .92);
+
+    font-size: 18px;
+
+    cursor: pointer;
+
+    transition:
+        transform .2s var(--ease),
+        background .2s;
+}
+
+
+.wishlist-button:hover {
+    background: #fff;
+
+    transform: scale(1.06);
+}
+
+
+/* ================================
+   PRODUCT INFO
+================================ */
+
+.product-info {
+    padding:
+        14px 2px 26px;
+}
+
+
+/* PRODUCT TITLE */
+
+.product-title {
+    margin-bottom: 6px;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    line-height: 1.35;
+
+    /*
+     * Maksimal dua baris agar
+     * tinggi kartu tetap konsisten.
+     */
+
+    display: -webkit-box;
+
+    -webkit-line-clamp: 2;
+
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| STRETCHED LINK
+|--------------------------------------------------------------------------
+|
+| Link pada judul diperluas sehingga seluruh
+| kartu dapat diklik.
+|
+*/
+
+.product-title a::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 1;
+}
+
+
+.product-title a:hover {
+    text-decoration: underline;
+
+    text-underline-offset: 3px;
+}
+
+
+.product-title a:focus-visible {
+    outline: none;
+}
+
+
+.product-title a:focus-visible::after {
+    outline:
+        2px solid var(--ink);
+
+    outline-offset: 2px;
+}
+
+
+/* ================================
+   CATEGORY & COLOR
+================================ */
+
+.product-category,
+.product-colors {
+    margin-bottom: 4px;
+
+    color: var(--ink-soft);
+
+    font-size: 12px;
+
+    line-height: 1.4;
+}
+
+
+/* ================================
+   PRICE
+================================ */
+
+.product-price {
+    margin-top: 10px;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+.product-price-from {
+    color: var(--ink-soft);
+
+    font-size: 12px;
+
+    font-weight: 400;
+}
+
+
+/* PRODUCT WITHOUT ACTIVE PRICE */
+
+.product-price-unavailable {
+    color: var(--ink-soft);
+
+    font-size: 12px;
+
+    font-weight: 400;
+}
+
+
+/* ================================
+   SOLD OUT
+================================ */
+
+.product-card.is-soldout
+.product-image {
+
+    opacity: .55;
+}
+
+
+.product-card.is-soldout
+.product-price {
+
+    color: var(--ink-soft);
+}
+
+
+/* ================================
+   EMPTY STATE
+================================ */
+
+.empty-product {
+    grid-column:
+        1 / -1;
+
+    padding:
+        80px 20px;
+
+    background: #f4f4f4;
+
+    text-align: center;
+
+    color: #777;
+}
+
+
+/* ================================
+   TABLET
+================================ */
+
+@media (max-width: 1100px) {
+
+    .product-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+}
+
+
+/* ================================
+   MOBILE
+================================ */
+
+@media (max-width: 768px) {
+
+    .product-grid {
+        gap: 8px;
+    }
+
+
+    .product-info {
+        padding:
+            12px 2px 20px;
+    }
+
+
+    .product-title {
+        font-size: 13px;
+    }
+
+
+    .product-category,
+    .product-colors {
+
+        font-size: 11px;
+    }
+
+
+    .product-price {
+        margin-top: 8px;
+
+        font-size: 13px;
+    }
+
+}
+
+
+/* ================================
+   SMALL MOBILE
+================================ */
+
+@media (max-width: 480px) {
+
+    .wishlist-button {
+        width: 34px;
+
+        height: 34px;
+
+        top: 8px;
+
+        right: 8px;
+
+        font-size: 15px;
+    }
+
+
+    .product-label {
+        padding:
+            6px 8px;
+
+        font-size: 10px;
+    }
+
+}

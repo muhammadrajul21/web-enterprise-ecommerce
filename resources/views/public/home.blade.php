@@ -1,48 +1,77 @@
 @extends('layouts.store')
 
-@section('title', 'Home')
+@section('title', 'Lifestyle Store')
 
 @section('content')
+
+@php
+    /*
+    |--------------------------------------------------------------------------
+    | HOME IMAGE PATHS
+    |--------------------------------------------------------------------------
+    */
+
+    $heroPhoto = file_exists(
+        public_path('images/home/hero.jpg')
+    )
+        ? asset('images/home/hero.jpg')
+        : null;
+
+
+    $campaignPhoto = file_exists(
+        public_path('images/home/campaign.jpg')
+    )
+        ? asset('images/home/campaign.jpg')
+        : null;
+@endphp
 
 
 {{-- =========================
     HERO
 ========================= --}}
 
-<section class="hero">
-
-    <div class="hero-overlay"></div>
+<section
+    class="hero"
+    @if ($heroPhoto)
+        style="--photo: url('{{ $heroPhoto }}');"
+    @endif
+>
 
     <div class="hero-content">
 
-        <span class="hero-label">
-            NEW COLLECTION
-        </span>
-
         <h1>
-            STYLE FOR
+            Built for
             <br>
-            EVERYDAY LIFE
+            everyday life
         </h1>
 
         <p>
-            Koleksi lifestyle modern untuk aktivitas sehari-hari.
-            Nyaman, sederhana, dan mudah dipadukan.
+            Clothing, footwear, and accessories
+            that are easy to wear and easy to mix.
         </p>
 
         <div class="hero-actions">
 
             <a
-                href="{{ route('catalog.preview', ['segment' => 'men']) }}"
-                class="btn-primary-store">
-                SHOP MEN
+                href="{{ route('catalog.preview', [
+                    'segment' => 'men'
+                ]) }}"
+                class="btn-secondary-store"
+            >
+                Shop men
+
                 <i class="bi bi-arrow-right"></i>
             </a>
 
+
             <a
-                href="{{ route('catalog.preview', ['segment' => 'women']) }}"
-                class="btn-secondary-store">
-                SHOP WOMEN
+                href="{{ route('catalog.preview', [
+                    'segment' => 'women'
+                ]) }}"
+                class="btn-ghost-store"
+            >
+                Shop women
+
                 <i class="bi bi-arrow-right"></i>
             </a>
 
@@ -62,36 +91,43 @@
 
     <div class="section-header">
 
-        <div>
-            <span class="section-small-title">
-                DISCOVER
-            </span>
+        <h2>
+            New arrivals
+        </h2>
 
-            <h2>
-                NEW ARRIVALS
-            </h2>
-        </div>
+        <a
+            href="{{ route('catalog.preview', [
+                'sort' => 'latest'
+            ]) }}"
+            class="section-link"
+        >
+            View all
 
-        <a href="{{ route('catalog.preview') }}" class="section-link">
-            VIEW ALL
             <i class="bi bi-arrow-right"></i>
         </a>
+
     </div>
 
 
     <div class="product-grid">
 
-        @forelse($products as $product)
+        @forelse ($products as $product)
 
-        @include('components.product-card', [
-        'product' => $product
-        ])
+            @include(
+                'components.product-card',
+                [
+                    'product' => $product
+                ]
+            )
 
         @empty
 
-        <div class="empty-product">
-            Belum ada produk tersedia.
-        </div>
+            <div class="empty-product">
+
+                No products yet.
+                Check back soon.
+
+            </div>
 
         @endforelse
 
@@ -102,251 +138,186 @@
 
 
 {{-- =========================
-    SHOP BY CATEGORY
+    SHOP BY SEGMENT
 ========================= --}}
 
-<section class="category-wrapper">
+@if ($segments->isNotEmpty())
 
-    <div class="category-heading">
+    <section class="segment-section">
 
-        <span class="section-small-title">
-            EXPLORE
-        </span>
-
-        <h2>
-            SHOP BY CATEGORY
-        </h2>
-
-    </div>
-
-
-    <div class="category-grid">
-
-
-        {{-- MEN --}}
-
-        <article
-            class="category-card category-men">
-
-            <div class="category-overlay"></div>
-
-            <div class="category-content">
-
-                <h3>
-                    MEN
-                </h3>
-
-                <a href="{{ route('catalog.preview', ['segment' => 'men']) }}">
-                    SHOP NOW
-                    <i class="bi bi-arrow-right"></i>
-                </a>
-
-            </div>
-
-        </article>
-
-
-        {{-- WOMEN --}}
-
-        <article
-            class="category-card category-women">
-
-            <div class="category-overlay"></div>
-
-            <div class="category-content">
-
-                <h3>
-                    WOMEN
-                </h3>
-
-                <a href="{{ route('catalog.preview', ['segment' => 'women']) }}">
-                    SHOP NOW
-                    <i class="bi bi-arrow-right"></i>
-                </a>
-
-            </div>
-
-        </article>
-
-
-        {{-- UNISEX --}}
-
-        <article
-            class="category-card category-unisex">
-
-            <div class="category-overlay"></div>
-
-            <div class="category-content">
-
-                <h3>
-                    UNISEX
-                </h3>
-
-                <a href="{{ route('catalog.preview', ['segment' => 'unisex']) }}">
-                    SHOP NOW
-                    <i class="bi bi-arrow-right"></i>
-                </a>
-
-            </div>
-
-        </article>
-
-    </div>
-
-</section>
-
-
-
-{{-- =========================
-    COLLECTION
-========================= --}}
-
-<section class="store-section collection-section">
-
-    <div class="section-header">
-
-        <div>
-
-            <span class="section-small-title">
-                CURATED FOR YOU
-            </span>
+        <div class="section-header segment-header">
 
             <h2>
-                SHOP COLLECTIONS
+                Shop by style
             </h2>
 
         </div>
 
-    </div>
+
+        <div class="segment-grid">
+
+            @foreach ($segments as $segment)
+
+                @php
+
+                    $segmentPath =
+                        'images/home/' .
+                        $segment->slug .
+                        '.jpg';
 
 
-    <div class="collection-grid">
+                    $segmentPhoto =
+                        file_exists(
+                            public_path($segmentPath)
+                        )
+                            ? asset($segmentPath)
+                            : null;
 
-        <a href="#" class="collection-item">
-
-            <span>
-                01
-            </span>
-
-            <div>
-                <h3>
-                    NEW ARRIVALS
-                </h3>
-
-                <p>
-                    Discover our latest products.
-                </p>
-            </div>
-
-            <i class="bi bi-arrow-up-right"></i>
-
-        </a>
+                @endphp
 
 
-        <a href="#" class="collection-item">
+                <a
+                    href="{{ route('catalog.preview', [
+                        'segment' => $segment->slug
+                    ]) }}"
+                    class="segment-card"
+                    @if ($segmentPhoto)
+                        style="--photo: url('{{ $segmentPhoto }}');"
+                    @endif
+                >
 
-            <span>
-                02
-            </span>
+                    <span class="segment-name">
 
-            <div>
-                <h3>
-                    ESSENTIALS
-                </h3>
+                        {{ $segment->name }}
 
-                <p>
-                    Everyday wardrobe essentials.
-                </p>
-            </div>
-
-            <i class="bi bi-arrow-up-right"></i>
-
-        </a>
+                    </span>
 
 
-        <a href="#" class="collection-item">
+                    <span class="segment-cta">
 
-            <span>
-                03
-            </span>
+                        Shop {{ strtolower($segment->name) }}
 
-            <div>
-                <h3>
-                    BEST SELLER
-                </h3>
+                        <i class="bi bi-arrow-right"></i>
 
-                <p>
-                    Customer favourite products.
-                </p>
-            </div>
+                    </span>
 
-            <i class="bi bi-arrow-up-right"></i>
+                </a>
 
-        </a>
+            @endforeach
 
+        </div>
 
-        <a href="#" class="collection-item">
+    </section>
 
-            <span>
-                04
-            </span>
-
-            <div>
-                <h3>
-                    DAILY WEAR
-                </h3>
-
-                <p>
-                    Designed for everyday movement.
-                </p>
-            </div>
-
-            <i class="bi bi-arrow-up-right"></i>
-
-        </a>
-
-    </div>
-
-</section>
+@endif
 
 
 
 {{-- =========================
-    CAMPAIGN
+    COLLECTIONS
 ========================= --}}
 
-<section class="campaign-section">
+@if ($collections->isNotEmpty())
 
-    <div class="campaign-overlay"></div>
+    <section class="store-section collection-section">
+
+        <div class="section-header">
+
+            <h2>
+                Collections
+            </h2>
+
+        </div>
+
+
+        <div class="collection-list">
+
+            @foreach ($collections as $collection)
+
+                <a
+                    href="{{ route('catalog.preview', [
+                        'collection' => $collection->slug
+                    ]) }}"
+                    class="collection-item"
+                >
+
+                    <div>
+
+                        <h3>
+                            {{ $collection->name }}
+                        </h3>
+
+
+                        @if ($collection->description)
+
+                            <p>
+                                {{ $collection->description }}
+                            </p>
+
+                        @endif
+
+                    </div>
+
+
+                    <span class="collection-count">
+
+                        {{ $collection->products_count }}
+
+                        {{ $collection->products_count === 1
+                            ? 'product'
+                            : 'products'
+                        }}
+
+                    </span>
+
+
+                    <i class="bi bi-arrow-right"></i>
+
+                </a>
+
+            @endforeach
+
+        </div>
+
+    </section>
+
+@endif
+
+
+
+{{-- =========================
+    CLOSING BANNER
+========================= --}}
+
+<section
+    class="campaign-section"
+    @if ($campaignPhoto)
+        style="--photo: url('{{ $campaignPhoto }}');"
+    @endif
+>
 
     <div class="campaign-content">
 
-        <span>
-            DAILY ESSENTIALS
-        </span>
-
         <h2>
-            MADE FOR
-            <br>
-            EVERYDAY MOVEMENT
+            Wear it on repeat
         </h2>
 
         <p>
-            Simple pieces designed to keep you comfortable
-            throughout your everyday activities.
+            Simple pieces that work with
+            what you already own.
         </p>
 
-        <a href="#" class="btn-primary-store">
-
-            EXPLORE COLLECTION
+        <a
+            href="{{ route('catalog.preview') }}"
+            class="btn-secondary-store"
+        >
+            Browse all products
 
             <i class="bi bi-arrow-right"></i>
-
         </a>
 
     </div>
 
 </section>
-
 
 @endsection

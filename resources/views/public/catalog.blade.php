@@ -1,298 +1,154 @@
 @extends('layouts.store')
 
-@section('title', 'Shop All Products')
+@php
+    // Judul halaman mengikuti filter yang aktif.
+    $activeSegment  = $segments->firstWhere('slug', request('segment'));
+    $activeCategory = $categories->firstWhere('slug', request('category'));
+
+    $heading = match (true) {
+        (bool) $activeSegment                    => $activeSegment->name,
+        (bool) $activeCategory                   => $activeCategory->name,
+        request('group') === 'clothing'          => 'Clothing',
+        (bool) request('collection')             => \Illuminate\Support\Str::headline(request('collection')),
+        request('sort') === 'latest'             => 'New arrivals',
+        default                                  => 'All products',
+    };
+
+    // Chip filter aktif, masing-masing bisa dilepas satu per satu.
+    $chips = [];
+    if ($activeSegment)            $chips['segment']    = $activeSegment->name;
+    if ($activeCategory)           $chips['category']   = $activeCategory->name;
+    if (request('group'))          $chips['group']      = ucfirst(request('group'));
+    if (request('collection'))     $chips['collection'] = \Illuminate\Support\Str::headline(request('collection'));
+@endphp
+
+@section('title', $heading)
 
 @section('content')
 
-{{-- =========================
-    PAGE HEADER
-========================= --}}
-
 <section class="catalog-header">
-
     <div>
-
-        <span class="section-small-title">
-            SHOP
-        </span>
-
-        <h1>
-            ALL PRODUCTS
-        </h1>
-
-        <p>
-            Discover everyday lifestyle pieces designed
-            for comfort, simplicity, and modern living.
-        </p>
-
+        <h1>{{ $heading }}</h1>
+        <p>Everyday pieces designed for comfort, simplicity, and modern living.</p>
     </div>
-
 </section>
-
-
-{{-- =========================
-    CATALOG TOOLBAR
-========================= --}}
 
 <section class="catalog-container">
 
-    <form
-        action="{{ route('catalog.preview') }}"
-        method="GET"
-        class="catalog-toolbar"
-    >
+    {{-- TOOLBAR: satu form membungkus semua filter --}}
+    <form action="{{ route('catalog.preview') }}" method="GET" class="catalog-toolbar">
+
+        @if (request('group'))
+            <input type="hidden" name="group" value="{{ request('group') }}">
+        @endif
+
+        @if (request('collection'))
+            <input type="hidden" name="collection" value="{{ request('collection') }}">
+        @endif
 
         <div class="catalog-filters">
 
-
-            {{-- SEGMENT --}}
-
             <div class="filter-group">
-
-                <label for="segment">
-                    SEGMENT
-                </label>
-
-                <select
-                    name="segment"
-                    id="segment"
-                >
-
-                    <option value="">
-                        All
-                    </option>
-
-                    @foreach($segments as $segment)
-
-                        <option
-                            value="{{ $segment->slug }}"
-                            {{ request('segment') === $segment->slug ? 'selected' : '' }}
-                        >
+                <label for="segment">Segment</label>
+                <select name="segment" id="segment" onchange="this.form.submit()">
+                    <option value="">All</option>
+                    @foreach ($segments as $segment)
+                        <option value="{{ $segment->slug }}" @selected(request('segment') === $segment->slug)>
                             {{ $segment->name }}
                         </option>
-
                     @endforeach
-
                 </select>
-
             </div>
 
-
-            {{-- CATEGORY --}}
-
             <div class="filter-group">
-
-                <label for="category">
-                    CATEGORY
-                </label>
-
-                <select
-                    name="category"
-                    id="category"
-                >
-
-                    <option value="">
-                        All
-                    </option>
-
-                    @foreach($categories as $category)
-
-                        <option
-                            value="{{ $category->slug }}"
-                            {{ request('category') === $category->slug ? 'selected' : '' }}
-                        >
+                <label for="category">Category</label>
+                <select name="category" id="category" onchange="this.form.submit()">
+                    <option value="">All</option>
+                    @foreach ($categories as $category)
+                        <option value="{{ $category->slug }}" @selected(request('category') === $category->slug)>
                             {{ $category->name }}
                         </option>
-
                     @endforeach
-
                 </select>
-
             </div>
-
-
-            {{-- SORT --}}
 
             <div class="filter-group">
-
-                <label for="sort">
-                    SORT BY
-                </label>
-
-                <select
-                    name="sort"
-                    id="sort"
-                >
-
-                    <option
-                        value="latest"
-                        {{ request('sort', 'latest') === 'latest' ? 'selected' : '' }}
-                    >
-                        Newest
-                    </option>
-
-                    <option
-                        value="price_low"
-                        {{ request('sort') === 'price_low' ? 'selected' : '' }}
-                    >
-                        Price: Low to High
-                    </option>
-
-                    <option
-                        value="price_high"
-                        {{ request('sort') === 'price_high' ? 'selected' : '' }}
-                    >
-                        Price: High to Low
-                    </option>
-
-                    <option
-                        value="name"
-                        {{ request('sort') === 'name' ? 'selected' : '' }}
-                    >
-                        Name A-Z
-                    </option>
-
+                <label for="sort">Sort by</label>
+                <select name="sort" id="sort" onchange="this.form.submit()">
+                    <option value="latest" @selected(request('sort', 'latest') === 'latest')>Newest</option>
+                    <option value="price_low" @selected(request('sort') === 'price_low')>Price: low to high</option>
+                    <option value="price_high" @selected(request('sort') === 'price_high')>Price: high to low</option>
+                    <option value="name" @selected(request('sort') === 'name')>Name A-Z</option>
                 </select>
-
             </div>
 
-
-            <button
-                type="submit"
-                class="catalog-filter-button"
-            >
-                APPLY
-            </button>
-
-
-            @if(
-                request('segment') ||
-                request('category') ||
-                request('sort')
-            )
-
-                <a
-                    href="{{ route('catalog.preview') }}"
-                    class="catalog-reset"
-                >
-                    RESET
-                </a>
-
-            @endif
+            {{-- Filter berjalan otomatis; tombol hanya untuk browser tanpa JS --}}
+            <noscript>
+                <button type="submit" class="catalog-filter-button">Apply</button>
+            </noscript>
 
         </div>
-
     </form>
 
-
-    {{-- =========================
-        PRODUCT RESULT
-    ========================= --}}
-
+    {{-- HASIL + CHIP FILTER --}}
     <div class="catalog-result-header">
 
-        <p>
+        <p><strong>{{ $products->total() }}</strong> {{ $products->total() === 1 ? 'product' : 'products' }}</p>
 
-            <strong>
-                {{ $products->total() }}
-            </strong>
+        @if ($chips)
+            <ul class="filter-chips">
+                @foreach ($chips as $key => $label)
+                    <li>
+                        <a
+                            href="{{ route('catalog.preview', request()->except([$key, 'page'])) }}"
+                            aria-label="Remove filter {{ $label }}">
+                            {{ $label }} <i class="bi bi-x"></i>
+                        </a>
+                    </li>
+                @endforeach
 
-            products
-
-        </p>
+                <li>
+                    <a href="{{ route('catalog.preview') }}" class="chip-reset">Clear all</a>
+                </li>
+            </ul>
+        @endif
 
     </div>
 
-
     <div class="product-grid catalog-product-grid">
 
-        @forelse($products as $product)
-
-            @include('components.product-card', [
-                'product' => $product
-            ])
-
+        @forelse ($products as $product)
+            @include('components.product-card', ['product' => $product])
         @empty
-
             <div class="catalog-empty">
-
                 <i class="bi bi-search"></i>
-
-                <h2>
-                    No products found
-                </h2>
-
-                <p>
-                    Try changing your filters.
-                </p>
-
-                <a
-                    href="{{ route('catalog.preview') }}"
-                    class="btn-primary-store"
-                >
-                    VIEW ALL PRODUCTS
-                </a>
-
+                <h2>No products found</h2>
+                <p>Try removing a filter or searching with different terms.</p>
+                <a href="{{ route('catalog.preview') }}" class="btn-primary-store">View all products</a>
             </div>
-
         @endforelse
 
     </div>
 
+    {{-- PAGINATION --}}
+    @if ($products->hasPages())
+        <nav class="catalog-pagination" aria-label="Pagination">
 
-    {{-- =========================
-        PAGINATION
-    ========================= --}}
-
-    @if($products->hasPages())
-
-        <div class="catalog-pagination">
-
-            @if($products->onFirstPage())
-
-                <span class="pagination-disabled">
-                    <i class="bi bi-arrow-left"></i>
-                    PREVIOUS
-                </span>
-
+            @if ($products->onFirstPage())
+                <span class="pagination-disabled"><i class="bi bi-arrow-left"></i> Previous</span>
             @else
-
-                <a href="{{ $products->previousPageUrl() }}">
-                    <i class="bi bi-arrow-left"></i>
-                    PREVIOUS
-                </a>
-
+                <a href="{{ $products->previousPageUrl() }}" rel="prev"><i class="bi bi-arrow-left"></i> Previous</a>
             @endif
 
+            <span class="pagination-page">Page {{ $products->currentPage() }} of {{ $products->lastPage() }}</span>
 
-            <span class="pagination-page">
-
-                PAGE
-                {{ $products->currentPage() }}
-                OF
-                {{ $products->lastPage() }}
-
-            </span>
-
-
-            @if($products->hasMorePages())
-
-                <a href="{{ $products->nextPageUrl() }}">
-                    NEXT
-                    <i class="bi bi-arrow-right"></i>
-                </a>
-
+            @if ($products->hasMorePages())
+                <a href="{{ $products->nextPageUrl() }}" rel="next">Next <i class="bi bi-arrow-right"></i></a>
             @else
-
-                <span class="pagination-disabled">
-                    NEXT
-                    <i class="bi bi-arrow-right"></i>
-                </span>
-
+                <span class="pagination-disabled">Next <i class="bi bi-arrow-right"></i></span>
             @endif
 
-        </div>
-
+        </nav>
     @endif
 
 </section>

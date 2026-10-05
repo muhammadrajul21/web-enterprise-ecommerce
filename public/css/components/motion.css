@@ -1,0 +1,86 @@
+/* ================================
+   MOTION
+   Semua gerak dikumpulkan di sini. Hapus <link> file ini di layout
+   untuk mematikan seluruh animasi tambahan.
+   (prefers-reduced-motion sudah ditangani di tokens.css)
+================================ */
+
+/* Header: bayangan saat di-scroll, sembunyi saat scroll turun */
+.site-header {
+    transition: transform .35s var(--ease), box-shadow .3s;
+}
+
+.site-header.is-scrolled { box-shadow: 0 6px 20px rgba(0, 0, 0, .06); }
+.site-header.is-hidden   { transform: translateY(-100%); }
+
+/* Toolbar katalog ikut naik saat header menghilang */
+.catalog-toolbar { transition: top .35s var(--ease); }
+body.nav-hidden .catalog-toolbar { top: 0; }
+
+/* Panel pencarian turun halus */
+.search-panel:not([hidden]) { animation: panelIn .25s var(--ease); }
+
+@keyframes panelIn {
+    from { opacity: 0; transform: translateY(-8px); }
+}
+
+/* Drawer: link masuk berurutan (satu momen terarah) */
+.drawer.is-open .drawer-links li {
+    animation: linkIn .4s var(--ease) both;
+    animation-delay: calc(var(--i, 0) * 45ms + 120ms);
+}
+
+.drawer-links li:nth-child(1) { --i: 0; }
+.drawer-links li:nth-child(2) { --i: 1; }
+.drawer-links li:nth-child(3) { --i: 2; }
+.drawer-links li:nth-child(4) { --i: 3; }
+.drawer-links li:nth-child(5) { --i: 4; }
+.drawer-links li:nth-child(6) { --i: 5; }
+.drawer-links li:nth-child(7) { --i: 6; }
+.drawer-links li:nth-child(8) { --i: 7; }
+
+@keyframes linkIn {
+    from { opacity: 0; transform: translateX(-14px); }
+}
+
+/* Home: teks hero masuk sekali saat halaman dibuka */
+.hero-content { animation: heroIn .9s var(--ease) .1s both; }
+
+@keyframes heroIn {
+    from { opacity: 0; transform: translateY(24px); }
+}
+
+/* Muncul saat di-scroll (kelas ditambah oleh motion.js) */
+.reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity .6s var(--ease), transform .6s var(--ease);
+}
+
+.reveal.is-in {
+    opacity: 1;
+    transform: none;
+}
+
+/* Panah bergeser saat hover */
+.section-link i,
+.btn-primary-store i,
+.btn-secondary-store i,
+.btn-ghost-store i,
+.segment-cta i,
+.collection-item > i {
+    transition: transform .25s var(--ease);
+}
+
+.section-link:hover i,
+.btn-primary-store:hover i,
+.btn-secondary-store:hover i,
+.btn-ghost-store:hover i,
+.segment-card:hover .segment-cta i,
+.collection-item:hover > i {
+    transform: translateX(5px);
+}
+
+/* Katalog: grid meredup sesaat selagi filter diterapkan */
+.catalog-product-grid { transition: opacity .25s; }
+.catalog-product-grid.is-loading { opacity: .4; pointer-events: none; }

@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\Segment;
+use App\Models\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -41,23 +42,50 @@ Route::get('/', function () {
 
 
 // ========================
-// HOME PREVIEW SAYED
+// HOME PREVIEW
 // ========================
 
 Route::get('/home-preview', function () {
 
+    // Produk terbaru
     $products = Product::with([
         'segment',
         'category',
         'variants',
-        'images'
+        'images',
+        'collections',
     ])
         ->where('status', 'active')
         ->latest()
         ->take(4)
         ->get();
 
-    return view('public.home', compact('products'));
+
+    // Segment aktif
+    $segments = Segment::where('is_active', true)
+        ->orderBy('id')
+        ->get();
+
+
+    // Collection aktif + jumlah produk aktif
+    $collections = Collection::where('is_active', true)
+        ->withCount([
+            'products' => function ($query) {
+                $query->where(
+                    'products.status',
+                    'active'
+                );
+            }
+        ])
+        ->orderBy('id')
+        ->get();
+
+
+    return view('public.home', compact(
+        'products',
+        'segments',
+        'collections'
+    ));
 })->name('home.preview');
 
 
@@ -73,7 +101,11 @@ Route::get('/catalog-preview', function () {
         'variants',
         'images',
     ])
-        ->withMin('variants', 'price')
+        ->withMin([
+            'variants' => function ($query) {
+                $query->where('status', 'active');
+            }
+        ], 'price')
         ->where('status', 'active');
 
     // Filter segment
@@ -101,6 +133,16 @@ Route::get('/catalog-preview', function () {
     if (request('category')) {
         $query->whereHas('category', function ($q) {
             $q->where('slug', request('category'));
+        });
+    }
+
+    // Filter collection
+    if (request('collection')) {
+        $query->whereHas('collections', function ($q) {
+            $q->where(
+                'collections.slug',
+                request('collection')
+            );
         });
     }
 

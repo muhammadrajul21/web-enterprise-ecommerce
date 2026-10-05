@@ -1,0 +1,66 @@
+/* ================================
+   BUTTON
+================================ */
+
+.btn-primary-store,
+.btn-secondary-store {
+    min-height: 52px;
+
+    padding: 0 23px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 18px;
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: .4px;
+
+    transition: .2s ease;
+}
+
+.btn-primary-store {
+    background: #000;
+    color: #fff;
+}
+
+.btn-primary-store:hover {
+    background: #333;
+}
+
+.btn-secondary-store {
+    background: #fff;
+    color: #000;
+}
+
+.btn-secondary-store:hover {
+    background: #eaeaea;
+}
+
+
+.btn-outline-store {
+    min-height: 52px;
+    padding: 0 23px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #000;
+    background: transparent;
+    color: #000;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: .4px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.btn-outline-store:hover {
+    background: #000;
+    color: #fff;
+}

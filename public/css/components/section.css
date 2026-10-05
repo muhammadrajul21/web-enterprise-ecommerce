@@ -1,0 +1,90 @@
+/* ================================
+   GENERAL SECTION
+================================ */
+
+.store-section {
+    padding: 85px 40px;
+}
+
+.section-header {
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    margin-bottom: 35px;
+}
+
+
+/* ================================
+   SHARED SECTION TITLE
+================================ */
+
+.section-small-title {
+    display: block;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    letter-spacing: 1.3px;
+
+    margin-bottom: 12px;
+}
+
+
+/* ================================
+   SECTION HEADING
+================================ */
+
+.section-header h2,
+.category-heading h2 {
+    font-size: clamp(32px, 4vw, 48px);
+
+    line-height: 1;
+
+    letter-spacing: -2px;
+}
+
+
+/* ================================
+   SECTION LINK
+================================ */
+
+.section-link {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 10px;
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    border-bottom: 1px solid #111;
+
+    padding-bottom: 5px;
+}
+
+
+/* ================================
+   SECTION RESPONSIVE
+================================ */
+
+@media (max-width: 768px) {
+
+    .store-section {
+        padding: 65px 18px;
+    }
+
+    .section-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+}

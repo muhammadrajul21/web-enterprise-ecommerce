@@ -1,0 +1,75 @@
+/* ================================
+   PAGINATION
+================================ */
+
+.catalog-pagination {
+    margin-top: 50px;
+
+    padding-top: 25px;
+
+    border-top: 1px solid #ddd;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+.catalog-pagination a,
+.pagination-disabled,
+.pagination-page {
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+.catalog-pagination a {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.catalog-pagination a:hover {
+    text-decoration: underline;
+}
+
+.pagination-disabled {
+    color: #aaa;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+/* ================================
+   PAGINATION RESPONSIVE
+================================ */
+
+@media (max-width: 768px) {
+
+    .catalog-pagination {
+        flex-wrap: wrap;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .pagination-page {
+        order: 3;
+
+        width: 100%;
+
+        text-align: center;
+    }
+
+}

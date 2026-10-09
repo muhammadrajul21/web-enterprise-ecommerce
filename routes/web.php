@@ -7,7 +7,11 @@ use App\Models\Segment;
 use App\Models\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-
+use App\Http\Controllers\Admin\OrderController;
+use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
+use App\Http\Controllers\Staff\StockController;
+use App\Http\Controllers\Staff\OrderController as StaffOrderController;
 
 // ========================
 // HOME / REDIRECT SESUAI ROLE
@@ -317,6 +321,34 @@ Route::middleware('auth')->group(function () {
             Route::get('/dashboard', function () {
                 return view('admin.dashboard');
             })->name('admin.dashboard');
+
+            Route::get(
+                '/orders',
+                [OrderController::class, 'index']
+            )->name('admin.orders.index');
+
+
+            Route::get(
+                '/orders/{order}',
+                [OrderController::class, 'show']
+            )->name('admin.orders.show');
+
+            Route::get(
+                '/payments',
+                [PaymentController::class, 'index']
+            )->name('admin.payments.index');
+
+
+            Route::post(
+                '/payments/{payment}/verify',
+                [PaymentController::class, 'verify']
+            )->name('admin.payments.verify');
+
+
+            Route::post(
+                '/payments/{payment}/reject',
+                [PaymentController::class, 'reject']
+            )->name('admin.payments.reject');
         });
 
 
@@ -328,9 +360,43 @@ Route::middleware('auth')->group(function () {
         ->middleware('role:staff_gudang')
         ->group(function () {
 
-            Route::get('/dashboard', function () {
-                return view('staff.dashboard');
-            })->name('staff.dashboard');
+            Route::get(
+                '/dashboard',
+                [StaffDashboardController::class, 'index']
+            )->name('staff.dashboard');
+
+            Route::get(
+                '/stock',
+                [StockController::class, 'index']
+            )->name('staff.stock.index');
+
+
+            Route::post(
+                '/stock/{variant}',
+                [StockController::class, 'update']
+            )->name('staff.stock.update');
+
+            Route::get(
+                '/orders/processing',
+                [StaffOrderController::class, 'processing']
+            )->name('staff.orders.processing');
+
+
+            Route::post(
+                '/orders/{order}/packing',
+                [StaffOrderController::class, 'markPacking']
+            )->name('staff.orders.packing');
+
+            Route::get(
+                '/orders/shipping',
+                [StaffOrderController::class, 'shipping']
+            )->name('staff.orders.shipping');
+
+
+            Route::post(
+                '/orders/{order}/ship',
+                [StaffOrderController::class, 'ship']
+            )->name('staff.orders.ship');
         });
 
 

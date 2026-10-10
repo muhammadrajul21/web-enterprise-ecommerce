@@ -1,0 +1,508 @@
+/* ================================
+   VARIANT MANAGEMENT
+================================ */
+
+.variant-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 15px 18px;
+    margin-bottom: 20px;
+
+    background: #fff;
+
+    border: 1px solid #d9d9d9;
+
+    font-size: 12px;
+}
+
+
+.variant-card-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+
+.add-variant-button {
+    min-height: 42px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 0 18px;
+
+    background: #111;
+    color: #fff;
+
+    font-size: 10px;
+    font-weight: 700;
+
+    letter-spacing: .4px;
+}
+
+.add-variant-button:hover {
+    background: #333;
+}
+
+
+.variant-table {
+    min-width: 1100px;
+}
+
+
+.variant-sku {
+    font-weight: 700;
+
+    letter-spacing: .3px;
+}
+
+
+.stock-value {
+    display: inline-flex;
+
+    min-width: 35px;
+
+    justify-content: center;
+
+    padding: 5px 8px;
+
+    background: #f3f3f3;
+
+    font-weight: 700;
+}
+
+
+.variant-status {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    min-width: 68px;
+
+    padding: 6px 9px;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: .3px;
+}
+
+.variant-status-active {
+    background: #e8f5ec;
+
+    color: #207a3d;
+}
+
+.variant-status-inactive {
+    background: #eeeeee;
+
+    color: #666;
+}
+
+
+.variant-actions {
+    display: flex;
+
+    gap: 7px;
+}
+
+.variant-actions a {
+    width: 32px;
+    height: 32px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #ddd;
+
+    background: #fff;
+
+    color: #666;
+}
+
+.variant-actions a:hover {
+    border-color: #111;
+
+    color: #111;
+}
+
+
+.variant-empty {
+    height: 250px;
+
+    text-align: center;
+}
+
+.variant-empty > i {
+    display: block;
+
+    margin-bottom: 14px;
+
+    color: #bbb;
+
+    font-size: 32px;
+}
+
+.variant-empty strong {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 14px;
+}
+
+.variant-empty span {
+    color: #999;
+
+    font-size: 11px;
+}
+
+
+.variant-pagination {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 18px 25px;
+
+    border-top: 1px solid #e5e5e5;
+}
+
+.pagination-info {
+    color: #777;
+
+    font-size: 10px;
+}
+
+.pagination-buttons {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.pagination-button,
+.pagination-disabled {
+    min-height: 36px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 0 13px;
+
+    font-size: 9px;
+
+    font-weight: 700;
+}
+
+.pagination-button {
+    border: 1px solid #111;
+
+    background: #111;
+
+    color: #fff;
+}
+
+.pagination-button:hover {
+    background: #333;
+}
+
+.pagination-disabled {
+    border: 1px solid #ddd;
+
+    background: #f5f5f5;
+
+    color: #aaa;
+}
+
+.pagination-button i,
+.pagination-disabled i {
+    font-size: 10px;
+}
+
+
+/* ================================
+   VARIANT FORM
+================================ */
+
+.variant-form-card {
+    background: #fff;
+
+    border: 1px solid #e5e5e5;
+}
+
+
+.variant-form-header {
+    padding: 25px;
+
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.variant-form-header h2 {
+    margin-bottom: 5px;
+
+    font-size: 18px;
+}
+
+.variant-form-header p {
+    color: #777;
+
+    font-size: 11px;
+}
+
+
+.variant-form-body {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 24px;
+
+    padding: 28px 25px;
+}
+
+
+.variant-form-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 9px;
+}
+
+.variant-full {
+    grid-column: 1 / -1;
+}
+
+
+.variant-form-group > label {
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+.variant-form-group > label span {
+    color: #a00;
+}
+
+
+.variant-form-group input,
+.variant-form-group select {
+    width: 100%;
+
+    min-height: 46px;
+
+    padding: 0 14px;
+
+    border: 1px solid #ccc;
+
+    background: #fff;
+
+    outline: none;
+
+    font-size: 12px;
+}
+
+.variant-form-group input:focus,
+.variant-form-group select:focus {
+    border-color: #111;
+}
+
+
+/* PRICE */
+
+.price-input {
+    display: flex;
+
+    min-height: 46px;
+
+    border: 1px solid #ccc;
+}
+
+.price-input:focus-within {
+    border-color: #111;
+}
+
+.price-input > span {
+    display: flex;
+
+    align-items: center;
+
+    padding: 0 14px;
+
+    background: #f5f5f5;
+
+    border-right: 1px solid #ccc;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+.price-input input {
+    border: none;
+}
+
+
+/* STOCK */
+
+.stock-readonly {
+    min-height: 46px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    padding: 0 14px;
+
+    background: #f5f5f5;
+
+    border: 1px solid #ddd;
+}
+
+.stock-readonly strong {
+    font-size: 14px;
+}
+
+.stock-readonly span {
+    color: #777;
+
+    font-size: 11px;
+}
+
+
+.variant-help {
+    color: #888;
+
+    font-size: 10px;
+}
+
+
+.variant-field-error {
+    color: #a00;
+
+    font-size: 10px;
+}
+
+
+.variant-error {
+    margin-bottom: 20px;
+
+    padding: 18px;
+
+    background: #fff;
+
+    border: 1px solid #d7aaaa;
+
+    font-size: 11px;
+}
+
+.variant-error strong {
+    display: block;
+
+    margin-bottom: 8px;
+}
+
+.variant-error ul {
+    padding-left: 18px;
+}
+
+
+/* FOOTER */
+
+.variant-form-footer {
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    padding: 20px 25px;
+
+    border-top: 1px solid #e5e5e5;
+}
+
+
+.variant-cancel,
+.variant-save {
+    min-height: 44px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 0 20px;
+
+    font-size: 10px;
+
+    font-weight: 700;
+}
+
+
+.variant-cancel {
+    border: 1px solid #ccc;
+
+    background: #fff;
+}
+
+
+.variant-save {
+    border: none;
+
+    background: #111;
+
+    color: #fff;
+
+    cursor: pointer;
+}
+
+.variant-save:hover {
+    background: #333;
+}
+
+
+@media (max-width: 800px) {
+
+    .variant-form-body {
+        grid-template-columns: 1fr;
+    }
+
+    .variant-full {
+        grid-column: auto;
+    }
+
+    .variant-card-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+}

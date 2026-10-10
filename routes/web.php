@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Staff\StockController;
 use App\Http\Controllers\Staff\OrderController as StaffOrderController;
@@ -378,6 +379,31 @@ Route::middleware('auth')->group(function () {
                 '/payments/{payment}/reject',
                 [PaymentController::class, 'reject']
             )->name('admin.payments.reject');
+
+            Route::get(
+                '/variants',
+                [ProductVariantController::class, 'index']
+            )->name('admin.variants.index');
+
+            Route::get(
+                '/variants/create',
+                [ProductVariantController::class, 'create']
+            )->name('admin.variants.create');
+
+            Route::post(
+                '/variants',
+                [ProductVariantController::class, 'store']
+            )->name('admin.variants.store');
+
+            Route::get(
+                '/variants/{variant}/edit',
+                [ProductVariantController::class, 'edit']
+            )->name('admin.variants.edit');
+
+            Route::put(
+                '/variants/{variant}',
+                [ProductVariantController::class, 'update']
+            )->name('admin.variants.update');
         });
 
 

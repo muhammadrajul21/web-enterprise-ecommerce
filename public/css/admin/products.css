@@ -1,0 +1,363 @@
+/* ================================
+   PRODUCT MANAGEMENT
+   Tambahan khusus halaman Product.
+   Layout utama memakai orders.css.
+================================ */
+
+
+/* ================================
+   ALERT
+================================ */
+
+.product-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 15px 18px;
+
+    margin-bottom: 20px;
+
+    background: #fff;
+
+    border:
+        1px solid #d9d9d9;
+
+    font-size: 12px;
+}
+
+.product-alert i {
+    font-size: 16px;
+}
+
+
+/* ================================
+   PRODUCT CARD HEADER
+================================ */
+
+.product-card-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+}
+
+
+/* ================================
+   ADD PRODUCT
+================================ */
+
+.add-product-button {
+    min-height: 42px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+
+    padding: 0 18px;
+
+    border: none;
+
+    background: #111;
+
+    color: #fff;
+
+    font-size: 10px;
+
+    font-weight: 700;
+
+    letter-spacing: .4px;
+
+    cursor: pointer;
+}
+
+.add-product-button:hover {
+    background: #333;
+}
+
+.add-product-button:disabled {
+    background: #aaa;
+
+    cursor: not-allowed;
+}
+
+
+/* ================================
+   PRODUCT TABLE
+================================ */
+
+.product-table {
+    min-width: 1150px;
+}
+
+
+/* PRODUCT INFO */
+
+.product-info {
+    min-width: 210px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+
+/* IMAGE */
+
+.product-thumbnail {
+    width: 46px;
+    height: 46px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    overflow: hidden;
+
+    background: #f5f5f5;
+
+    border:
+        1px solid #e5e5e5;
+
+    color: #aaa;
+
+    font-size: 17px;
+}
+
+.product-thumbnail img {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+}
+
+
+/* PRODUCT NAME */
+
+.product-name {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+.product-name strong {
+    font-size: 12px;
+
+    color: #111;
+}
+
+.product-name span {
+    max-width: 160px;
+
+    overflow: hidden;
+
+    color: #999;
+
+    font-size: 10px;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+}
+
+
+/* PRICE */
+
+.price-range {
+    display: block;
+
+    margin-top: 4px;
+
+    color: #777;
+
+    font-size: 10px;
+}
+
+
+/* MUTED */
+
+.table-muted {
+    color: #999;
+}
+
+
+/* FEATURED */
+
+.featured-product {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    font-size: 11px;
+}
+
+.featured-product i {
+    font-size: 12px;
+}
+
+
+/* ================================
+   STATUS
+================================ */
+
+.product-status {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-width: 68px;
+
+    padding: 6px 9px;
+
+    font-size: 9px;
+
+    font-weight: 700;
+
+    letter-spacing: .3px;
+}
+
+.product-status-active {
+    background: #e8f5ec;
+
+    color: #207a3d;
+}
+
+.product-status-draft {
+    background: #fff4d8;
+
+    color: #8a6400;
+}
+
+.product-status-inactive {
+    background: #eeeeee;
+
+    color: #666;
+}
+
+
+/* ================================
+   ACTION
+================================ */
+
+.product-actions {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+}
+
+.product-actions button {
+    width: 32px;
+    height: 32px;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border:
+        1px solid #ddd;
+
+    background: #fff;
+
+    color: #666;
+
+    cursor: pointer;
+}
+
+.product-actions button:hover {
+    border-color: #111;
+
+    color: #111;
+}
+
+.product-actions button:disabled {
+    color: #bbb;
+
+    border-color: #eee;
+
+    cursor: not-allowed;
+}
+
+
+/* ================================
+   EMPTY STATE
+================================ */
+
+.product-empty {
+    height: 260px;
+
+    text-align: center;
+}
+
+.product-empty > i {
+    display: block;
+
+    margin-bottom: 14px;
+
+    color: #bbb;
+
+    font-size: 32px;
+}
+
+.product-empty strong {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: 14px;
+}
+
+.product-empty span {
+    color: #999;
+
+    font-size: 11px;
+}
+
+
+/* ================================
+   PAGINATION
+================================ */
+
+.product-pagination {
+    padding: 20px 25px;
+
+    border-top:
+        1px solid #e5e5e5;
+}
+
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 900px) {
+
+    .product-card-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+}

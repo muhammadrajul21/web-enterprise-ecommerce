@@ -29,72 +29,123 @@
 
 <body>
 
-<div class="admin-layout">
+    <div class="admin-layout">
 
-    <aside class="admin-sidebar">
+        <aside class="admin-sidebar">
 
-        <div class="sidebar-brand">
-            <h2>LIFESTYLE</h2>
-            <span>ADMIN PANEL</span>
-        </div>
-
-
-        <nav class="sidebar-menu">
-
-            <a href="{{ route('admin.dashboard') }}">
-                <i class="bi bi-grid"></i>
-                Dashboard
-            </a>
-
-            <a href="{{ route('admin.products.index') }}">
-                <i class="bi bi-box-seam"></i>
-                Products
-            </a>
-
-            <a href="{{ route('admin.variants.index') }}">
-                <i class="bi bi-boxes"></i>
-                Variants
-            </a>
-
-            <a href="{{ route('admin.categories.index') }}">
-                <i class="bi bi-tags"></i>
-                Categories
-            </a>
-
-            <a href="{{ route('admin.collections.index') }}">
-                <i class="bi bi-collection"></i>
-                Collections
-            </a>
-
-            <a
-                href="{{ route('admin.vouchers.index') }}"
-                class="active">
-
-                <i class="bi bi-ticket-perforated"></i>
-                Vouchers
-
-            </a>
-
-            <a href="{{ route('admin.orders.index') }}">
-                <i class="bi bi-bag-check"></i>
-                Orders
-            </a>
-
-            <a href="{{ route('admin.payments.index') }}">
-                <i class="bi bi-credit-card"></i>
-                Payments
-            </a>
-
-        </nav>
+            <div class="sidebar-brand">
+                <h2>LIFESTYLE</h2>
+                <span>ADMIN PANEL</span>
+            </div>
 
 
-        <div class="sidebar-footer">
+            <nav class="sidebar-menu">
 
-            <div class="admin-user">
+                {{-- DASHBOARD --}}
+                <a
+                    href="{{ route('admin.dashboard') }}"
+                    class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
 
-                <div class="admin-avatar">
+                    <i class="bi bi-grid"></i>
 
-                    {{ strtoupper(
+                    Dashboard
+
+                </a>
+
+
+                {{-- PRODUCTS --}}
+                <a
+                    href="{{ route('admin.products.index') }}"
+                    class="{{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-box-seam"></i>
+
+                    Products
+
+                </a>
+
+
+                {{-- VARIANTS --}}
+                <a
+                    href="{{ route('admin.variants.index') }}"
+                    class="{{ request()->routeIs('admin.variants.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-boxes"></i>
+
+                    Variants
+
+                </a>
+
+
+                {{-- CATEGORIES --}}
+                <a
+                    href="{{ route('admin.categories.index') }}"
+                    class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-tags"></i>
+
+                    Categories
+
+                </a>
+
+
+                {{-- COLLECTIONS --}}
+                <a
+                    href="{{ route('admin.collections.index') }}"
+                    class="{{ request()->routeIs('admin.collections.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-collection"></i>
+
+                    Collections
+
+                </a>
+
+
+                {{-- VOUCHERS --}}
+                <a
+                    href="{{ route('admin.vouchers.index') }}"
+                    class="{{ request()->routeIs('admin.vouchers.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-ticket-perforated"></i>
+
+                    Vouchers
+
+                </a>
+
+
+                {{-- ORDERS --}}
+                <a
+                    href="{{ route('admin.orders.index') }}"
+                    class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-bag-check"></i>
+
+                    Orders
+
+                </a>
+
+
+                {{-- PAYMENTS --}}
+                <a
+                    href="{{ route('admin.payments.index') }}"
+                    class="{{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-credit-card"></i>
+
+                    Payments
+
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-footer">
+
+                <div class="admin-user">
+
+                    <div class="admin-avatar">
+
+                        {{ strtoupper(
                         substr(
                             auth()->user()->name,
                             0,
@@ -102,84 +153,84 @@
                         )
                     ) }}
 
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            {{ auth()->user()->name }}
+                        </strong>
+
+                        <span>
+                            Administrator
+                        </span>
+
+                    </div>
+
                 </div>
+
+
+                <form
+                    action="{{ route('logout') }}"
+                    method="POST">
+
+                    @csrf
+
+                    <button
+                        type="submit"
+                        class="logout-button">
+
+                        <i class="bi bi-box-arrow-right"></i>
+
+                        Logout
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </aside>
+
+
+        <main class="admin-main">
+
+            <div class="admin-header">
 
                 <div>
 
-                    <strong>
-                        {{ auth()->user()->name }}
-                    </strong>
-
-                    <span>
-                        Administrator
+                    <span class="page-label">
+                        ADMIN
                     </span>
+
+                    <h1>
+
+                        {{ $voucher
+                        ? 'Edit Voucher'
+                        : 'Add Voucher' }}
+
+                    </h1>
+
+                    <p>
+
+                        {{ $voucher
+                        ? 'Update voucher configuration.'
+                        : 'Create a new discount voucher.' }}
+
+                    </p>
+
+                </div>
+
+                <div class="header-icon">
+
+                    <i class="bi bi-ticket-perforated"></i>
 
                 </div>
 
             </div>
 
 
-            <form
-                action="{{ route('logout') }}"
-                method="POST">
-
-                @csrf
-
-                <button
-                    type="submit"
-                    class="logout-button">
-
-                    <i class="bi bi-box-arrow-right"></i>
-
-                    Logout
-
-                </button>
-
-            </form>
-
-        </div>
-
-    </aside>
-
-
-    <main class="admin-main">
-
-        <div class="admin-header">
-
-            <div>
-
-                <span class="page-label">
-                    ADMIN
-                </span>
-
-                <h1>
-
-                    {{ $voucher
-                        ? 'Edit Voucher'
-                        : 'Add Voucher' }}
-
-                </h1>
-
-                <p>
-
-                    {{ $voucher
-                        ? 'Update voucher configuration.'
-                        : 'Create a new discount voucher.' }}
-
-                </p>
-
-            </div>
-
-            <div class="header-icon">
-
-                <i class="bi bi-ticket-perforated"></i>
-
-            </div>
-
-        </div>
-
-
-        @if ($errors->any())
+            @if ($errors->any())
 
             <div class="voucher-form-error">
 
@@ -191,9 +242,9 @@
 
                     @foreach ($errors->all() as $error)
 
-                        <li>
-                            {{ $error }}
-                        </li>
+                    <li>
+                        {{ $error }}
+                    </li>
 
                     @endforeach
 
@@ -201,11 +252,11 @@
 
             </div>
 
-        @endif
+            @endif
 
 
-        <form
-            action="{{ $voucher
+            <form
+                action="{{ $voucher
                 ? route(
                     'admin.vouchers.update',
                     $voucher
@@ -213,318 +264,318 @@
                 : route(
                     'admin.vouchers.store'
                 ) }}"
-            method="POST">
+                method="POST">
 
-            @csrf
+                @csrf
 
-            @if ($voucher)
+                @if ($voucher)
                 @method('PUT')
-            @endif
+                @endif
 
 
-            <section class="voucher-form-card">
+                <section class="voucher-form-card">
 
-                <div class="voucher-form-header">
+                    <div class="voucher-form-header">
 
-                    <h2>
-                        Voucher Information
-                    </h2>
+                        <h2>
+                            Voucher Information
+                        </h2>
 
-                    <p>
-                        Complete the voucher configuration below.
-                    </p>
+                        <p>
+                            Complete the voucher configuration below.
+                        </p>
 
-                </div>
-
-
-                <div class="voucher-form-body">
+                    </div>
 
 
-                    <div class="voucher-form-group">
+                    <div class="voucher-form-body">
 
-                        <label for="code">
 
-                            Voucher Code
-                            <span>*</span>
+                        <div class="voucher-form-group">
 
-                        </label>
+                            <label for="code">
 
-                        <input
-                            id="code"
-                            type="text"
-                            name="code"
-                            value="{{ old(
+                                Voucher Code
+                                <span>*</span>
+
+                            </label>
+
+                            <input
+                                id="code"
+                                type="text"
+                                name="code"
+                                value="{{ old(
                                 'code',
                                 $voucher?->code
                             ) }}"
-                            placeholder="Example: SAVE20"
-                            required>
+                                placeholder="Example: SAVE20"
+                                required>
 
-                        <small>
-                            Code will be stored in uppercase.
-                        </small>
+                            <small>
+                                Code will be stored in uppercase.
+                            </small>
 
-                    </div>
+                        </div>
 
 
-                    <div class="voucher-form-group">
+                        <div class="voucher-form-group">
 
-                        <label for="name">
+                            <label for="name">
 
-                            Voucher Name
-                            <span>*</span>
+                                Voucher Name
+                                <span>*</span>
 
-                        </label>
+                            </label>
 
-                        <input
-                            id="name"
-                            type="text"
-                            name="name"
-                            value="{{ old(
+                            <input
+                                id="name"
+                                type="text"
+                                name="name"
+                                value="{{ old(
                                 'name',
                                 $voucher?->name
                             ) }}"
-                            placeholder="Example: Weekend Discount"
-                            required>
+                                placeholder="Example: Weekend Discount"
+                                required>
 
-                    </div>
+                        </div>
 
 
-                    <div class="voucher-form-group">
+                        <div class="voucher-form-group">
 
-                        <label for="discount_type">
+                            <label for="discount_type">
 
-                            Discount Type
-                            <span>*</span>
+                                Discount Type
+                                <span>*</span>
 
-                        </label>
+                            </label>
 
-                        <select
-                            id="discount_type"
-                            name="discount_type"
-                            required>
+                            <select
+                                id="discount_type"
+                                name="discount_type"
+                                required>
 
-                            <option value="">
-                                Select discount type
-                            </option>
+                                <option value="">
+                                    Select discount type
+                                </option>
 
-                            <option
-                                value="percentage"
-                                {{ old(
+                                <option
+                                    value="percentage"
+                                    {{ old(
                                     'discount_type',
                                     $voucher?->discount_type
                                 ) === 'percentage'
                                     ? 'selected'
                                     : '' }}>
 
-                                Percentage (%)
+                                    Percentage (%)
 
-                            </option>
+                                </option>
 
-                            <option
-                                value="fixed"
-                                {{ old(
+                                <option
+                                    value="fixed"
+                                    {{ old(
                                     'discount_type',
                                     $voucher?->discount_type
                                 ) === 'fixed'
                                     ? 'selected'
                                     : '' }}>
 
-                                Fixed Amount (Rp)
+                                    Fixed Amount (Rp)
 
-                            </option>
+                                </option>
 
-                        </select>
+                            </select>
 
-                    </div>
+                        </div>
 
 
-                    <div class="voucher-form-group">
+                        <div class="voucher-form-group">
 
-                        <label for="discount_value">
+                            <label for="discount_value">
 
-                            Discount Value
-                            <span>*</span>
+                                Discount Value
+                                <span>*</span>
 
-                        </label>
+                            </label>
 
-                        <input
-                            id="discount_value"
-                            type="number"
-                            name="discount_value"
-                            min="0"
-                            step="0.01"
-                            value="{{ old(
+                            <input
+                                id="discount_value"
+                                type="number"
+                                name="discount_value"
+                                min="0"
+                                step="0.01"
+                                value="{{ old(
                                 'discount_value',
                                 $voucher?->discount_value
                             ) }}"
-                            placeholder="Example: 20"
-                            required>
+                                placeholder="Example: 20"
+                                required>
 
-                        <small>
-                            Percentage uses 0–100. Fixed uses Rupiah value.
-                        </small>
+                            <small>
+                                Percentage uses 0–100. Fixed uses Rupiah value.
+                            </small>
 
-                    </div>
+                        </div>
 
 
-                    <div class="voucher-form-group">
+                        <div class="voucher-form-group">
 
-                        <label for="min_order_amount">
-                            Minimum Order Amount
-                        </label>
+                            <label for="min_order_amount">
+                                Minimum Order Amount
+                            </label>
 
-                        <div class="money-input">
+                            <div class="money-input">
 
-                            <span>
-                                Rp
-                            </span>
+                                <span>
+                                    Rp
+                                </span>
 
-                            <input
-                                id="min_order_amount"
-                                type="number"
-                                name="min_order_amount"
-                                min="0"
-                                step="1"
-                                value="{{ old(
+                                <input
+                                    id="min_order_amount"
+                                    type="number"
+                                    name="min_order_amount"
+                                    min="0"
+                                    step="1"
+                                    value="{{ old(
                                     'min_order_amount',
                                     $voucher?->min_order_amount ?? 0
                                 ) }}"
-                                placeholder="0">
+                                    placeholder="0">
+
+                            </div>
 
                         </div>
 
-                    </div>
 
+                        <div class="voucher-form-group">
 
-                    <div class="voucher-form-group">
+                            <label for="max_discount_amount">
+                                Maximum Discount Amount
+                            </label>
 
-                        <label for="max_discount_amount">
-                            Maximum Discount Amount
-                        </label>
+                            <div class="money-input">
 
-                        <div class="money-input">
+                                <span>
+                                    Rp
+                                </span>
 
-                            <span>
-                                Rp
-                            </span>
-
-                            <input
-                                id="max_discount_amount"
-                                type="number"
-                                name="max_discount_amount"
-                                min="0"
-                                step="1"
-                                value="{{ old(
+                                <input
+                                    id="max_discount_amount"
+                                    type="number"
+                                    name="max_discount_amount"
+                                    min="0"
+                                    step="1"
+                                    value="{{ old(
                                     'max_discount_amount',
                                     $voucher?->max_discount_amount
                                 ) }}"
-                                placeholder="Optional">
+                                    placeholder="Optional">
+
+                            </div>
+
+                            <small>
+                                Useful for limiting percentage discounts.
+                            </small>
 
                         </div>
 
-                        <small>
-                            Useful for limiting percentage discounts.
-                        </small>
 
-                    </div>
+                        <div class="voucher-form-group">
 
+                            <label for="usage_limit">
+                                Usage Limit
+                            </label>
 
-                    <div class="voucher-form-group">
-
-                        <label for="usage_limit">
-                            Usage Limit
-                        </label>
-
-                        <input
-                            id="usage_limit"
-                            type="number"
-                            name="usage_limit"
-                            min="1"
-                            step="1"
-                            value="{{ old(
+                            <input
+                                id="usage_limit"
+                                type="number"
+                                name="usage_limit"
+                                min="1"
+                                step="1"
+                                value="{{ old(
                                 'usage_limit',
                                 $voucher?->usage_limit
                             ) }}"
-                            placeholder="Unlimited if empty">
-
-                    </div>
-
-
-                    <div class="voucher-form-group">
-
-                        <label>
-                            Used Count
-                        </label>
-
-                        <div class="voucher-readonly">
-
-                            {{ $voucher
-                                ? $voucher->used_count
-                                : 0 }}
+                                placeholder="Unlimited if empty">
 
                         </div>
 
-                        <small>
-                            Updated automatically by the system.
-                        </small>
 
-                    </div>
+                        <div class="voucher-form-group">
+
+                            <label>
+                                Used Count
+                            </label>
+
+                            <div class="voucher-readonly">
+
+                                {{ $voucher
+                                ? $voucher->used_count
+                                : 0 }}
+
+                            </div>
+
+                            <small>
+                                Updated automatically by the system.
+                            </small>
+
+                        </div>
 
 
-                    <div class="voucher-form-group">
+                        <div class="voucher-form-group">
 
-                        <label for="starts_at">
-                            Start Date & Time
-                        </label>
+                            <label for="starts_at">
+                                Start Date & Time
+                            </label>
 
-                        <input
-                            id="starts_at"
-                            type="datetime-local"
-                            name="starts_at"
-                            value="{{ old(
+                            <input
+                                id="starts_at"
+                                type="datetime-local"
+                                name="starts_at"
+                                value="{{ old(
                                 'starts_at',
                                 $voucher?->starts_at
                                     ? $voucher->starts_at->format('Y-m-d\TH:i')
                                     : ''
                             ) }}">
 
-                    </div>
+                        </div>
 
 
-                    <div class="voucher-form-group">
+                        <div class="voucher-form-group">
 
-                        <label for="expires_at">
-                            Expiry Date & Time
-                        </label>
+                            <label for="expires_at">
+                                Expiry Date & Time
+                            </label>
 
-                        <input
-                            id="expires_at"
-                            type="datetime-local"
-                            name="expires_at"
-                            value="{{ old(
+                            <input
+                                id="expires_at"
+                                type="datetime-local"
+                                name="expires_at"
+                                value="{{ old(
                                 'expires_at',
                                 $voucher?->expires_at
                                     ? $voucher->expires_at->format('Y-m-d\TH:i')
                                     : ''
                             ) }}">
 
-                    </div>
+                        </div>
 
 
-                    <div class="voucher-form-group voucher-full">
+                        <div class="voucher-form-group voucher-full">
 
-                        <label>
-                            Status
-                        </label>
+                            <label>
+                                Status
+                            </label>
 
-                        <label class="voucher-checkbox">
+                            <label class="voucher-checkbox">
 
-                            <input
-                                type="checkbox"
-                                name="is_active"
-                                value="1"
-                                {{ old(
+                                <input
+                                    type="checkbox"
+                                    name="is_active"
+                                    value="1"
+                                    {{ old(
                                     'is_active',
                                     $voucher
                                         ? $voucher->is_active
@@ -533,56 +584,56 @@
                                     ? 'checked'
                                     : '' }}>
 
-                            <span>
-                                Active Voucher
-                            </span>
+                                <span>
+                                    Active Voucher
+                                </span>
 
-                        </label>
+                            </label>
 
-                        <small>
-                            Inactive vouchers cannot be used during checkout.
-                        </small>
+                            <small>
+                                Inactive vouchers cannot be used during checkout.
+                            </small>
+
+                        </div>
+
 
                     </div>
 
 
-                </div>
+                    <div class="voucher-form-footer">
 
-
-                <div class="voucher-form-footer">
-
-                    <a
-                        href="{{ route(
+                        <a
+                            href="{{ route(
                             'admin.vouchers.index'
                         ) }}"
-                        class="voucher-cancel">
+                            class="voucher-cancel">
 
-                        CANCEL
+                            CANCEL
 
-                    </a>
+                        </a>
 
 
-                    <button
-                        type="submit"
-                        class="voucher-save">
+                        <button
+                            type="submit"
+                            class="voucher-save">
 
-                        <i class="bi bi-check-lg"></i>
+                            <i class="bi bi-check-lg"></i>
 
-                        {{ $voucher
+                            {{ $voucher
                             ? 'UPDATE VOUCHER'
                             : 'SAVE VOUCHER' }}
 
-                    </button>
+                        </button>
 
-                </div>
+                    </div>
 
-            </section>
+                </section>
 
-        </form>
+            </form>
 
-    </main>
+        </main>
 
-</div>
+    </div>
 
 </body>
 

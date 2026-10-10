@@ -47,51 +47,99 @@
 
             <nav class="sidebar-menu">
 
-                <a href="{{ route('admin.dashboard') }}">
+                {{-- DASHBOARD --}}
+                <a
+                    href="{{ route('admin.dashboard') }}"
+                    class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+
                     <i class="bi bi-grid"></i>
+
                     Dashboard
+
                 </a>
 
-                <a href="{{ route('admin.products.index') }}">
+
+                {{-- PRODUCTS --}}
+                <a
+                    href="{{ route('admin.products.index') }}"
+                    class="{{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
+
                     <i class="bi bi-box-seam"></i>
+
                     Products
+
                 </a>
 
+
+                {{-- VARIANTS --}}
                 <a
                     href="{{ route('admin.variants.index') }}"
-                    class="active">
+                    class="{{ request()->routeIs('admin.variants.*') ? 'active' : '' }}">
 
                     <i class="bi bi-boxes"></i>
+
                     Variants
 
                 </a>
 
 
-                <a href="{{ route('admin.categories.index') }}">
+                {{-- CATEGORIES --}}
+                <a
+                    href="{{ route('admin.categories.index') }}"
+                    class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+
                     <i class="bi bi-tags"></i>
+
                     Categories
+
                 </a>
 
 
-                <a href="{{ route('admin.collections.index') }}">
+                {{-- COLLECTIONS --}}
+                <a
+                    href="{{ route('admin.collections.index') }}"
+                    class="{{ request()->routeIs('admin.collections.*') ? 'active' : '' }}">
+
                     <i class="bi bi-collection"></i>
+
                     Collections
+
                 </a>
 
 
-                <a href="{{ route('admin.vouchers.index') }}">
+                {{-- VOUCHERS --}}
+                <a
+                    href="{{ route('admin.vouchers.index') }}"
+                    class="{{ request()->routeIs('admin.vouchers.*') ? 'active' : '' }}">
+
                     <i class="bi bi-ticket-perforated"></i>
+
                     Vouchers
+
                 </a>
 
-                <a href="{{ route('admin.orders.index') }}">
+
+                {{-- ORDERS --}}
+                <a
+                    href="{{ route('admin.orders.index') }}"
+                    class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+
                     <i class="bi bi-bag-check"></i>
+
                     Orders
+
                 </a>
 
-                <a href="{{ route('admin.payments.index') }}">
+
+                {{-- PAYMENTS --}}
+                <a
+                    href="{{ route('admin.payments.index') }}"
+                    class="{{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
+
                     <i class="bi bi-credit-card"></i>
+
                     Payments
+
                 </a>
 
             </nav>

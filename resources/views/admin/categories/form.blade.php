@@ -29,26 +29,29 @@
 
 <body>
 
-<div class="admin-layout">
+    <div class="admin-layout">
 
-    <aside class="admin-sidebar">
+        <aside class="admin-sidebar">
 
-        <div class="sidebar-brand">
+            <div class="sidebar-brand">
 
-            <h2>
-                LIFESTYLE
-            </h2>
+                <h2>
+                    LIFESTYLE
+                </h2>
 
-            <span>
-                ADMIN PANEL
-            </span>
+                <span>
+                    ADMIN PANEL
+                </span>
 
-        </div>
+            </div>
 
 
-        <nav class="sidebar-menu">
+            <nav class="sidebar-menu">
 
-                <a href="{{ route('admin.dashboard') }}">
+                {{-- DASHBOARD --}}
+                <a
+                    href="{{ route('admin.dashboard') }}"
+                    class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
 
                     <i class="bi bi-grid"></i>
 
@@ -57,9 +60,10 @@
                 </a>
 
 
+                {{-- PRODUCTS --}}
                 <a
                     href="{{ route('admin.products.index') }}"
-                    class="active">
+                    class="{{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
 
                     <i class="bi bi-box-seam"></i>
 
@@ -67,7 +71,11 @@
 
                 </a>
 
-                <a href="{{ route('admin.variants.index') }}">
+
+                {{-- VARIANTS --}}
+                <a
+                    href="{{ route('admin.variants.index') }}"
+                    class="{{ request()->routeIs('admin.variants.*') ? 'active' : '' }}">
 
                     <i class="bi bi-boxes"></i>
 
@@ -75,23 +83,47 @@
 
                 </a>
 
-                <a href="{{ route('admin.categories.index') }}">
+
+                {{-- CATEGORIES --}}
+                <a
+                    href="{{ route('admin.categories.index') }}"
+                    class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+
                     <i class="bi bi-tags"></i>
+
                     Categories
+
                 </a>
 
-                <a href="{{ route('admin.collections.index') }}">
+
+                {{-- COLLECTIONS --}}
+                <a
+                    href="{{ route('admin.collections.index') }}"
+                    class="{{ request()->routeIs('admin.collections.*') ? 'active' : '' }}">
+
                     <i class="bi bi-collection"></i>
+
                     Collections
+
                 </a>
 
-                <a href="{{ route('admin.vouchers.index') }}">
+
+                {{-- VOUCHERS --}}
+                <a
+                    href="{{ route('admin.vouchers.index') }}"
+                    class="{{ request()->routeIs('admin.vouchers.*') ? 'active' : '' }}">
+
                     <i class="bi bi-ticket-perforated"></i>
+
                     Vouchers
+
                 </a>
 
 
-                <a href="{{ route('admin.orders.index') }}">
+                {{-- ORDERS --}}
+                <a
+                    href="{{ route('admin.orders.index') }}"
+                    class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
 
                     <i class="bi bi-bag-check"></i>
 
@@ -100,7 +132,10 @@
                 </a>
 
 
-                <a href="{{ route('admin.payments.index') }}">
+                {{-- PAYMENTS --}}
+                <a
+                    href="{{ route('admin.payments.index') }}"
+                    class="{{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
 
                     <i class="bi bi-credit-card"></i>
 
@@ -111,13 +146,13 @@
             </nav>
 
 
-        <div class="sidebar-footer">
+            <div class="sidebar-footer">
 
-            <div class="admin-user">
+                <div class="admin-user">
 
-                <div class="admin-avatar">
+                    <div class="admin-avatar">
 
-                    {{ strtoupper(
+                        {{ strtoupper(
                         substr(
                             auth()->user()->name,
                             0,
@@ -125,85 +160,85 @@
                         )
                     ) }}
 
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            {{ auth()->user()->name }}
+                        </strong>
+
+                        <span>
+                            Administrator
+                        </span>
+
+                    </div>
+
                 </div>
+
+
+                <form
+                    action="{{ route('logout') }}"
+                    method="POST">
+
+                    @csrf
+
+                    <button
+                        type="submit"
+                        class="logout-button">
+
+                        <i class="bi bi-box-arrow-right"></i>
+
+                        Logout
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </aside>
+
+
+        <main class="admin-main">
+
+            <div class="admin-header">
 
                 <div>
 
-                    <strong>
-                        {{ auth()->user()->name }}
-                    </strong>
-
-                    <span>
-                        Administrator
+                    <span class="page-label">
+                        ADMIN
                     </span>
+
+                    <h1>
+
+                        {{ $category
+                        ? 'Edit Category'
+                        : 'Add Category' }}
+
+                    </h1>
+
+                    <p>
+
+                        {{ $category
+                        ? 'Update category information.'
+                        : 'Create a new product category.' }}
+
+                    </p>
+
+                </div>
+
+
+                <div class="header-icon">
+
+                    <i class="bi bi-tags"></i>
 
                 </div>
 
             </div>
 
 
-            <form
-                action="{{ route('logout') }}"
-                method="POST">
-
-                @csrf
-
-                <button
-                    type="submit"
-                    class="logout-button">
-
-                    <i class="bi bi-box-arrow-right"></i>
-
-                    Logout
-
-                </button>
-
-            </form>
-
-        </div>
-
-    </aside>
-
-
-    <main class="admin-main">
-
-        <div class="admin-header">
-
-            <div>
-
-                <span class="page-label">
-                    ADMIN
-                </span>
-
-                <h1>
-
-                    {{ $category
-                        ? 'Edit Category'
-                        : 'Add Category' }}
-
-                </h1>
-
-                <p>
-
-                    {{ $category
-                        ? 'Update category information.'
-                        : 'Create a new product category.' }}
-
-                </p>
-
-            </div>
-
-
-            <div class="header-icon">
-
-                <i class="bi bi-tags"></i>
-
-            </div>
-
-        </div>
-
-
-        @if ($errors->any())
+            @if ($errors->any())
 
             <div class="category-form-error">
 
@@ -215,9 +250,9 @@
 
                     @foreach ($errors->all() as $error)
 
-                        <li>
-                            {{ $error }}
-                        </li>
+                    <li>
+                        {{ $error }}
+                    </li>
 
                     @endforeach
 
@@ -225,11 +260,11 @@
 
             </div>
 
-        @endif
+            @endif
 
 
-        <form
-            action="{{ $category
+            <form
+                action="{{ $category
                 ? route(
                     'admin.categories.update',
                     $category
@@ -237,81 +272,81 @@
                 : route(
                     'admin.categories.store'
                 ) }}"
-            method="POST">
+                method="POST">
 
-            @csrf
+                @csrf
 
-            @if ($category)
+                @if ($category)
 
                 @method('PUT')
 
-            @endif
+                @endif
 
 
-            <section class="category-form-card">
+                <section class="category-form-card">
 
-                <div class="category-form-header">
+                    <div class="category-form-header">
 
-                    <h2>
-                        Category Information
-                    </h2>
+                        <h2>
+                            Category Information
+                        </h2>
 
-                    <p>
-                        Complete the category information below.
-                    </p>
+                        <p>
+                            Complete the category information below.
+                        </p>
 
-                </div>
-
-
-                <div class="category-form-body">
+                    </div>
 
 
-                    {{-- NAME --}}
-                    <div class="category-form-group">
+                    <div class="category-form-body">
 
-                        <label for="name">
 
-                            Category Name
-                            <span>*</span>
+                        {{-- NAME --}}
+                        <div class="category-form-group">
 
-                        </label>
+                            <label for="name">
 
-                        <input
-                            id="name"
-                            type="text"
-                            name="name"
-                            value="{{ old(
+                                Category Name
+                                <span>*</span>
+
+                            </label>
+
+                            <input
+                                id="name"
+                                type="text"
+                                name="name"
+                                value="{{ old(
                                 'name',
                                 $category?->name
                             ) }}"
-                            placeholder="Example: Hoodies"
-                            required>
+                                placeholder="Example: Hoodies"
+                                required>
 
-                        @error('name')
+                            @error('name')
 
                             <small class="category-field-error">
                                 {{ $message }}
                             </small>
 
-                        @enderror
+                            @enderror
 
-                    </div>
+                        </div>
 
 
-                    {{-- STATUS --}}
-                    <div class="category-form-group">
+                        {{-- STATUS --}}
+                        <div class="category-form-group">
 
-                        <label>
-                            Status
-                        </label>
+                            <label>
+                                Status
+                            </label>
 
-                        <label class="category-checkbox">
+                            <label class="category-checkbox">
 
-                            <input
-                                type="checkbox"
-                                name="is_active"
-                                value="1"
-                                {{ old(
+                                <input
+                                    type="checkbox"
+                                    name="is_active"
+                                    value="1"
+                                    {{ old(
                                     'is_active',
                                     $category
                                         ? $category->is_active
@@ -320,68 +355,70 @@
                                     ? 'checked'
                                     : '' }}>
 
-                            <span>
-                                Active Category
-                            </span>
+                                <span>
+                                    Active Category
+                                </span>
 
-                        </label>
+                            </label>
 
-                        <small class="category-help">
+                            <small class="category-help">
 
-                            Inactive categories will not be shown
-                            in active category selections.
+                                Inactive categories will not be shown
+                                in active category selections.
 
-                        </small>
+                            </small>
 
-                    </div>
+                        </div>
 
 
-                    {{-- DESCRIPTION --}}
-                    <div class="category-form-group category-full">
+                        {{-- DESCRIPTION --}}
+                        <div class="category-form-group category-full">
 
-                        <label for="description">
-                            Description
-                        </label>
+                            <label for="description">
+                                Description
+                            </label>
 
-                        <textarea
-                            id="description"
-                            name="description"
-                            rows="6"
-                            placeholder="Category description...">{{ old(
+                            <textarea
+                                id="description"
+                                name="description"
+                                rows="6"
+                                placeholder="Category description...">{{ old(
                                 'description',
                                 $category?->description
                             ) }}</textarea>
 
-                    </div>
+                        </div>
 
 
-                    {{-- SLUG INFO --}}
-                    <div class="category-form-group category-full">
+                        {{-- SLUG INFO --}}
+                        <div class="category-form-group category-full">
 
-                        <div class="slug-info">
+                            <div class="slug-info">
 
-                            <i class="bi bi-info-circle"></i>
+                                <i class="bi bi-info-circle"></i>
 
-                            <div>
+                                <div>
 
-                                <strong>
-                                    Category Slug
-                                </strong>
+                                    <strong>
+                                        Category Slug
+                                    </strong>
 
-                                <span>
+                                    <span>
 
-                                    Slug akan dibuat otomatis
-                                    berdasarkan nama category.
+                                        Slug akan dibuat otomatis
+                                        berdasarkan nama category.
 
-                                </span>
+                                    </span>
 
-                                @if ($category)
+                                    @if ($category)
 
                                     <code>
                                         {{ $category->slug }}
                                     </code>
 
-                                @endif
+                                    @endif
+
+                                </div>
 
                             </div>
 
@@ -389,43 +426,41 @@
 
                     </div>
 
-                </div>
 
+                    <div class="category-form-footer">
 
-                <div class="category-form-footer">
-
-                    <a
-                        href="{{ route(
+                        <a
+                            href="{{ route(
                             'admin.categories.index'
                         ) }}"
-                        class="category-cancel">
+                            class="category-cancel">
 
-                        CANCEL
+                            CANCEL
 
-                    </a>
+                        </a>
 
 
-                    <button
-                        type="submit"
-                        class="category-save">
+                        <button
+                            type="submit"
+                            class="category-save">
 
-                        <i class="bi bi-check-lg"></i>
+                            <i class="bi bi-check-lg"></i>
 
-                        {{ $category
+                            {{ $category
                             ? 'UPDATE CATEGORY'
                             : 'SAVE CATEGORY' }}
 
-                    </button>
+                        </button>
 
-                </div>
+                    </div>
 
-            </section>
+                </section>
 
-        </form>
+            </form>
 
-    </main>
+        </main>
 
-</div>
+    </div>
 
 </body>
 

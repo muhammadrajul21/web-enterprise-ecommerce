@@ -25,145 +25,197 @@
 
 <body>
 
-<div class="admin-layout">
+    <div class="admin-layout">
 
-    <aside class="admin-sidebar">
+        <aside class="admin-sidebar">
 
-        <div class="sidebar-brand">
-            <h2>LIFESTYLE</h2>
-            <span>ADMIN PANEL</span>
-        </div>
+            <div class="sidebar-brand">
+                <h2>LIFESTYLE</h2>
+                <span>ADMIN PANEL</span>
+            </div>
 
-        <nav class="sidebar-menu">
+            <nav class="sidebar-menu">
 
-            <a href="{{ route('admin.dashboard') }}">
-                <i class="bi bi-grid"></i>
-                Dashboard
-            </a>
+                {{-- DASHBOARD --}}
+                <a
+                    href="{{ route('admin.dashboard') }}"
+                    class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
 
-            <a href="{{ route('admin.products.index') }}">
-                <i class="bi bi-box-seam"></i>
-                Products
-            </a>
+                    <i class="bi bi-grid"></i>
 
-            <a href="{{ route('admin.variants.index') }}">
-                <i class="bi bi-boxes"></i>
-                Variants
-            </a>
+                    Dashboard
 
-            <a href="{{ route('admin.categories.index') }}">
-                <i class="bi bi-tags"></i>
-                Categories
-            </a>
-
-            <a href="{{ route('admin.collections.index') }}">
-                <i class="bi bi-collection"></i>
-                Collections
-            </a>
-
-            <a
-                href="{{ route('admin.vouchers.index') }}"
-                class="active">
-
-                <i class="bi bi-ticket-perforated"></i>
-                Vouchers
-            </a>
-
-            <a href="{{ route('admin.orders.index') }}">
-                <i class="bi bi-bag-check"></i>
-                Orders
-            </a>
-
-            <a href="{{ route('admin.payments.index') }}">
-                <i class="bi bi-credit-card"></i>
-                Payments
-            </a>
-
-        </nav>
+                </a>
 
 
-        <div class="sidebar-footer">
+                {{-- PRODUCTS --}}
+                <a
+                    href="{{ route('admin.products.index') }}"
+                    class="{{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
 
-            <div class="admin-user">
+                    <i class="bi bi-box-seam"></i>
 
-                <div class="admin-avatar">
-                    {{ strtoupper(
+                    Products
+
+                </a>
+
+
+                {{-- VARIANTS --}}
+                <a
+                    href="{{ route('admin.variants.index') }}"
+                    class="{{ request()->routeIs('admin.variants.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-boxes"></i>
+
+                    Variants
+
+                </a>
+
+
+                {{-- CATEGORIES --}}
+                <a
+                    href="{{ route('admin.categories.index') }}"
+                    class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-tags"></i>
+
+                    Categories
+
+                </a>
+
+
+                {{-- COLLECTIONS --}}
+                <a
+                    href="{{ route('admin.collections.index') }}"
+                    class="{{ request()->routeIs('admin.collections.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-collection"></i>
+
+                    Collections
+
+                </a>
+
+
+                {{-- VOUCHERS --}}
+                <a
+                    href="{{ route('admin.vouchers.index') }}"
+                    class="{{ request()->routeIs('admin.vouchers.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-ticket-perforated"></i>
+
+                    Vouchers
+
+                </a>
+
+
+                {{-- ORDERS --}}
+                <a
+                    href="{{ route('admin.orders.index') }}"
+                    class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-bag-check"></i>
+
+                    Orders
+
+                </a>
+
+
+                {{-- PAYMENTS --}}
+                <a
+                    href="{{ route('admin.payments.index') }}"
+                    class="{{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
+
+                    <i class="bi bi-credit-card"></i>
+
+                    Payments
+
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-footer">
+
+                <div class="admin-user">
+
+                    <div class="admin-avatar">
+                        {{ strtoupper(
                         substr(
                             auth()->user()->name,
                             0,
                             1
                         )
                     ) }}
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            {{ auth()->user()->name }}
+                        </strong>
+
+                        <span>
+                            Administrator
+                        </span>
+
+                    </div>
+
                 </div>
+
+
+                <form
+                    action="{{ route('logout') }}"
+                    method="POST">
+
+                    @csrf
+
+                    <button
+                        type="submit"
+                        class="logout-button">
+
+                        <i class="bi bi-box-arrow-right"></i>
+
+                        Logout
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </aside>
+
+
+        <main class="admin-main">
+
+            <div class="admin-header">
 
                 <div>
 
-                    <strong>
-                        {{ auth()->user()->name }}
-                    </strong>
-
-                    <span>
-                        Administrator
+                    <span class="page-label">
+                        ADMIN
                     </span>
+
+                    <h1>
+                        Voucher Management
+                    </h1>
+
+                    <p>
+                        Manage discounts, usage limits, and voucher periods.
+                    </p>
+
+                </div>
+
+                <div class="header-icon">
+
+                    <i class="bi bi-ticket-perforated"></i>
 
                 </div>
 
             </div>
 
 
-            <form
-                action="{{ route('logout') }}"
-                method="POST">
-
-                @csrf
-
-                <button
-                    type="submit"
-                    class="logout-button">
-
-                    <i class="bi bi-box-arrow-right"></i>
-
-                    Logout
-
-                </button>
-
-            </form>
-
-        </div>
-
-    </aside>
-
-
-    <main class="admin-main">
-
-        <div class="admin-header">
-
-            <div>
-
-                <span class="page-label">
-                    ADMIN
-                </span>
-
-                <h1>
-                    Voucher Management
-                </h1>
-
-                <p>
-                    Manage discounts, usage limits, and voucher periods.
-                </p>
-
-            </div>
-
-            <div class="header-icon">
-
-                <i class="bi bi-ticket-perforated"></i>
-
-            </div>
-
-        </div>
-
-
-        @if (session('success'))
+            @if (session('success'))
 
             <div class="voucher-alert success">
 
@@ -173,10 +225,10 @@
 
             </div>
 
-        @endif
+            @endif
 
 
-        @if (session('error'))
+            @if (session('error'))
 
             <div class="voucher-alert error">
 
@@ -186,97 +238,97 @@
 
             </div>
 
-        @endif
+            @endif
 
 
-        <section class="filter-card">
+            <section class="filter-card">
 
-            <form
-                action="{{ route('admin.vouchers.index') }}"
-                method="GET"
-                class="order-filter">
+                <form
+                    action="{{ route('admin.vouchers.index') }}"
+                    method="GET"
+                    class="order-filter">
 
-                <div class="search-box">
+                    <div class="search-box">
 
-                    <i class="bi bi-search"></i>
+                        <i class="bi bi-search"></i>
 
-                    <input
-                        type="text"
-                        name="search"
-                        value="{{ $search }}"
-                        placeholder="Search code or voucher name...">
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ $search }}"
+                            placeholder="Search code or voucher name...">
 
-                </div>
+                    </div>
 
 
-                <select name="type">
+                    <select name="type">
 
-                    <option value="">
-                        All Types
-                    </option>
+                        <option value="">
+                            All Types
+                        </option>
 
-                    <option
-                        value="percentage"
-                        {{ $type === 'percentage'
+                        <option
+                            value="percentage"
+                            {{ $type === 'percentage'
                             ? 'selected'
                             : '' }}>
 
-                        Percentage
+                            Percentage
 
-                    </option>
+                        </option>
 
-                    <option
-                        value="fixed"
-                        {{ $type === 'fixed'
+                        <option
+                            value="fixed"
+                            {{ $type === 'fixed'
                             ? 'selected'
                             : '' }}>
 
-                        Fixed
+                            Fixed
 
-                    </option>
+                        </option>
 
-                </select>
+                    </select>
 
 
-                <select name="status">
+                    <select name="status">
 
-                    <option value="">
-                        All Status
-                    </option>
+                        <option value="">
+                            All Status
+                        </option>
 
-                    <option
-                        value="active"
-                        {{ $status === 'active'
+                        <option
+                            value="active"
+                            {{ $status === 'active'
                             ? 'selected'
                             : '' }}>
 
-                        Active
+                            Active
 
-                    </option>
+                        </option>
 
-                    <option
-                        value="inactive"
-                        {{ $status === 'inactive'
+                        <option
+                            value="inactive"
+                            {{ $status === 'inactive'
                             ? 'selected'
                             : '' }}>
 
-                        Inactive
+                            Inactive
 
-                    </option>
+                        </option>
 
-                </select>
-
-
-                <button
-                    type="submit"
-                    class="filter-button">
-
-                    FILTER
-
-                </button>
+                    </select>
 
 
-                @if ($search || $type || $status)
+                    <button
+                        type="submit"
+                        class="filter-button">
+
+                        FILTER
+
+                    </button>
+
+
+                    @if ($search || $type || $status)
 
                     <a
                         href="{{ route('admin.vouchers.index') }}"
@@ -286,88 +338,88 @@
 
                     </a>
 
-                @endif
+                    @endif
 
-            </form>
+                </form>
 
-        </section>
+            </section>
 
 
-        <section class="order-card">
+            <section class="order-card">
 
-            <div class="order-card-header voucher-card-header">
+                <div class="order-card-header voucher-card-header">
 
-                <div>
+                    <div>
 
-                    <h2>
-                        Vouchers
-                    </h2>
+                        <h2>
+                            Vouchers
+                        </h2>
 
-                    <p>
-                        {{ $vouchers->total() }}
-                        total vouchers
-                    </p>
+                        <p>
+                            {{ $vouchers->total() }}
+                            total vouchers
+                        </p>
+
+                    </div>
+
+
+                    <a
+                        href="{{ route('admin.vouchers.create') }}"
+                        class="add-voucher-button">
+
+                        <i class="bi bi-plus-lg"></i>
+
+                        ADD VOUCHER
+
+                    </a>
 
                 </div>
 
 
-                <a
-                    href="{{ route('admin.vouchers.create') }}"
-                    class="add-voucher-button">
+                <div class="table-wrapper">
 
-                    <i class="bi bi-plus-lg"></i>
+                    <table class="order-table voucher-table">
 
-                    ADD VOUCHER
+                        <thead>
 
-                </a>
+                            <tr>
+                                <th>VOUCHER</th>
+                                <th>DISCOUNT</th>
+                                <th>MIN. ORDER</th>
+                                <th>USAGE</th>
+                                <th>PERIOD</th>
+                                <th>STATUS</th>
+                                <th>ACTION</th>
+                            </tr>
 
-            </div>
+                        </thead>
 
+                        <tbody>
 
-            <div class="table-wrapper">
+                            @forelse ($vouchers as $voucher)
 
-                <table class="order-table voucher-table">
+                            <tr>
 
-                    <thead>
+                                <td>
 
-                    <tr>
-                        <th>VOUCHER</th>
-                        <th>DISCOUNT</th>
-                        <th>MIN. ORDER</th>
-                        <th>USAGE</th>
-                        <th>PERIOD</th>
-                        <th>STATUS</th>
-                        <th>ACTION</th>
-                    </tr>
+                                    <div class="voucher-identity">
 
-                    </thead>
+                                        <strong>
+                                            {{ $voucher->code }}
+                                        </strong>
 
-                    <tbody>
+                                        <span>
+                                            {{ $voucher->name }}
+                                        </span>
 
-                    @forelse ($vouchers as $voucher)
+                                    </div>
 
-                        <tr>
-
-                            <td>
-
-                                <div class="voucher-identity">
-
-                                    <strong>
-                                        {{ $voucher->code }}
-                                    </strong>
-
-                                    <span>
-                                        {{ $voucher->name }}
-                                    </span>
-
-                                </div>
-
-                            </td>
+                                </td>
 
 
-                            <td>
+                                <td>
 
-                                @if ($voucher->discount_type === 'percentage')
+                                    @if ($voucher->discount_type === 'percentage')
 
                                     <strong class="voucher-discount">
                                         {{ rtrim(
@@ -384,7 +436,7 @@
                                         ) }}%
                                     </strong>
 
-                                @else
+                                    @else
 
                                     <strong class="voucher-discount">
 
@@ -397,168 +449,168 @@
 
                                     </strong>
 
-                                @endif
+                                    @endif
 
-                                <span class="voucher-type">
+                                    <span class="voucher-type">
 
-                                    {{ strtoupper(
+                                        {{ strtoupper(
                                         $voucher->discount_type
                                     ) }}
 
-                                </span>
+                                    </span>
 
-                            </td>
+                                </td>
 
 
-                            <td>
+                                <td>
 
-                                Rp{{ number_format(
+                                    Rp{{ number_format(
                                     $voucher->min_order_amount,
                                     0,
                                     ',',
                                     '.'
                                 ) }}
 
-                            </td>
+                                </td>
 
 
-                            <td>
+                                <td>
 
-                                <strong>
-                                    {{ $voucher->used_count }}
-                                </strong>
+                                    <strong>
+                                        {{ $voucher->used_count }}
+                                    </strong>
 
-                                /
+                                    /
 
-                                {{ $voucher->usage_limit
+                                    {{ $voucher->usage_limit
                                     ?? '∞' }}
 
-                            </td>
+                                </td>
 
 
-                            <td>
+                                <td>
 
-                                <div class="voucher-period">
+                                    <div class="voucher-period">
 
-                                    <span>
+                                        <span>
 
-                                        {{ $voucher->starts_at
+                                            {{ $voucher->starts_at
                                             ? $voucher->starts_at->format('d M Y')
                                             : 'No start limit' }}
 
-                                    </span>
+                                        </span>
 
-                                    <small>
-                                        to
-                                    </small>
+                                        <small>
+                                            to
+                                        </small>
 
-                                    <span>
+                                        <span>
 
-                                        {{ $voucher->expires_at
+                                            {{ $voucher->expires_at
                                             ? $voucher->expires_at->format('d M Y')
                                             : 'No expiry' }}
 
-                                    </span>
+                                        </span>
 
-                                </div>
+                                    </div>
 
-                            </td>
+                                </td>
 
 
-                            <td>
+                                <td>
 
-                                <span
-                                    class="voucher-status
+                                    <span
+                                        class="voucher-status
                                     {{ $voucher->is_active
                                         ? 'voucher-status-active'
                                         : 'voucher-status-inactive' }}">
 
-                                    {{ $voucher->is_active
+                                        {{ $voucher->is_active
                                         ? 'ACTIVE'
                                         : 'INACTIVE' }}
 
-                                </span>
+                                    </span>
 
-                            </td>
+                                </td>
 
 
-                            <td>
+                                <td>
 
-                                <div class="voucher-actions">
+                                    <div class="voucher-actions">
 
-                                    <a
-                                        href="{{ route(
+                                        <a
+                                            href="{{ route(
                                             'admin.vouchers.edit',
                                             $voucher
                                         ) }}"
-                                        title="Edit voucher">
+                                            title="Edit voucher">
 
-                                        <i class="bi bi-pencil"></i>
+                                            <i class="bi bi-pencil"></i>
 
-                                    </a>
+                                        </a>
 
 
-                                    <form
-                                        action="{{ route(
+                                        <form
+                                            action="{{ route(
                                             'admin.vouchers.destroy',
                                             $voucher
                                         ) }}"
-                                        method="POST"
-                                        onsubmit="return confirm(
+                                            method="POST"
+                                            onsubmit="return confirm(
                                             'Hapus voucher {{ $voucher->code }}?'
                                         );">
 
-                                        @csrf
-                                        @method('DELETE')
+                                            @csrf
+                                            @method('DELETE')
 
-                                        <button
-                                            type="submit"
-                                            title="Delete voucher">
+                                            <button
+                                                type="submit"
+                                                title="Delete voucher">
 
-                                            <i class="bi bi-trash"></i>
+                                                <i class="bi bi-trash"></i>
 
-                                        </button>
+                                            </button>
 
-                                    </form>
+                                        </form>
 
-                                </div>
+                                    </div>
 
-                            </td>
+                                </td>
 
-                        </tr>
+                            </tr>
 
-                    @empty
+                            @empty
 
-                        <tr>
+                            <tr>
 
-                            <td
-                                colspan="7"
-                                class="voucher-empty">
+                                <td
+                                    colspan="7"
+                                    class="voucher-empty">
 
-                                <i class="bi bi-ticket-perforated"></i>
+                                    <i class="bi bi-ticket-perforated"></i>
 
-                                <strong>
-                                    No vouchers found
-                                </strong>
+                                    <strong>
+                                        No vouchers found
+                                    </strong>
 
-                                <span>
-                                    Voucher data will appear here.
-                                </span>
+                                    <span>
+                                        Voucher data will appear here.
+                                    </span>
 
-                            </td>
+                                </td>
 
-                        </tr>
+                            </tr>
 
-                    @endforelse
+                            @endforelse
 
-                    </tbody>
+                        </tbody>
 
-                </table>
+                    </table>
 
-            </div>
+                </div>
 
 
-            @if ($vouchers->hasPages())
+                @if ($vouchers->hasPages())
 
                 <div class="voucher-pagination">
 
@@ -576,46 +628,46 @@
 
                         @if ($vouchers->onFirstPage())
 
-                            <span class="pagination-disabled">
+                        <span class="pagination-disabled">
 
-                                <i class="bi bi-chevron-left"></i>
-                                PREVIOUS
+                            <i class="bi bi-chevron-left"></i>
+                            PREVIOUS
 
-                            </span>
+                        </span>
 
                         @else
 
-                            <a
-                                href="{{ $vouchers->previousPageUrl() }}"
-                                class="pagination-button">
+                        <a
+                            href="{{ $vouchers->previousPageUrl() }}"
+                            class="pagination-button">
 
-                                <i class="bi bi-chevron-left"></i>
-                                PREVIOUS
+                            <i class="bi bi-chevron-left"></i>
+                            PREVIOUS
 
-                            </a>
+                        </a>
 
                         @endif
 
 
                         @if ($vouchers->hasMorePages())
 
-                            <a
-                                href="{{ $vouchers->nextPageUrl() }}"
-                                class="pagination-button">
+                        <a
+                            href="{{ $vouchers->nextPageUrl() }}"
+                            class="pagination-button">
 
-                                NEXT
-                                <i class="bi bi-chevron-right"></i>
+                            NEXT
+                            <i class="bi bi-chevron-right"></i>
 
-                            </a>
+                        </a>
 
                         @else
 
-                            <span class="pagination-disabled">
+                        <span class="pagination-disabled">
 
-                                NEXT
-                                <i class="bi bi-chevron-right"></i>
+                            NEXT
+                            <i class="bi bi-chevron-right"></i>
 
-                            </span>
+                        </span>
 
                         @endif
 
@@ -623,13 +675,13 @@
 
                 </div>
 
-            @endif
+                @endif
 
-        </section>
+            </section>
 
-    </main>
+        </main>
 
-</div>
+    </div>
 
 </body>
 

@@ -27,27 +27,30 @@
 
 <body>
 
-<div class="admin-layout">
+    <div class="admin-layout">
 
-    {{-- SIDEBAR --}}
-    <aside class="admin-sidebar">
+        {{-- SIDEBAR --}}
+        <aside class="admin-sidebar">
 
-        <div class="sidebar-brand">
+            <div class="sidebar-brand">
 
-            <h2>
-                LIFESTYLE
-            </h2>
+                <h2>
+                    LIFESTYLE
+                </h2>
 
-            <span>
-                ADMIN PANEL
-            </span>
+                <span>
+                    ADMIN PANEL
+                </span>
 
-        </div>
+            </div>
 
 
-        <nav class="sidebar-menu">
+            <nav class="sidebar-menu">
 
-                <a href="{{ route('admin.dashboard') }}">
+                {{-- DASHBOARD --}}
+                <a
+                    href="{{ route('admin.dashboard') }}"
+                    class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
 
                     <i class="bi bi-grid"></i>
 
@@ -56,9 +59,10 @@
                 </a>
 
 
+                {{-- PRODUCTS --}}
                 <a
                     href="{{ route('admin.products.index') }}"
-                    class="active">
+                    class="{{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
 
                     <i class="bi bi-box-seam"></i>
 
@@ -66,7 +70,11 @@
 
                 </a>
 
-                <a href="{{ route('admin.variants.index') }}">
+
+                {{-- VARIANTS --}}
+                <a
+                    href="{{ route('admin.variants.index') }}"
+                    class="{{ request()->routeIs('admin.variants.*') ? 'active' : '' }}">
 
                     <i class="bi bi-boxes"></i>
 
@@ -74,23 +82,47 @@
 
                 </a>
 
-                <a href="{{ route('admin.categories.index') }}">
+
+                {{-- CATEGORIES --}}
+                <a
+                    href="{{ route('admin.categories.index') }}"
+                    class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+
                     <i class="bi bi-tags"></i>
+
                     Categories
+
                 </a>
 
-                <a href="{{ route('admin.collections.index') }}">
+
+                {{-- COLLECTIONS --}}
+                <a
+                    href="{{ route('admin.collections.index') }}"
+                    class="{{ request()->routeIs('admin.collections.*') ? 'active' : '' }}">
+
                     <i class="bi bi-collection"></i>
+
                     Collections
+
                 </a>
 
-                <a href="{{ route('admin.vouchers.index') }}">
+
+                {{-- VOUCHERS --}}
+                <a
+                    href="{{ route('admin.vouchers.index') }}"
+                    class="{{ request()->routeIs('admin.vouchers.*') ? 'active' : '' }}">
+
                     <i class="bi bi-ticket-perforated"></i>
+
                     Vouchers
+
                 </a>
 
 
-                <a href="{{ route('admin.orders.index') }}">
+                {{-- ORDERS --}}
+                <a
+                    href="{{ route('admin.orders.index') }}"
+                    class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
 
                     <i class="bi bi-bag-check"></i>
 
@@ -99,7 +131,10 @@
                 </a>
 
 
-                <a href="{{ route('admin.payments.index') }}">
+                {{-- PAYMENTS --}}
+                <a
+                    href="{{ route('admin.payments.index') }}"
+                    class="{{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
 
                     <i class="bi bi-credit-card"></i>
 
@@ -110,13 +145,13 @@
             </nav>
 
 
-        <div class="sidebar-footer">
+            <div class="sidebar-footer">
 
-            <div class="admin-user">
+                <div class="admin-user">
 
-                <div class="admin-avatar">
+                    <div class="admin-avatar">
 
-                    {{ strtoupper(
+                        {{ strtoupper(
                         substr(
                             auth()->user()->name,
                             0,
@@ -124,79 +159,79 @@
                         )
                     ) }}
 
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            {{ auth()->user()->name }}
+                        </strong>
+
+                        <span>
+                            Administrator
+                        </span>
+
+                    </div>
+
                 </div>
+
+
+                <form
+                    action="{{ route('logout') }}"
+                    method="POST">
+
+                    @csrf
+
+                    <button
+                        type="submit"
+                        class="logout-button">
+
+                        <i class="bi bi-box-arrow-right"></i>
+
+                        Logout
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </aside>
+
+
+        {{-- MAIN --}}
+        <main class="admin-main">
+
+            <div class="admin-header">
 
                 <div>
 
-                    <strong>
-                        {{ auth()->user()->name }}
-                    </strong>
-
-                    <span>
-                        Administrator
+                    <span class="page-label">
+                        ADMIN
                     </span>
+
+                    <h1>
+                        Category Management
+                    </h1>
+
+                    <p>
+                        Manage product categories and catalog organization.
+                    </p>
+
+                </div>
+
+
+                <div class="header-icon">
+
+                    <i class="bi bi-tags"></i>
 
                 </div>
 
             </div>
 
 
-            <form
-                action="{{ route('logout') }}"
-                method="POST">
-
-                @csrf
-
-                <button
-                    type="submit"
-                    class="logout-button">
-
-                    <i class="bi bi-box-arrow-right"></i>
-
-                    Logout
-
-                </button>
-
-            </form>
-
-        </div>
-
-    </aside>
-
-
-    {{-- MAIN --}}
-    <main class="admin-main">
-
-        <div class="admin-header">
-
-            <div>
-
-                <span class="page-label">
-                    ADMIN
-                </span>
-
-                <h1>
-                    Category Management
-                </h1>
-
-                <p>
-                    Manage product categories and catalog organization.
-                </p>
-
-            </div>
-
-
-            <div class="header-icon">
-
-                <i class="bi bi-tags"></i>
-
-            </div>
-
-        </div>
-
-
-        {{-- SUCCESS --}}
-        @if (session('success'))
+            {{-- SUCCESS --}}
+            @if (session('success'))
 
             <div class="category-alert success">
 
@@ -206,11 +241,11 @@
 
             </div>
 
-        @endif
+            @endif
 
 
-        {{-- ERROR --}}
-        @if (session('error'))
+            {{-- ERROR --}}
+            @if (session('error'))
 
             <div class="category-alert error">
 
@@ -220,69 +255,69 @@
 
             </div>
 
-        @endif
+            @endif
 
 
-        {{-- FILTER --}}
-        <section class="filter-card">
+            {{-- FILTER --}}
+            <section class="filter-card">
 
-            <form
-                action="{{ route('admin.categories.index') }}"
-                method="GET"
-                class="order-filter">
+                <form
+                    action="{{ route('admin.categories.index') }}"
+                    method="GET"
+                    class="order-filter">
 
-                <div class="search-box">
+                    <div class="search-box">
 
-                    <i class="bi bi-search"></i>
+                        <i class="bi bi-search"></i>
 
-                    <input
-                        type="text"
-                        name="search"
-                        value="{{ $search }}"
-                        placeholder="Search category...">
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ $search }}"
+                            placeholder="Search category...">
 
-                </div>
+                    </div>
 
 
-                <select name="status">
+                    <select name="status">
 
-                    <option value="">
-                        All Status
-                    </option>
+                        <option value="">
+                            All Status
+                        </option>
 
-                    <option
-                        value="active"
-                        {{ $status === 'active'
+                        <option
+                            value="active"
+                            {{ $status === 'active'
                             ? 'selected'
                             : '' }}>
 
-                        Active
+                            Active
 
-                    </option>
+                        </option>
 
-                    <option
-                        value="inactive"
-                        {{ $status === 'inactive'
+                        <option
+                            value="inactive"
+                            {{ $status === 'inactive'
                             ? 'selected'
                             : '' }}>
 
-                        Inactive
+                            Inactive
 
-                    </option>
+                        </option>
 
-                </select>
-
-
-                <button
-                    type="submit"
-                    class="filter-button">
-
-                    FILTER
-
-                </button>
+                    </select>
 
 
-                @if ($search || $status)
+                    <button
+                        type="submit"
+                        class="filter-button">
+
+                        FILTER
+
+                    </button>
+
+
+                    @if ($search || $status)
 
                     <a
                         href="{{ route('admin.categories.index') }}"
@@ -292,232 +327,232 @@
 
                     </a>
 
-                @endif
+                    @endif
 
-            </form>
+                </form>
 
-        </section>
+            </section>
 
 
-        {{-- TABLE --}}
-        <section class="order-card">
+            {{-- TABLE --}}
+            <section class="order-card">
 
-            <div class="order-card-header category-card-header">
+                <div class="order-card-header category-card-header">
 
-                <div>
+                    <div>
 
-                    <h2>
-                        Categories
-                    </h2>
+                        <h2>
+                            Categories
+                        </h2>
 
-                    <p>
-                        {{ $categories->total() }}
-                        total categories
-                    </p>
+                        <p>
+                            {{ $categories->total() }}
+                            total categories
+                        </p>
+
+                    </div>
+
+
+                    <a
+                        href="{{ route('admin.categories.create') }}"
+                        class="add-category-button">
+
+                        <i class="bi bi-plus-lg"></i>
+
+                        ADD CATEGORY
+
+                    </a>
 
                 </div>
 
 
-                <a
-                    href="{{ route('admin.categories.create') }}"
-                    class="add-category-button">
+                <div class="table-wrapper">
 
-                    <i class="bi bi-plus-lg"></i>
+                    <table class="order-table category-table">
 
-                    ADD CATEGORY
+                        <thead>
 
-                </a>
+                            <tr>
 
-            </div>
+                                <th>
+                                    CATEGORY
+                                </th>
 
+                                <th>
+                                    SLUG
+                                </th>
 
-            <div class="table-wrapper">
+                                <th>
+                                    DESCRIPTION
+                                </th>
 
-                <table class="order-table category-table">
+                                <th>
+                                    PRODUCTS
+                                </th>
 
-                    <thead>
+                                <th>
+                                    STATUS
+                                </th>
 
-                    <tr>
+                                <th>
+                                    ACTION
+                                </th>
 
-                        <th>
-                            CATEGORY
-                        </th>
+                            </tr>
 
-                        <th>
-                            SLUG
-                        </th>
-
-                        <th>
-                            DESCRIPTION
-                        </th>
-
-                        <th>
-                            PRODUCTS
-                        </th>
-
-                        <th>
-                            STATUS
-                        </th>
-
-                        <th>
-                            ACTION
-                        </th>
-
-                    </tr>
-
-                    </thead>
+                        </thead>
 
 
-                    <tbody>
+                        <tbody>
 
-                    @forelse ($categories as $category)
+                            @forelse ($categories as $category)
 
-                        <tr>
+                            <tr>
 
-                            <td>
+                                <td>
 
-                                <strong>
-                                    {{ $category->name }}
-                                </strong>
+                                    <strong>
+                                        {{ $category->name }}
+                                    </strong>
 
-                            </td>
-
-
-                            <td>
-
-                                <span class="category-slug">
-                                    {{ $category->slug }}
-                                </span>
-
-                            </td>
+                                </td>
 
 
-                            <td>
+                                <td>
 
-                                <span class="category-description">
+                                    <span class="category-slug">
+                                        {{ $category->slug }}
+                                    </span>
 
-                                    {{ $category->description
+                                </td>
+
+
+                                <td>
+
+                                    <span class="category-description">
+
+                                        {{ $category->description
                                         ?: '-' }}
 
-                                </span>
+                                    </span>
 
-                            </td>
+                                </td>
 
 
-                            <td>
+                                <td>
 
-                                <span class="product-count">
+                                    <span class="product-count">
 
-                                    {{ $category->products_count }}
+                                        {{ $category->products_count }}
 
-                                    {{ $category->products_count == 1
+                                        {{ $category->products_count == 1
                                         ? 'Product'
                                         : 'Products' }}
 
-                                </span>
+                                    </span>
 
-                            </td>
+                                </td>
 
 
-                            <td>
+                                <td>
 
-                                <span
-                                    class="category-status
+                                    <span
+                                        class="category-status
                                     {{ $category->is_active
                                         ? 'category-status-active'
                                         : 'category-status-inactive' }}">
 
-                                    {{ $category->is_active
+                                        {{ $category->is_active
                                         ? 'ACTIVE'
                                         : 'INACTIVE' }}
 
-                                </span>
+                                    </span>
 
-                            </td>
-
-
-                            <td>
-
-                                <div class="category-actions">
+                                </td>
 
 
-                                    {{-- EDIT --}}
-                                    <a
-                                        href="{{ route(
+                                <td>
+
+                                    <div class="category-actions">
+
+
+                                        {{-- EDIT --}}
+                                        <a
+                                            href="{{ route(
                                             'admin.categories.edit',
                                             $category
                                         ) }}"
-                                        title="Edit category">
+                                            title="Edit category">
 
-                                        <i class="bi bi-pencil"></i>
+                                            <i class="bi bi-pencil"></i>
 
-                                    </a>
+                                        </a>
 
 
-                                    {{-- DELETE --}}
-                                    <form
-                                        action="{{ route(
+                                        {{-- DELETE --}}
+                                        <form
+                                            action="{{ route(
                                             'admin.categories.destroy',
                                             $category
                                         ) }}"
-                                        method="POST"
-                                        onsubmit="return confirm(
+                                            method="POST"
+                                            onsubmit="return confirm(
                                             'Hapus category {{ $category->name }}?'
                                         );">
 
-                                        @csrf
-                                        @method('DELETE')
+                                            @csrf
+                                            @method('DELETE')
 
-                                        <button
-                                            type="submit"
-                                            title="Delete category">
+                                            <button
+                                                type="submit"
+                                                title="Delete category">
 
-                                            <i class="bi bi-trash"></i>
+                                                <i class="bi bi-trash"></i>
 
-                                        </button>
+                                            </button>
 
-                                    </form>
+                                        </form>
 
-                                </div>
+                                    </div>
 
-                            </td>
+                                </td>
 
-                        </tr>
-
-
-                    @empty
-
-                        <tr>
-
-                            <td
-                                colspan="6"
-                                class="category-empty">
-
-                                <i class="bi bi-tags"></i>
-
-                                <strong>
-                                    No categories found
-                                </strong>
-
-                                <span>
-                                    Category data will appear here.
-                                </span>
-
-                            </td>
-
-                        </tr>
-
-                    @endforelse
-
-                    </tbody>
-
-                </table>
-
-            </div>
+                            </tr>
 
 
-            {{-- PAGINATION --}}
-            @if ($categories->hasPages())
+                            @empty
+
+                            <tr>
+
+                                <td
+                                    colspan="6"
+                                    class="category-empty">
+
+                                    <i class="bi bi-tags"></i>
+
+                                    <strong>
+                                        No categories found
+                                    </strong>
+
+                                    <span>
+                                        Category data will appear here.
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                            @endforelse
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                {{-- PAGINATION --}}
+                @if ($categories->hasPages())
 
                 <div class="category-pagination">
 
@@ -535,50 +570,50 @@
 
                         @if ($categories->onFirstPage())
 
-                            <span class="pagination-disabled">
+                        <span class="pagination-disabled">
 
-                                <i class="bi bi-chevron-left"></i>
+                            <i class="bi bi-chevron-left"></i>
 
-                                PREVIOUS
+                            PREVIOUS
 
-                            </span>
+                        </span>
 
                         @else
 
-                            <a
-                                href="{{ $categories->previousPageUrl() }}"
-                                class="pagination-button">
+                        <a
+                            href="{{ $categories->previousPageUrl() }}"
+                            class="pagination-button">
 
-                                <i class="bi bi-chevron-left"></i>
+                            <i class="bi bi-chevron-left"></i>
 
-                                PREVIOUS
+                            PREVIOUS
 
-                            </a>
+                        </a>
 
                         @endif
 
 
                         @if ($categories->hasMorePages())
 
-                            <a
-                                href="{{ $categories->nextPageUrl() }}"
-                                class="pagination-button">
+                        <a
+                            href="{{ $categories->nextPageUrl() }}"
+                            class="pagination-button">
 
-                                NEXT
+                            NEXT
 
-                                <i class="bi bi-chevron-right"></i>
+                            <i class="bi bi-chevron-right"></i>
 
-                            </a>
+                        </a>
 
                         @else
 
-                            <span class="pagination-disabled">
+                        <span class="pagination-disabled">
 
-                                NEXT
+                            NEXT
 
-                                <i class="bi bi-chevron-right"></i>
+                            <i class="bi bi-chevron-right"></i>
 
-                            </span>
+                        </span>
 
                         @endif
 
@@ -586,13 +621,13 @@
 
                 </div>
 
-            @endif
+                @endif
 
-        </section>
+            </section>
 
-    </main>
+        </main>
 
-</div>
+    </div>
 
 </body>
 

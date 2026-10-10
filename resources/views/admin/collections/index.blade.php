@@ -27,26 +27,29 @@
 
 <body>
 
-<div class="admin-layout">
+    <div class="admin-layout">
 
-    <aside class="admin-sidebar">
+        <aside class="admin-sidebar">
 
-        <div class="sidebar-brand">
+            <div class="sidebar-brand">
 
-            <h2>
-                LIFESTYLE
-            </h2>
+                <h2>
+                    LIFESTYLE
+                </h2>
 
-            <span>
-                ADMIN PANEL
-            </span>
+                <span>
+                    ADMIN PANEL
+                </span>
 
-        </div>
+            </div>
 
 
-        <nav class="sidebar-menu">
+            <nav class="sidebar-menu">
 
-                <a href="{{ route('admin.dashboard') }}">
+                {{-- DASHBOARD --}}
+                <a
+                    href="{{ route('admin.dashboard') }}"
+                    class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
 
                     <i class="bi bi-grid"></i>
 
@@ -55,9 +58,10 @@
                 </a>
 
 
+                {{-- PRODUCTS --}}
                 <a
                     href="{{ route('admin.products.index') }}"
-                    class="active">
+                    class="{{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
 
                     <i class="bi bi-box-seam"></i>
 
@@ -65,7 +69,11 @@
 
                 </a>
 
-                <a href="{{ route('admin.variants.index') }}">
+
+                {{-- VARIANTS --}}
+                <a
+                    href="{{ route('admin.variants.index') }}"
+                    class="{{ request()->routeIs('admin.variants.*') ? 'active' : '' }}">
 
                     <i class="bi bi-boxes"></i>
 
@@ -73,23 +81,47 @@
 
                 </a>
 
-                <a href="{{ route('admin.categories.index') }}">
+
+                {{-- CATEGORIES --}}
+                <a
+                    href="{{ route('admin.categories.index') }}"
+                    class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+
                     <i class="bi bi-tags"></i>
+
                     Categories
+
                 </a>
 
-                <a href="{{ route('admin.collections.index') }}">
+
+                {{-- COLLECTIONS --}}
+                <a
+                    href="{{ route('admin.collections.index') }}"
+                    class="{{ request()->routeIs('admin.collections.*') ? 'active' : '' }}">
+
                     <i class="bi bi-collection"></i>
+
                     Collections
+
                 </a>
 
-                <a href="{{ route('admin.vouchers.index') }}">
+
+                {{-- VOUCHERS --}}
+                <a
+                    href="{{ route('admin.vouchers.index') }}"
+                    class="{{ request()->routeIs('admin.vouchers.*') ? 'active' : '' }}">
+
                     <i class="bi bi-ticket-perforated"></i>
+
                     Vouchers
+
                 </a>
 
 
-                <a href="{{ route('admin.orders.index') }}">
+                {{-- ORDERS --}}
+                <a
+                    href="{{ route('admin.orders.index') }}"
+                    class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
 
                     <i class="bi bi-bag-check"></i>
 
@@ -98,7 +130,10 @@
                 </a>
 
 
-                <a href="{{ route('admin.payments.index') }}">
+                {{-- PAYMENTS --}}
+                <a
+                    href="{{ route('admin.payments.index') }}"
+                    class="{{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
 
                     <i class="bi bi-credit-card"></i>
 
@@ -109,13 +144,13 @@
             </nav>
 
 
-        <div class="sidebar-footer">
+            <div class="sidebar-footer">
 
-            <div class="admin-user">
+                <div class="admin-user">
 
-                <div class="admin-avatar">
+                    <div class="admin-avatar">
 
-                    {{ strtoupper(
+                        {{ strtoupper(
                         substr(
                             auth()->user()->name,
                             0,
@@ -123,77 +158,77 @@
                         )
                     ) }}
 
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            {{ auth()->user()->name }}
+                        </strong>
+
+                        <span>
+                            Administrator
+                        </span>
+
+                    </div>
+
                 </div>
+
+
+                <form
+                    action="{{ route('logout') }}"
+                    method="POST">
+
+                    @csrf
+
+                    <button
+                        type="submit"
+                        class="logout-button">
+
+                        <i class="bi bi-box-arrow-right"></i>
+
+                        Logout
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </aside>
+
+
+        <main class="admin-main">
+
+            <div class="admin-header">
 
                 <div>
 
-                    <strong>
-                        {{ auth()->user()->name }}
-                    </strong>
-
-                    <span>
-                        Administrator
+                    <span class="page-label">
+                        ADMIN
                     </span>
+
+                    <h1>
+                        Collection Management
+                    </h1>
+
+                    <p>
+                        Manage product collections and catalog grouping.
+                    </p>
+
+                </div>
+
+
+                <div class="header-icon">
+
+                    <i class="bi bi-collection"></i>
 
                 </div>
 
             </div>
 
 
-            <form
-                action="{{ route('logout') }}"
-                method="POST">
-
-                @csrf
-
-                <button
-                    type="submit"
-                    class="logout-button">
-
-                    <i class="bi bi-box-arrow-right"></i>
-
-                    Logout
-
-                </button>
-
-            </form>
-
-        </div>
-
-    </aside>
-
-
-    <main class="admin-main">
-
-        <div class="admin-header">
-
-            <div>
-
-                <span class="page-label">
-                    ADMIN
-                </span>
-
-                <h1>
-                    Collection Management
-                </h1>
-
-                <p>
-                    Manage product collections and catalog grouping.
-                </p>
-
-            </div>
-
-
-            <div class="header-icon">
-
-                <i class="bi bi-collection"></i>
-
-            </div>
-
-        </div>
-
-
-        @if (session('success'))
+            @if (session('success'))
 
             <div class="collection-alert success">
 
@@ -203,68 +238,68 @@
 
             </div>
 
-        @endif
+            @endif
 
 
-        <section class="filter-card">
+            <section class="filter-card">
 
-            <form
-                action="{{ route('admin.collections.index') }}"
-                method="GET"
-                class="order-filter">
+                <form
+                    action="{{ route('admin.collections.index') }}"
+                    method="GET"
+                    class="order-filter">
 
-                <div class="search-box">
+                    <div class="search-box">
 
-                    <i class="bi bi-search"></i>
+                        <i class="bi bi-search"></i>
 
-                    <input
-                        type="text"
-                        name="search"
-                        value="{{ $search }}"
-                        placeholder="Search collection...">
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ $search }}"
+                            placeholder="Search collection...">
 
-                </div>
+                    </div>
 
 
-                <select name="status">
+                    <select name="status">
 
-                    <option value="">
-                        All Status
-                    </option>
+                        <option value="">
+                            All Status
+                        </option>
 
-                    <option
-                        value="active"
-                        {{ $status === 'active'
+                        <option
+                            value="active"
+                            {{ $status === 'active'
                             ? 'selected'
                             : '' }}>
 
-                        Active
+                            Active
 
-                    </option>
+                        </option>
 
-                    <option
-                        value="inactive"
-                        {{ $status === 'inactive'
+                        <option
+                            value="inactive"
+                            {{ $status === 'inactive'
                             ? 'selected'
                             : '' }}>
 
-                        Inactive
+                            Inactive
 
-                    </option>
+                        </option>
 
-                </select>
-
-
-                <button
-                    type="submit"
-                    class="filter-button">
-
-                    FILTER
-
-                </button>
+                    </select>
 
 
-                @if ($search || $status)
+                    <button
+                        type="submit"
+                        class="filter-button">
+
+                        FILTER
+
+                    </button>
+
+
+                    @if ($search || $status)
 
                     <a
                         href="{{ route('admin.collections.index') }}"
@@ -274,211 +309,211 @@
 
                     </a>
 
-                @endif
+                    @endif
 
-            </form>
+                </form>
 
-        </section>
+            </section>
 
 
-        <section class="order-card">
+            <section class="order-card">
 
-            <div class="order-card-header collection-card-header">
+                <div class="order-card-header collection-card-header">
 
-                <div>
+                    <div>
 
-                    <h2>
-                        Collections
-                    </h2>
+                        <h2>
+                            Collections
+                        </h2>
 
-                    <p>
-                        {{ $collections->total() }}
-                        total collections
-                    </p>
+                        <p>
+                            {{ $collections->total() }}
+                            total collections
+                        </p>
+
+                    </div>
+
+
+                    <a
+                        href="{{ route('admin.collections.create') }}"
+                        class="add-collection-button">
+
+                        <i class="bi bi-plus-lg"></i>
+
+                        ADD COLLECTION
+
+                    </a>
 
                 </div>
 
 
-                <a
-                    href="{{ route('admin.collections.create') }}"
-                    class="add-collection-button">
+                <div class="table-wrapper">
 
-                    <i class="bi bi-plus-lg"></i>
+                    <table class="order-table collection-table">
 
-                    ADD COLLECTION
+                        <thead>
 
-                </a>
+                            <tr>
 
-            </div>
+                                <th>COLLECTION</th>
+                                <th>SLUG</th>
+                                <th>DESCRIPTION</th>
+                                <th>PRODUCTS</th>
+                                <th>STATUS</th>
+                                <th>ACTION</th>
 
+                            </tr>
 
-            <div class="table-wrapper">
-
-                <table class="order-table collection-table">
-
-                    <thead>
-
-                    <tr>
-
-                        <th>COLLECTION</th>
-                        <th>SLUG</th>
-                        <th>DESCRIPTION</th>
-                        <th>PRODUCTS</th>
-                        <th>STATUS</th>
-                        <th>ACTION</th>
-
-                    </tr>
-
-                    </thead>
+                        </thead>
 
 
-                    <tbody>
+                        <tbody>
 
-                    @forelse ($collections as $collection)
+                            @forelse ($collections as $collection)
 
-                        <tr>
+                            <tr>
 
-                            <td>
+                                <td>
 
-                                <strong>
-                                    {{ $collection->name }}
-                                </strong>
+                                    <strong>
+                                        {{ $collection->name }}
+                                    </strong>
 
-                            </td>
-
-
-                            <td>
-
-                                <span class="collection-slug">
-                                    {{ $collection->slug }}
-                                </span>
-
-                            </td>
+                                </td>
 
 
-                            <td>
+                                <td>
 
-                                <span class="collection-description">
+                                    <span class="collection-slug">
+                                        {{ $collection->slug }}
+                                    </span>
 
-                                    {{ $collection->description
+                                </td>
+
+
+                                <td>
+
+                                    <span class="collection-description">
+
+                                        {{ $collection->description
                                         ?: '-' }}
 
-                                </span>
+                                    </span>
 
-                            </td>
+                                </td>
 
 
-                            <td>
+                                <td>
 
-                                <span class="product-count">
+                                    <span class="product-count">
 
-                                    {{ $collection->products_count }}
+                                        {{ $collection->products_count }}
 
-                                    {{ $collection->products_count == 1
+                                        {{ $collection->products_count == 1
                                         ? 'Product'
                                         : 'Products' }}
 
-                                </span>
+                                    </span>
 
-                            </td>
+                                </td>
 
 
-                            <td>
+                                <td>
 
-                                <span
-                                    class="collection-status
+                                    <span
+                                        class="collection-status
                                     {{ $collection->is_active
                                         ? 'collection-status-active'
                                         : 'collection-status-inactive' }}">
 
-                                    {{ $collection->is_active
+                                        {{ $collection->is_active
                                         ? 'ACTIVE'
                                         : 'INACTIVE' }}
 
-                                </span>
+                                    </span>
 
-                            </td>
-
-
-                            <td>
-
-                                <div class="collection-actions">
+                                </td>
 
 
-                                    <a
-                                        href="{{ route(
+                                <td>
+
+                                    <div class="collection-actions">
+
+
+                                        <a
+                                            href="{{ route(
                                             'admin.collections.edit',
                                             $collection
                                         ) }}"
-                                        title="Edit collection">
+                                            title="Edit collection">
 
-                                        <i class="bi bi-pencil"></i>
+                                            <i class="bi bi-pencil"></i>
 
-                                    </a>
+                                        </a>
 
 
-                                    <form
-                                        action="{{ route(
+                                        <form
+                                            action="{{ route(
                                             'admin.collections.destroy',
                                             $collection
                                         ) }}"
-                                        method="POST"
-                                        onsubmit="return confirm(
+                                            method="POST"
+                                            onsubmit="return confirm(
                                             'Hapus collection {{ $collection->name }}?'
                                         );">
 
-                                        @csrf
-                                        @method('DELETE')
+                                            @csrf
+                                            @method('DELETE')
 
-                                        <button
-                                            type="submit"
-                                            title="Delete collection">
+                                            <button
+                                                type="submit"
+                                                title="Delete collection">
 
-                                            <i class="bi bi-trash"></i>
+                                                <i class="bi bi-trash"></i>
 
-                                        </button>
+                                            </button>
 
-                                    </form>
+                                        </form>
 
-                                </div>
+                                    </div>
 
-                            </td>
+                                </td>
 
-                        </tr>
-
-
-                    @empty
-
-                        <tr>
-
-                            <td
-                                colspan="6"
-                                class="collection-empty">
-
-                                <i class="bi bi-collection"></i>
-
-                                <strong>
-                                    No collections found
-                                </strong>
-
-                                <span>
-                                    Collection data will appear here.
-                                </span>
-
-                            </td>
-
-                        </tr>
-
-                    @endforelse
-
-                    </tbody>
-
-                </table>
-
-            </div>
+                            </tr>
 
 
-            @if ($collections->hasPages())
+                            @empty
+
+                            <tr>
+
+                                <td
+                                    colspan="6"
+                                    class="collection-empty">
+
+                                    <i class="bi bi-collection"></i>
+
+                                    <strong>
+                                        No collections found
+                                    </strong>
+
+                                    <span>
+                                        Collection data will appear here.
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                            @endforelse
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                @if ($collections->hasPages())
 
                 <div class="collection-pagination">
 
@@ -496,50 +531,50 @@
 
                         @if ($collections->onFirstPage())
 
-                            <span class="pagination-disabled">
+                        <span class="pagination-disabled">
 
-                                <i class="bi bi-chevron-left"></i>
+                            <i class="bi bi-chevron-left"></i>
 
-                                PREVIOUS
+                            PREVIOUS
 
-                            </span>
+                        </span>
 
                         @else
 
-                            <a
-                                href="{{ $collections->previousPageUrl() }}"
-                                class="pagination-button">
+                        <a
+                            href="{{ $collections->previousPageUrl() }}"
+                            class="pagination-button">
 
-                                <i class="bi bi-chevron-left"></i>
+                            <i class="bi bi-chevron-left"></i>
 
-                                PREVIOUS
+                            PREVIOUS
 
-                            </a>
+                        </a>
 
                         @endif
 
 
                         @if ($collections->hasMorePages())
 
-                            <a
-                                href="{{ $collections->nextPageUrl() }}"
-                                class="pagination-button">
+                        <a
+                            href="{{ $collections->nextPageUrl() }}"
+                            class="pagination-button">
 
-                                NEXT
+                            NEXT
 
-                                <i class="bi bi-chevron-right"></i>
+                            <i class="bi bi-chevron-right"></i>
 
-                            </a>
+                        </a>
 
                         @else
 
-                            <span class="pagination-disabled">
+                        <span class="pagination-disabled">
 
-                                NEXT
+                            NEXT
 
-                                <i class="bi bi-chevron-right"></i>
+                            <i class="bi bi-chevron-right"></i>
 
-                            </span>
+                        </span>
 
                         @endif
 
@@ -547,13 +582,13 @@
 
                 </div>
 
-            @endif
+                @endif
 
-        </section>
+            </section>
 
-    </main>
+        </main>
 
-</div>
+    </div>
 
 </body>
 

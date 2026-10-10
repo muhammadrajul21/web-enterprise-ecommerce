@@ -29,26 +29,29 @@
 
 <body>
 
-<div class="admin-layout">
+    <div class="admin-layout">
 
-    <aside class="admin-sidebar">
+        <aside class="admin-sidebar">
 
-        <div class="sidebar-brand">
+            <div class="sidebar-brand">
 
-            <h2>
-                LIFESTYLE
-            </h2>
+                <h2>
+                    LIFESTYLE
+                </h2>
 
-            <span>
-                ADMIN PANEL
-            </span>
+                <span>
+                    ADMIN PANEL
+                </span>
 
-        </div>
+            </div>
 
 
-        <nav class="sidebar-menu">
+            <nav class="sidebar-menu">
 
-                <a href="{{ route('admin.dashboard') }}">
+                {{-- DASHBOARD --}}
+                <a
+                    href="{{ route('admin.dashboard') }}"
+                    class="{{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
 
                     <i class="bi bi-grid"></i>
 
@@ -57,9 +60,10 @@
                 </a>
 
 
+                {{-- PRODUCTS --}}
                 <a
                     href="{{ route('admin.products.index') }}"
-                    class="active">
+                    class="{{ request()->routeIs('admin.products.*') ? 'active' : '' }}">
 
                     <i class="bi bi-box-seam"></i>
 
@@ -67,7 +71,11 @@
 
                 </a>
 
-                <a href="{{ route('admin.variants.index') }}">
+
+                {{-- VARIANTS --}}
+                <a
+                    href="{{ route('admin.variants.index') }}"
+                    class="{{ request()->routeIs('admin.variants.*') ? 'active' : '' }}">
 
                     <i class="bi bi-boxes"></i>
 
@@ -75,23 +83,47 @@
 
                 </a>
 
-                <a href="{{ route('admin.categories.index') }}">
+
+                {{-- CATEGORIES --}}
+                <a
+                    href="{{ route('admin.categories.index') }}"
+                    class="{{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
+
                     <i class="bi bi-tags"></i>
+
                     Categories
+
                 </a>
 
-                <a href="{{ route('admin.collections.index') }}">
+
+                {{-- COLLECTIONS --}}
+                <a
+                    href="{{ route('admin.collections.index') }}"
+                    class="{{ request()->routeIs('admin.collections.*') ? 'active' : '' }}">
+
                     <i class="bi bi-collection"></i>
+
                     Collections
+
                 </a>
 
-                <a href="{{ route('admin.vouchers.index') }}">
+
+                {{-- VOUCHERS --}}
+                <a
+                    href="{{ route('admin.vouchers.index') }}"
+                    class="{{ request()->routeIs('admin.vouchers.*') ? 'active' : '' }}">
+
                     <i class="bi bi-ticket-perforated"></i>
+
                     Vouchers
+
                 </a>
 
 
-                <a href="{{ route('admin.orders.index') }}">
+                {{-- ORDERS --}}
+                <a
+                    href="{{ route('admin.orders.index') }}"
+                    class="{{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
 
                     <i class="bi bi-bag-check"></i>
 
@@ -100,7 +132,10 @@
                 </a>
 
 
-                <a href="{{ route('admin.payments.index') }}">
+                {{-- PAYMENTS --}}
+                <a
+                    href="{{ route('admin.payments.index') }}"
+                    class="{{ request()->routeIs('admin.payments.*') ? 'active' : '' }}">
 
                     <i class="bi bi-credit-card"></i>
 
@@ -111,13 +146,13 @@
             </nav>
 
 
-        <div class="sidebar-footer">
+            <div class="sidebar-footer">
 
-            <div class="admin-user">
+                <div class="admin-user">
 
-                <div class="admin-avatar">
+                    <div class="admin-avatar">
 
-                    {{ strtoupper(
+                        {{ strtoupper(
                         substr(
                             auth()->user()->name,
                             0,
@@ -125,85 +160,85 @@
                         )
                     ) }}
 
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            {{ auth()->user()->name }}
+                        </strong>
+
+                        <span>
+                            Administrator
+                        </span>
+
+                    </div>
+
                 </div>
+
+
+                <form
+                    action="{{ route('logout') }}"
+                    method="POST">
+
+                    @csrf
+
+                    <button
+                        type="submit"
+                        class="logout-button">
+
+                        <i class="bi bi-box-arrow-right"></i>
+
+                        Logout
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </aside>
+
+
+        <main class="admin-main">
+
+            <div class="admin-header">
 
                 <div>
 
-                    <strong>
-                        {{ auth()->user()->name }}
-                    </strong>
-
-                    <span>
-                        Administrator
+                    <span class="page-label">
+                        ADMIN
                     </span>
+
+                    <h1>
+
+                        {{ $collection
+                        ? 'Edit Collection'
+                        : 'Add Collection' }}
+
+                    </h1>
+
+                    <p>
+
+                        {{ $collection
+                        ? 'Update collection information.'
+                        : 'Create a new product collection.' }}
+
+                    </p>
+
+                </div>
+
+
+                <div class="header-icon">
+
+                    <i class="bi bi-collection"></i>
 
                 </div>
 
             </div>
 
 
-            <form
-                action="{{ route('logout') }}"
-                method="POST">
-
-                @csrf
-
-                <button
-                    type="submit"
-                    class="logout-button">
-
-                    <i class="bi bi-box-arrow-right"></i>
-
-                    Logout
-
-                </button>
-
-            </form>
-
-        </div>
-
-    </aside>
-
-
-    <main class="admin-main">
-
-        <div class="admin-header">
-
-            <div>
-
-                <span class="page-label">
-                    ADMIN
-                </span>
-
-                <h1>
-
-                    {{ $collection
-                        ? 'Edit Collection'
-                        : 'Add Collection' }}
-
-                </h1>
-
-                <p>
-
-                    {{ $collection
-                        ? 'Update collection information.'
-                        : 'Create a new product collection.' }}
-
-                </p>
-
-            </div>
-
-
-            <div class="header-icon">
-
-                <i class="bi bi-collection"></i>
-
-            </div>
-
-        </div>
-
-
-        @if ($errors->any())
+            @if ($errors->any())
 
             <div class="collection-form-error">
 
@@ -215,9 +250,9 @@
 
                     @foreach ($errors->all() as $error)
 
-                        <li>
-                            {{ $error }}
-                        </li>
+                    <li>
+                        {{ $error }}
+                    </li>
 
                     @endforeach
 
@@ -225,11 +260,11 @@
 
             </div>
 
-        @endif
+            @endif
 
 
-        <form
-            action="{{ $collection
+            <form
+                action="{{ $collection
                 ? route(
                     'admin.collections.update',
                     $collection
@@ -237,77 +272,77 @@
                 : route(
                     'admin.collections.store'
                 ) }}"
-            method="POST">
+                method="POST">
 
-            @csrf
+                @csrf
 
-            @if ($collection)
+                @if ($collection)
                 @method('PUT')
-            @endif
+                @endif
 
 
-            <section class="collection-form-card">
+                <section class="collection-form-card">
 
-                <div class="collection-form-header">
+                    <div class="collection-form-header">
 
-                    <h2>
-                        Collection Information
-                    </h2>
+                        <h2>
+                            Collection Information
+                        </h2>
 
-                    <p>
-                        Complete the collection information below.
-                    </p>
+                        <p>
+                            Complete the collection information below.
+                        </p>
 
-                </div>
-
-
-                <div class="collection-form-body">
+                    </div>
 
 
-                    <div class="collection-form-group">
+                    <div class="collection-form-body">
 
-                        <label for="name">
 
-                            Collection Name
-                            <span>*</span>
+                        <div class="collection-form-group">
 
-                        </label>
+                            <label for="name">
 
-                        <input
-                            id="name"
-                            type="text"
-                            name="name"
-                            value="{{ old(
+                                Collection Name
+                                <span>*</span>
+
+                            </label>
+
+                            <input
+                                id="name"
+                                type="text"
+                                name="name"
+                                value="{{ old(
                                 'name',
                                 $collection?->name
                             ) }}"
-                            placeholder="Example: Weekend Essentials"
-                            required>
+                                placeholder="Example: Weekend Essentials"
+                                required>
 
-                        @error('name')
+                            @error('name')
 
                             <small class="collection-field-error">
                                 {{ $message }}
                             </small>
 
-                        @enderror
+                            @enderror
 
-                    </div>
+                        </div>
 
 
-                    <div class="collection-form-group">
+                        <div class="collection-form-group">
 
-                        <label>
-                            Status
-                        </label>
+                            <label>
+                                Status
+                            </label>
 
-                        <label class="collection-checkbox">
+                            <label class="collection-checkbox">
 
-                            <input
-                                type="checkbox"
-                                name="is_active"
-                                value="1"
-                                {{ old(
+                                <input
+                                    type="checkbox"
+                                    name="is_active"
+                                    value="1"
+                                    {{ old(
                                     'is_active',
                                     $collection
                                         ? $collection->is_active
@@ -316,56 +351,58 @@
                                     ? 'checked'
                                     : '' }}>
 
-                            <span>
-                                Active Collection
-                            </span>
+                                <span>
+                                    Active Collection
+                                </span>
 
-                        </label>
+                            </label>
 
-                    </div>
+                        </div>
 
 
-                    <div class="collection-form-group collection-full">
+                        <div class="collection-form-group collection-full">
 
-                        <label for="description">
-                            Description
-                        </label>
+                            <label for="description">
+                                Description
+                            </label>
 
-                        <textarea
-                            id="description"
-                            name="description"
-                            rows="6"
-                            placeholder="Collection description...">{{ old(
+                            <textarea
+                                id="description"
+                                name="description"
+                                rows="6"
+                                placeholder="Collection description...">{{ old(
                                 'description',
                                 $collection?->description
                             ) }}</textarea>
 
-                    </div>
+                        </div>
 
 
-                    <div class="collection-form-group collection-full">
+                        <div class="collection-form-group collection-full">
 
-                        <div class="slug-info">
+                            <div class="slug-info">
 
-                            <i class="bi bi-info-circle"></i>
+                                <i class="bi bi-info-circle"></i>
 
-                            <div>
+                                <div>
 
-                                <strong>
-                                    Collection Slug
-                                </strong>
+                                    <strong>
+                                        Collection Slug
+                                    </strong>
 
-                                <span>
-                                    Slug dibuat otomatis berdasarkan nama collection.
-                                </span>
+                                    <span>
+                                        Slug dibuat otomatis berdasarkan nama collection.
+                                    </span>
 
-                                @if ($collection)
+                                    @if ($collection)
 
                                     <code>
                                         {{ $collection->slug }}
                                     </code>
 
-                                @endif
+                                    @endif
+
+                                </div>
 
                             </div>
 
@@ -373,43 +410,41 @@
 
                     </div>
 
-                </div>
 
+                    <div class="collection-form-footer">
 
-                <div class="collection-form-footer">
-
-                    <a
-                        href="{{ route(
+                        <a
+                            href="{{ route(
                             'admin.collections.index'
                         ) }}"
-                        class="collection-cancel">
+                            class="collection-cancel">
 
-                        CANCEL
+                            CANCEL
 
-                    </a>
+                        </a>
 
 
-                    <button
-                        type="submit"
-                        class="collection-save">
+                        <button
+                            type="submit"
+                            class="collection-save">
 
-                        <i class="bi bi-check-lg"></i>
+                            <i class="bi bi-check-lg"></i>
 
-                        {{ $collection
+                            {{ $collection
                             ? 'UPDATE COLLECTION'
                             : 'SAVE COLLECTION' }}
 
-                    </button>
+                        </button>
 
-                </div>
+                    </div>
 
-            </section>
+                </section>
 
-        </form>
+            </form>
 
-    </main>
+        </main>
 
-</div>
+    </div>
 
 </body>
 

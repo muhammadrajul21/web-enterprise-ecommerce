@@ -84,6 +84,11 @@
                     Collections
                 </a>
 
+                <a href="{{ route('admin.vouchers.index') }}">
+                    <i class="bi bi-ticket-perforated"></i>
+                    Vouchers
+                </a>
+
                 <a href="{{ route('admin.orders.index') }}">
 
                     <i class="bi bi-bag-check"></i>

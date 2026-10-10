@@ -48,46 +48,67 @@
 
         <nav class="sidebar-menu">
 
-            <a href="{{ route('admin.dashboard') }}">
-                <i class="bi bi-grid"></i>
-                Dashboard
-            </a>
+                <a href="{{ route('admin.dashboard') }}">
 
-            <a href="{{ route('admin.products.index') }}">
-                <i class="bi bi-box-seam"></i>
-                Products
-            </a>
+                    <i class="bi bi-grid"></i>
 
-            <a href="{{ route('admin.variants.index') }}">
-                <i class="bi bi-boxes"></i>
-                Variants
-            </a>
+                    Dashboard
 
-            <a href="{{ route('admin.categories.index') }}">
-                <i class="bi bi-tags"></i>
-                Categories
-            </a>
+                </a>
 
-            <a
-                href="{{ route('admin.collections.index') }}"
-                class="active">
 
-                <i class="bi bi-collection"></i>
-                Collections
+                <a
+                    href="{{ route('admin.products.index') }}"
+                    class="active">
 
-            </a>
+                    <i class="bi bi-box-seam"></i>
 
-            <a href="{{ route('admin.orders.index') }}">
-                <i class="bi bi-bag-check"></i>
-                Orders
-            </a>
+                    Products
 
-            <a href="{{ route('admin.payments.index') }}">
-                <i class="bi bi-credit-card"></i>
-                Payments
-            </a>
+                </a>
 
-        </nav>
+                <a href="{{ route('admin.variants.index') }}">
+
+                    <i class="bi bi-boxes"></i>
+
+                    Variants
+
+                </a>
+
+                <a href="{{ route('admin.categories.index') }}">
+                    <i class="bi bi-tags"></i>
+                    Categories
+                </a>
+
+                <a href="{{ route('admin.collections.index') }}">
+                    <i class="bi bi-collection"></i>
+                    Collections
+                </a>
+
+                <a href="{{ route('admin.vouchers.index') }}">
+                    <i class="bi bi-ticket-perforated"></i>
+                    Vouchers
+                </a>
+
+
+                <a href="{{ route('admin.orders.index') }}">
+
+                    <i class="bi bi-bag-check"></i>
+
+                    Orders
+
+                </a>
+
+
+                <a href="{{ route('admin.payments.index') }}">
+
+                    <i class="bi bi-credit-card"></i>
+
+                    Payments
+
+                </a>
+
+            </nav>
 
 
         <div class="sidebar-footer">

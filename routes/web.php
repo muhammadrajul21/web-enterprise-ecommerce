@@ -13,6 +13,7 @@ use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\CollectionController;
+use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Staff\StockController;
 use App\Http\Controllers\Staff\OrderController as StaffOrderController;
@@ -474,6 +475,37 @@ Route::middleware('auth')->group(function () {
                 '/collections/{collection}',
                 [CollectionController::class, 'destroy']
             )->name('admin.collections.destroy');
+
+
+            Route::get(
+                '/vouchers',
+                [VoucherController::class, 'index']
+            )->name('admin.vouchers.index');
+
+            Route::get(
+                '/vouchers/create',
+                [VoucherController::class, 'create']
+            )->name('admin.vouchers.create');
+
+            Route::post(
+                '/vouchers',
+                [VoucherController::class, 'store']
+            )->name('admin.vouchers.store');
+
+            Route::get(
+                '/vouchers/{voucher}/edit',
+                [VoucherController::class, 'edit']
+            )->name('admin.vouchers.edit');
+
+            Route::put(
+                '/vouchers/{voucher}',
+                [VoucherController::class, 'update']
+            )->name('admin.vouchers.update');
+
+            Route::delete(
+                '/vouchers/{voucher}',
+                [VoucherController::class, 'destroy']
+            )->name('admin.vouchers.destroy');
         });
 
 

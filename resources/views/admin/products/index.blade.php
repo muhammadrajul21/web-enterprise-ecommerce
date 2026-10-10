@@ -83,6 +83,11 @@
                     Categories
                 </a>
 
+                <a href="{{ route('admin.collections.index') }}">
+                    <i class="bi bi-collection"></i>
+                    Collections
+                </a>
+
 
                 <a href="{{ route('admin.orders.index') }}">
 

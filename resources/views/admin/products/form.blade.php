@@ -29,46 +29,46 @@
 
 <body>
 
-<div class="admin-layout">
+    <div class="admin-layout">
 
-    {{-- SIDEBAR --}}
-    <aside class="admin-sidebar">
+        {{-- SIDEBAR --}}
+        <aside class="admin-sidebar">
 
-        <div class="sidebar-brand">
+            <div class="sidebar-brand">
 
-            <h2>
-                LIFESTYLE
-            </h2>
+                <h2>
+                    LIFESTYLE
+                </h2>
 
-            <span>
-                ADMIN PANEL
-            </span>
+                <span>
+                    ADMIN PANEL
+                </span>
 
-        </div>
-
-
-        <nav class="sidebar-menu">
-
-            <a href="{{ route('admin.dashboard') }}">
-
-                <i class="bi bi-grid"></i>
-
-                Dashboard
-
-            </a>
+            </div>
 
 
-            <a
-                href="{{ route('admin.products.index') }}"
-                class="active">
+            <nav class="sidebar-menu">
 
-                <i class="bi bi-box-seam"></i>
+                <a href="{{ route('admin.dashboard') }}">
 
-                Products
+                    <i class="bi bi-grid"></i>
 
-            </a>
+                    Dashboard
 
-            <a href="{{ route('admin.variants.index') }}">
+                </a>
+
+
+                <a
+                    href="{{ route('admin.products.index') }}"
+                    class="active">
+
+                    <i class="bi bi-box-seam"></i>
+
+                    Products
+
+                </a>
+
+                <a href="{{ route('admin.variants.index') }}">
 
                     <i class="bi bi-boxes"></i>
 
@@ -81,34 +81,39 @@
                     Categories
                 </a>
 
-
-            <a href="{{ route('admin.orders.index') }}">
-
-                <i class="bi bi-bag-check"></i>
-
-                Orders
-
-            </a>
+                <a href="{{ route('admin.collections.index') }}">
+                    <i class="bi bi-collection"></i>
+                    Collections
+                </a>
 
 
-            <a href="{{ route('admin.payments.index') }}">
+                <a href="{{ route('admin.orders.index') }}">
 
-                <i class="bi bi-credit-card"></i>
+                    <i class="bi bi-bag-check"></i>
 
-                Payments
+                    Orders
 
-            </a>
-
-        </nav>
+                </a>
 
 
-        <div class="sidebar-footer">
+                <a href="{{ route('admin.payments.index') }}">
 
-            <div class="admin-user">
+                    <i class="bi bi-credit-card"></i>
 
-                <div class="admin-avatar">
+                    Payments
 
-                    {{ strtoupper(
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-footer">
+
+                <div class="admin-user">
+
+                    <div class="admin-avatar">
+
+                        {{ strtoupper(
                         substr(
                             auth()->user()->name,
                             0,
@@ -116,88 +121,88 @@
                         )
                     ) }}
 
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            {{ auth()->user()->name }}
+                        </strong>
+
+                        <span>
+                            Administrator
+                        </span>
+
+                    </div>
+
                 </div>
 
+
+                <form
+                    action="{{ route('logout') }}"
+                    method="POST">
+
+                    @csrf
+
+                    <button
+                        type="submit"
+                        class="logout-button">
+
+                        <i class="bi bi-box-arrow-right"></i>
+
+                        Logout
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </aside>
+
+
+        {{-- MAIN --}}
+        <main class="admin-main">
+
+
+            <div class="admin-header">
 
                 <div>
 
-                    <strong>
-                        {{ auth()->user()->name }}
-                    </strong>
-
-                    <span>
-                        Administrator
+                    <span class="page-label">
+                        ADMIN
                     </span>
+
+                    <h1>
+
+                        {{ $product
+                        ? 'Edit Product'
+                        : 'Add Product' }}
+
+                    </h1>
+
+                    <p>
+
+                        {{ $product
+                        ? 'Update product information and catalog settings.'
+                        : 'Create a new product for the catalog.' }}
+
+                    </p>
+
+                </div>
+
+
+                <div class="header-icon">
+
+                    <i class="bi bi-box-seam"></i>
 
                 </div>
 
             </div>
 
 
-            <form
-                action="{{ route('logout') }}"
-                method="POST">
-
-                @csrf
-
-                <button
-                    type="submit"
-                    class="logout-button">
-
-                    <i class="bi bi-box-arrow-right"></i>
-
-                    Logout
-
-                </button>
-
-            </form>
-
-        </div>
-
-    </aside>
-
-
-    {{-- MAIN --}}
-    <main class="admin-main">
-
-
-        <div class="admin-header">
-
-            <div>
-
-                <span class="page-label">
-                    ADMIN
-                </span>
-
-                <h1>
-
-                    {{ $product
-                        ? 'Edit Product'
-                        : 'Add Product' }}
-
-                </h1>
-
-                <p>
-
-                    {{ $product
-                        ? 'Update product information and catalog settings.'
-                        : 'Create a new product for the catalog.' }}
-
-                </p>
-
-            </div>
-
-
-            <div class="header-icon">
-
-                <i class="bi bi-box-seam"></i>
-
-            </div>
-
-        </div>
-
-
-        @if ($errors->any())
+            @if ($errors->any())
 
             <div class="product-error">
 
@@ -209,9 +214,9 @@
 
                     @foreach ($errors->all() as $error)
 
-                        <li>
-                            {{ $error }}
-                        </li>
+                    <li>
+                        {{ $error }}
+                    </li>
 
                     @endforeach
 
@@ -219,11 +224,11 @@
 
             </div>
 
-        @endif
+            @endif
 
 
-        <form
-            action="{{ $product
+            <form
+                action="{{ $product
                 ? route(
                     'admin.products.update',
                     $product
@@ -231,84 +236,84 @@
                 : route(
                     'admin.products.store'
                 ) }}"
-            method="POST"
-            enctype="multipart/form-data">
+                method="POST"
+                enctype="multipart/form-data">
 
-            @csrf
+                @csrf
 
-            @if ($product)
+                @if ($product)
                 @method('PUT')
-            @endif
+                @endif
 
 
-            <section class="product-form-card">
+                <section class="product-form-card">
 
-                <div class="product-form-header">
+                    <div class="product-form-header">
 
-                    <div>
+                        <div>
 
-                        <h2>
-                            Product Information
-                        </h2>
+                            <h2>
+                                Product Information
+                            </h2>
 
-                        <p>
-                            Complete the information below.
-                        </p>
+                            <p>
+                                Complete the information below.
+                            </p>
+
+                        </div>
 
                     </div>
 
-                </div>
+
+                    <div class="product-form-body">
 
 
-                <div class="product-form-body">
+                        {{-- NAME --}}
+                        <div class="form-group form-full">
 
+                            <label for="name">
+                                Product Name
+                                <span>*</span>
+                            </label>
 
-                    {{-- NAME --}}
-                    <div class="form-group form-full">
-
-                        <label for="name">
-                            Product Name
-                            <span>*</span>
-                        </label>
-
-                        <input
-                            id="name"
-                            type="text"
-                            name="name"
-                            value="{{ old(
+                            <input
+                                id="name"
+                                type="text"
+                                name="name"
+                                value="{{ old(
                                 'name',
                                 $product?->name
                             ) }}"
-                            placeholder="Example: Oversized T-Shirt"
-                            required>
+                                placeholder="Example: Oversized T-Shirt"
+                                required>
 
-                        @error('name')
+                            @error('name')
 
                             <small class="field-error">
                                 {{ $message }}
                             </small>
 
-                        @enderror
+                            @enderror
 
-                    </div>
+                        </div>
 
 
-                    {{-- SEGMENT --}}
-                    <div class="form-group">
+                        {{-- SEGMENT --}}
+                        <div class="form-group">
 
-                        <label for="segment_id">
-                            Segment
-                        </label>
+                            <label for="segment_id">
+                                Segment
+                            </label>
 
-                        <select
-                            id="segment_id"
-                            name="segment_id">
+                            <select
+                                id="segment_id"
+                                name="segment_id">
 
-                            <option value="">
-                                No Segment
-                            </option>
+                                <option value="">
+                                    No Segment
+                                </option>
 
-                            @foreach ($segments as $segment)
+                                @foreach ($segments as $segment)
 
                                 <option
                                     value="{{ $segment->id }}"
@@ -325,33 +330,33 @@
 
                                 </option>
 
-                            @endforeach
+                                @endforeach
 
-                        </select>
+                            </select>
 
-                    </div>
+                        </div>
 
 
-                    {{-- CATEGORY --}}
-                    <div class="form-group">
+                        {{-- CATEGORY --}}
+                        <div class="form-group">
 
-                        <label for="category_id">
+                            <label for="category_id">
 
-                            Category
-                            <span>*</span>
+                                Category
+                                <span>*</span>
 
-                        </label>
+                            </label>
 
-                        <select
-                            id="category_id"
-                            name="category_id"
-                            required>
+                            <select
+                                id="category_id"
+                                name="category_id"
+                                required>
 
-                            <option value="">
-                                Select Category
-                            </option>
+                                <option value="">
+                                    Select Category
+                                </option>
 
-                            @foreach ($categories as $category)
+                                @foreach ($categories as $category)
 
                                 <option
                                     value="{{ $category->id }}"
@@ -368,151 +373,151 @@
 
                                 </option>
 
-                            @endforeach
+                                @endforeach
 
-                        </select>
+                            </select>
 
-                    </div>
+                        </div>
 
 
-                    {{-- STATUS --}}
-                    <div class="form-group">
+                        {{-- STATUS --}}
+                        <div class="form-group">
 
-                        <label for="status">
+                            <label for="status">
 
-                            Status
-                            <span>*</span>
+                                Status
+                                <span>*</span>
 
-                        </label>
+                            </label>
 
-                        <select
-                            id="status"
-                            name="status"
-                            required>
+                            <select
+                                id="status"
+                                name="status"
+                                required>
 
-                            <option
-                                value="draft"
-                                {{ old(
+                                <option
+                                    value="draft"
+                                    {{ old(
                                     'status',
                                     $product?->status ?? 'draft'
                                 ) === 'draft'
                                     ? 'selected'
                                     : '' }}>
 
-                                Draft
+                                    Draft
 
-                            </option>
+                                </option>
 
 
-                            <option
-                                value="active"
-                                {{ old(
+                                <option
+                                    value="active"
+                                    {{ old(
                                     'status',
                                     $product?->status
                                 ) === 'active'
                                     ? 'selected'
                                     : '' }}>
 
-                                Active
+                                    Active
 
-                            </option>
+                                </option>
 
 
-                            <option
-                                value="inactive"
-                                {{ old(
+                                <option
+                                    value="inactive"
+                                    {{ old(
                                     'status',
                                     $product?->status
                                 ) === 'inactive'
                                     ? 'selected'
                                     : '' }}>
 
-                                Inactive
+                                    Inactive
 
-                            </option>
+                                </option>
 
-                        </select>
+                            </select>
 
-                    </div>
+                        </div>
 
 
-                    {{-- FEATURED --}}
-                    <div class="form-group">
+                        {{-- FEATURED --}}
+                        <div class="form-group">
 
-                        <label>
-                            Featured Product
-                        </label>
+                            <label>
+                                Featured Product
+                            </label>
 
-                        <label class="checkbox-option">
+                            <label class="checkbox-option">
 
-                            <input
-                                type="checkbox"
-                                name="is_featured"
-                                value="1"
-                                {{ old(
+                                <input
+                                    type="checkbox"
+                                    name="is_featured"
+                                    value="1"
+                                    {{ old(
                                     'is_featured',
                                     $product?->is_featured
                                 )
                                     ? 'checked'
                                     : '' }}>
 
-                            <span>
-                                Display as featured product
-                            </span>
+                                <span>
+                                    Display as featured product
+                                </span>
 
-                        </label>
+                            </label>
 
-                    </div>
+                        </div>
 
 
-                    {{-- DESCRIPTION --}}
-                    <div class="form-group form-full">
+                        {{-- DESCRIPTION --}}
+                        <div class="form-group form-full">
 
-                        <label for="description">
-                            Description
-                        </label>
+                            <label for="description">
+                                Description
+                            </label>
 
-                        <textarea
-                            id="description"
-                            name="description"
-                            rows="6"
-                            placeholder="Product description...">{{ old(
+                            <textarea
+                                id="description"
+                                name="description"
+                                rows="6"
+                                placeholder="Product description...">{{ old(
                                 'description',
                                 $product?->description
                             ) }}</textarea>
 
-                    </div>
+                        </div>
 
 
-                    {{-- COLLECTIONS --}}
-                    <div class="form-group form-full">
+                        {{-- COLLECTIONS --}}
+                        <div class="form-group form-full">
 
-                        <label>
-                            Collections
-                        </label>
+                            <label>
+                                Collections
+                            </label>
 
-                        @php
+                            @php
 
                             $selectedCollections =
-                                old(
-                                    'collections',
-                                    $product
-                                        ? $product
-                                            ->collections
-                                            ->pluck('id')
-                                            ->all()
-                                        : []
-                                );
+                            old(
+                            'collections',
+                            $product
+                            ? $product
+                            ->collections
+                            ->pluck('id')
+                            ->all()
+                            : []
+                            );
 
-                        @endphp
+                            @endphp
 
 
-                        <div class="collection-options">
+                            <div class="collection-options">
 
-                            @forelse (
+                                @forelse (
                                 $collections
                                 as $collection
-                            )
+                                )
 
                                 <label class="collection-option">
 
@@ -533,49 +538,49 @@
 
                                 </label>
 
-                            @empty
+                                @empty
 
                                 <span class="table-muted">
                                     No active collections.
                                 </span>
 
-                            @endforelse
+                                @endforelse
+
+                            </div>
 
                         </div>
 
-                    </div>
+
+                        {{-- IMAGE --}}
+                        <div class="form-group form-full">
+
+                            <label for="image">
+                                Primary Product Image
+                            </label>
 
 
-                    {{-- IMAGE --}}
-                    <div class="form-group form-full">
-
-                        <label for="image">
-                            Primary Product Image
-                        </label>
-
-
-                        @if (
+                            @if (
                             $product
                             &&
                             $product
-                                ->images
-                                ->where(
-                                    'is_primary',
-                                    true
-                                )
-                                ->first()
-                        )
+                            ->images
+                            ->where(
+                            'is_primary',
+                            true
+                            )
+                            ->first()
+                            )
 
                             @php
 
-                                $currentImage =
-                                    $product
-                                        ->images
-                                        ->where(
-                                            'is_primary',
-                                            true
-                                        )
-                                        ->first();
+                            $currentImage =
+                            $product
+                            ->images
+                            ->where(
+                            'is_primary',
+                            true
+                            )
+                            ->first();
 
                             @endphp
 
@@ -602,62 +607,62 @@
 
                             </div>
 
-                        @endif
+                            @endif
 
 
-                        <input
-                            id="image"
-                            type="file"
-                            name="image"
-                            accept=".jpg,.jpeg,.png,.webp">
+                            <input
+                                id="image"
+                                type="file"
+                                name="image"
+                                accept=".jpg,.jpeg,.png,.webp">
 
 
-                        <small class="form-help">
+                            <small class="form-help">
 
-                            JPG, JPEG, PNG or WEBP.
-                            Maximum 2 MB.
+                                JPG, JPEG, PNG or WEBP.
+                                Maximum 2 MB.
 
-                        </small>
+                            </small>
+
+                        </div>
 
                     </div>
 
-                </div>
 
+                    <div class="product-form-footer">
 
-                <div class="product-form-footer">
-
-                    <a
-                        href="{{ route(
+                        <a
+                            href="{{ route(
                             'admin.products.index'
                         ) }}"
-                        class="form-cancel-button">
+                            class="form-cancel-button">
 
-                        CANCEL
+                            CANCEL
 
-                    </a>
+                        </a>
 
 
-                    <button
-                        type="submit"
-                        class="form-save-button">
+                        <button
+                            type="submit"
+                            class="form-save-button">
 
-                        <i class="bi bi-check-lg"></i>
+                            <i class="bi bi-check-lg"></i>
 
-                        {{ $product
+                            {{ $product
                             ? 'UPDATE PRODUCT'
                             : 'SAVE PRODUCT' }}
 
-                    </button>
+                        </button>
 
-                </div>
+                    </div>
 
-            </section>
+                </section>
 
-        </form>
+            </form>
 
-    </main>
+        </main>
 
-</div>
+    </div>
 
 </body>
 

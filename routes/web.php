@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
 use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CollectionController;
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Staff\StockController;
 use App\Http\Controllers\Staff\OrderController as StaffOrderController;
@@ -439,6 +440,40 @@ Route::middleware('auth')->group(function () {
                 '/categories/{category}',
                 [CategoryController::class, 'destroy']
             )->name('admin.categories.destroy');
+
+            // ========================
+            // COLLECTIONS
+            // ========================
+
+            Route::get(
+                '/collections',
+                [CollectionController::class, 'index']
+            )->name('admin.collections.index');
+
+            Route::get(
+                '/collections/create',
+                [CollectionController::class, 'create']
+            )->name('admin.collections.create');
+
+            Route::post(
+                '/collections',
+                [CollectionController::class, 'store']
+            )->name('admin.collections.store');
+
+            Route::get(
+                '/collections/{collection}/edit',
+                [CollectionController::class, 'edit']
+            )->name('admin.collections.edit');
+
+            Route::put(
+                '/collections/{collection}',
+                [CollectionController::class, 'update']
+            )->name('admin.collections.update');
+
+            Route::delete(
+                '/collections/{collection}',
+                [CollectionController::class, 'destroy']
+            )->name('admin.collections.destroy');
         });
 
 

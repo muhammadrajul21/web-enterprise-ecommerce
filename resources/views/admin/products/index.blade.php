@@ -29,75 +29,75 @@
 
 <body>
 
-<div class="admin-layout">
+    <div class="admin-layout">
 
-    {{-- =========================
+        {{-- =========================
         SIDEBAR
     ========================= --}}
-    <aside class="admin-sidebar">
+        <aside class="admin-sidebar">
 
-        <div class="sidebar-brand">
+            <div class="sidebar-brand">
 
-            <h2>
-                LIFESTYLE
-            </h2>
+                <h2>
+                    LIFESTYLE
+                </h2>
 
-            <span>
-                ADMIN PANEL
-            </span>
+                <span>
+                    ADMIN PANEL
+                </span>
 
-        </div>
-
-
-        <nav class="sidebar-menu">
-
-            <a href="{{ route('admin.dashboard') }}">
-
-                <i class="bi bi-grid"></i>
-
-                Dashboard
-
-            </a>
+            </div>
 
 
-            <a
-                href="{{ route('admin.products.index') }}"
-                class="active">
+            <nav class="sidebar-menu">
 
-                <i class="bi bi-box-seam"></i>
+                <a href="{{ route('admin.dashboard') }}">
 
-                Products
+                    <i class="bi bi-grid"></i>
 
-            </a>
+                    Dashboard
 
-
-            <a href="{{ route('admin.orders.index') }}">
-
-                <i class="bi bi-bag-check"></i>
-
-                Orders
-
-            </a>
+                </a>
 
 
-            <a href="{{ route('admin.payments.index') }}">
+                <a
+                    href="{{ route('admin.products.index') }}"
+                    class="active">
 
-                <i class="bi bi-credit-card"></i>
+                    <i class="bi bi-box-seam"></i>
 
-                Payments
+                    Products
 
-            </a>
-
-        </nav>
+                </a>
 
 
-        <div class="sidebar-footer">
+                <a href="{{ route('admin.orders.index') }}">
 
-            <div class="admin-user">
+                    <i class="bi bi-bag-check"></i>
 
-                <div class="admin-avatar">
+                    Orders
 
-                    {{ strtoupper(
+                </a>
+
+
+                <a href="{{ route('admin.payments.index') }}">
+
+                    <i class="bi bi-credit-card"></i>
+
+                    Payments
+
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-footer">
+
+                <div class="admin-user">
+
+                    <div class="admin-avatar">
+
+                        {{ strtoupper(
                         substr(
                             auth()->user()->name,
                             0,
@@ -105,86 +105,86 @@
                         )
                     ) }}
 
+                    </div>
+
+
+                    <div>
+
+                        <strong>
+                            {{ auth()->user()->name }}
+                        </strong>
+
+                        <span>
+                            Administrator
+                        </span>
+
+                    </div>
+
                 </div>
 
 
-                <div>
+                <form
+                    action="{{ route('logout') }}"
+                    method="POST">
 
-                    <strong>
-                        {{ auth()->user()->name }}
-                    </strong>
+                    @csrf
 
-                    <span>
-                        Administrator
-                    </span>
+                    <button
+                        type="submit"
+                        class="logout-button">
 
-                </div>
+                        <i class="bi bi-box-arrow-right"></i>
 
-            </div>
+                        Logout
 
+                    </button>
 
-            <form
-                action="{{ route('logout') }}"
-                method="POST">
-
-                @csrf
-
-                <button
-                    type="submit"
-                    class="logout-button">
-
-                    <i class="bi bi-box-arrow-right"></i>
-
-                    Logout
-
-                </button>
-
-            </form>
-
-        </div>
-
-    </aside>
-
-
-    {{-- =========================
-        MAIN CONTENT
-    ========================= --}}
-    <main class="admin-main">
-
-
-        {{-- HEADER --}}
-        <div class="admin-header">
-
-            <div>
-
-                <span class="page-label">
-                    ADMIN
-                </span>
-
-                <h1>
-                    Product Management
-                </h1>
-
-                <p>
-                    Manage products, variants, prices and product status.
-                </p>
+                </form>
 
             </div>
 
-
-            <div class="header-icon">
-
-                <i class="bi bi-box-seam"></i>
-
-            </div>
-
-        </div>
+        </aside>
 
 
         {{-- =========================
+        MAIN CONTENT
+    ========================= --}}
+        <main class="admin-main">
+
+
+            {{-- HEADER --}}
+            <div class="admin-header">
+
+                <div>
+
+                    <span class="page-label">
+                        ADMIN
+                    </span>
+
+                    <h1>
+                        Product Management
+                    </h1>
+
+                    <p>
+                        Manage products, variants, prices and product status.
+                    </p>
+
+                </div>
+
+
+                <div class="header-icon">
+
+                    <i class="bi bi-box-seam"></i>
+
+                </div>
+
+            </div>
+
+
+            {{-- =========================
             SUCCESS MESSAGE
         ========================= --}}
-        @if (session('success'))
+            @if (session('success'))
 
             <div class="product-alert">
 
@@ -194,84 +194,84 @@
 
             </div>
 
-        @endif
+            @endif
 
 
-        {{-- =========================
+            {{-- =========================
             FILTER
         ========================= --}}
-        <section class="filter-card">
+            <section class="filter-card">
 
-            <form
-                action="{{ route('admin.products.index') }}"
-                method="GET"
-                class="order-filter">
-
-
-                {{-- SEARCH --}}
-                <div class="search-box">
-
-                    <i class="bi bi-search"></i>
-
-                    <input
-                        type="text"
-                        name="search"
-                        value="{{ $search }}"
-                        placeholder="Search product, category or segment...">
-
-                </div>
+                <form
+                    action="{{ route('admin.products.index') }}"
+                    method="GET"
+                    class="order-filter">
 
 
-                {{-- STATUS --}}
-                <select name="status">
+                    {{-- SEARCH --}}
+                    <div class="search-box">
 
-                    <option value="">
-                        All Status
-                    </option>
+                        <i class="bi bi-search"></i>
 
-                    <option
-                        value="active"
-                        {{ $status === 'active'
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ $search }}"
+                            placeholder="Search product, category or segment...">
+
+                    </div>
+
+
+                    {{-- STATUS --}}
+                    <select name="status">
+
+                        <option value="">
+                            All Status
+                        </option>
+
+                        <option
+                            value="active"
+                            {{ $status === 'active'
                             ? 'selected'
                             : '' }}>
 
-                        Active
+                            Active
 
-                    </option>
+                        </option>
 
-                    <option
-                        value="draft"
-                        {{ $status === 'draft'
+                        <option
+                            value="draft"
+                            {{ $status === 'draft'
                             ? 'selected'
                             : '' }}>
 
-                        Draft
+                            Draft
 
-                    </option>
+                        </option>
 
-                    <option
-                        value="inactive"
-                        {{ $status === 'inactive'
+                        <option
+                            value="inactive"
+                            {{ $status === 'inactive'
                             ? 'selected'
                             : '' }}>
 
-                        Inactive
+                            Inactive
 
-                    </option>
+                        </option>
 
-                </select>
-
-
-                <button
-                    type="submit"
-                    class="filter-button">
-
-                    FILTER
-
-                </button>
+                    </select>
 
 
-                @if ($search || $status)
+                    <button
+                        type="submit"
+                        class="filter-button">
+
+                        FILTER
+
+                    </button>
+
+
+                    @if ($search || $status)
 
                     <a
                         href="{{ route('admin.products.index') }}"
@@ -281,129 +281,126 @@
 
                     </a>
 
-                @endif
+                    @endif
 
-            </form>
+                </form>
 
-        </section>
+            </section>
 
 
-        {{-- =========================
+            {{-- =========================
             PRODUCT TABLE
         ========================= --}}
-        <section class="order-card">
+            <section class="order-card">
 
 
-            <div class="order-card-header product-card-header">
+                <div class="order-card-header product-card-header">
 
-                <div>
+                    <div>
 
-                    <h2>
-                        Products
-                    </h2>
+                        <h2>
+                            Products
+                        </h2>
 
-                    <p>
-                        {{ $products->total() }}
-                        total products
-                    </p>
+                        <p>
+                            {{ $products->total() }}
+                            total products
+                        </p>
+
+                    </div>
+
+
+                    <a
+                        href="{{ route('admin.products.create') }}"
+                        class="add-product-button">
+
+                        <i class="bi bi-plus-lg"></i>
+
+                        ADD PRODUCT
+
+                    </a>
 
                 </div>
 
 
-                {{-- Belum aktif karena create product
-                     akan dibuat di tahap berikutnya --}}
-                <button
-                    type="button"
-                    class="add-product-button"
-                    disabled>
+                <div class="table-wrapper">
 
-                    <i class="bi bi-plus-lg"></i>
+                    <table class="order-table product-table">
 
-                    ADD PRODUCT
+                        <thead>
 
-                </button>
+                            <tr>
 
-            </div>
+                                <th>
+                                    PRODUCT
+                                </th>
 
+                                <th>
+                                    SEGMENT
+                                </th>
 
-            <div class="table-wrapper">
+                                <th>
+                                    CATEGORY
+                                </th>
 
-                <table class="order-table product-table">
+                                <th>
+                                    PRICE
+                                </th>
 
-                    <thead>
+                                <th>
+                                    VARIANTS
+                                </th>
 
-                    <tr>
+                                <th>
+                                    FEATURED
+                                </th>
 
-                        <th>
-                            PRODUCT
-                        </th>
+                                <th>
+                                    STATUS
+                                </th>
 
-                        <th>
-                            SEGMENT
-                        </th>
+                                <th>
+                                    ACTION
+                                </th>
 
-                        <th>
-                            CATEGORY
-                        </th>
+                            </tr>
 
-                        <th>
-                            PRICE
-                        </th>
-
-                        <th>
-                            VARIANTS
-                        </th>
-
-                        <th>
-                            FEATURED
-                        </th>
-
-                        <th>
-                            STATUS
-                        </th>
-
-                        <th>
-                            ACTION
-                        </th>
-
-                    </tr>
-
-                    </thead>
+                        </thead>
 
 
-                    <tbody>
+                        <tbody>
 
-                    @forelse ($products as $product)
+                            @forelse ($products as $product)
 
-                        @php
+                            @php
 
                             $primaryImage =
-                                $product
-                                    ->images
-                                    ->first();
+                            $product
+                            ->images
+                            ->first();
 
                             $imageExists =
-                                $primaryImage
-                                && file_exists(
-                                    public_path(
-                                        $primaryImage->image_path
-                                    )
-                                );
+                            $primaryImage
+                            && file_exists(
+                            public_path(
+                            $primaryImage->image_path
+                            )
+                            );
 
-                        @endphp
-
-
-                        <tr>
+                            @endphp
 
 
-                            {{-- PRODUCT --}}
-                            <td>
+                            <tr>
 
-                                <div class="product-info">
 
-                                    <div class="product-thumbnail">
+                                {{-- PRODUCT --}}
+                                <td>
 
-                                        @if ($imageExists)
+                                    <div class="product-info">
+
+                                        <div class="product-thumbnail">
+
+                                            @if ($imageExists)
 
                                             <img
                                                 src="{{ asset(
@@ -411,52 +408,52 @@
                                                 ) }}"
                                                 alt="{{ $product->name }}">
 
-                                        @else
+                                            @else
 
                                             <i class="bi bi-image"></i>
 
-                                        @endif
+                                            @endif
+
+                                        </div>
+
+
+                                        <div class="product-name">
+
+                                            <strong>
+                                                {{ $product->name }}
+                                            </strong>
+
+                                            <span>
+                                                {{ $product->slug }}
+                                            </span>
+
+                                        </div>
 
                                     </div>
 
-
-                                    <div class="product-name">
-
-                                        <strong>
-                                            {{ $product->name }}
-                                        </strong>
-
-                                        <span>
-                                            {{ $product->slug }}
-                                        </span>
-
-                                    </div>
-
-                                </div>
-
-                            </td>
+                                </td>
 
 
-                            {{-- SEGMENT --}}
-                            <td>
+                                {{-- SEGMENT --}}
+                                <td>
 
-                                {{ $product->segment?->name ?? '-' }}
+                                    {{ $product->segment?->name ?? '-' }}
 
-                            </td>
-
-
-                            {{-- CATEGORY --}}
-                            <td>
-
-                                {{ $product->category?->name ?? '-' }}
-
-                            </td>
+                                </td>
 
 
-                            {{-- PRICE --}}
-                            <td>
+                                {{-- CATEGORY --}}
+                                <td>
 
-                                @if ($product->variants_min_price !== null)
+                                    {{ $product->category?->name ?? '-' }}
+
+                                </td>
+
+
+                                {{-- PRICE --}}
+                                <td>
+
+                                    @if ($product->variants_min_price !== null)
 
                                     <strong>
 
@@ -472,55 +469,55 @@
 
 
                                     @if (
-                                        $product->variants_max_price !== null
-                                        &&
-                                        $product->variants_min_price
-                                        !=
-                                        $product->variants_max_price
+                                    $product->variants_max_price !== null
+                                    &&
+                                    $product->variants_min_price
+                                    !=
+                                    $product->variants_max_price
                                     )
 
-                                        <span class="price-range">
+                                    <span class="price-range">
 
-                                            -
-                                            Rp
-                                            {{ number_format(
+                                        -
+                                        Rp
+                                        {{ number_format(
                                                 $product->variants_max_price,
                                                 0,
                                                 ',',
                                                 '.'
                                             ) }}
 
-                                        </span>
+                                    </span>
 
                                     @endif
 
-                                @else
+                                    @else
 
                                     <span class="table-muted">
                                         No price
                                     </span>
 
-                                @endif
+                                    @endif
 
-                            </td>
+                                </td>
 
 
-                            {{-- VARIANTS --}}
-                            <td>
+                                {{-- VARIANTS --}}
+                                <td>
 
-                                {{ $product->variants_count }}
+                                    {{ $product->variants_count }}
 
-                                {{ $product->variants_count == 1
+                                    {{ $product->variants_count == 1
                                     ? 'Variant'
                                     : 'Variants' }}
 
-                            </td>
+                                </td>
 
 
-                            {{-- FEATURED --}}
-                            <td>
+                                {{-- FEATURED --}}
+                                <td>
 
-                                @if ($product->is_featured)
+                                    @if ($product->is_featured)
 
                                     <span class="featured-product">
 
@@ -530,96 +527,99 @@
 
                                     </span>
 
-                                @else
+                                    @else
 
                                     <span class="table-muted">
                                         No
                                     </span>
 
-                                @endif
+                                    @endif
 
-                            </td>
+                                </td>
 
 
-                            {{-- STATUS --}}
-                            <td>
+                                {{-- STATUS --}}
+                                <td>
 
-                                <span
-                                    class="product-status
+                                    <span
+                                        class="product-status
                                     product-status-{{ $product->status }}">
 
-                                    {{ strtoupper(
+                                        {{ strtoupper(
                                         $product->status
                                     ) }}
 
-                                </span>
+                                    </span>
 
-                            </td>
-
-
-                            {{-- ACTION --}}
-                            <td>
-
-                                <div class="product-actions">
-
-                                    <button
-                                        type="button"
-                                        title="Product detail"
-                                        disabled>
-
-                                        <i class="bi bi-eye"></i>
-
-                                    </button>
+                                </td>
 
 
-                                    <button
-                                        type="button"
-                                        title="Edit product"
-                                        disabled>
+                                {{-- ACTION --}}
+                                <td>
 
-                                        <i class="bi bi-pencil"></i>
+                                    <div class="product-actions">
 
-                                    </button>
+                                        <button
+                                            type="button"
+                                            title="Product detail"
+                                            disabled>
 
-                                </div>
+                                            <i class="bi bi-eye"></i>
 
-                            </td>
-
-                        </tr>
-
-
-                    @empty
-
-                        <tr>
-
-                            <td
-                                colspan="8"
-                                class="product-empty">
-
-                                <i class="bi bi-box"></i>
-
-                                <strong>
-                                    No products found
-                                </strong>
-
-                                <span>
-                                    Product data will appear here.
-                                </span>
-
-                            </td>
-
-                        </tr>
-
-                    @endforelse
-
-                    </tbody>
-
-                </table>
-
-            </div>
+                                        </button>
 
 
-            @if ($products->hasPages())
+                                        <a
+                                            href="{{ route(
+                                                'admin.products.edit',
+                                                $product
+                                            ) }}"
+                                            class="product-action-link"
+                                            title="Edit product">
+
+                                            <i class="bi bi-pencil"></i>
+
+                                        </a>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+
+                            @empty
+
+                            <tr>
+
+                                <td
+                                    colspan="8"
+                                    class="product-empty">
+
+                                    <i class="bi bi-box"></i>
+
+                                    <strong>
+                                        No products found
+                                    </strong>
+
+                                    <span>
+                                        Product data will appear here.
+                                    </span>
+
+                                </td>
+
+                            </tr>
+
+                            @endforelse
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+
+                @if ($products->hasPages())
 
                 <div class="product-pagination">
 
@@ -627,13 +627,13 @@
 
                 </div>
 
-            @endif
+                @endif
 
-        </section>
+            </section>
 
-    </main>
+        </main>
 
-</div>
+    </div>
 
 </body>
 

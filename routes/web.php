@@ -9,6 +9,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProductVariantController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\CollectionController;
+use App\Http\Controllers\Admin\VoucherController;
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Staff\StockController;
 use App\Http\Controllers\Staff\OrderController as StaffOrderController;
@@ -19,13 +24,13 @@ use App\Http\Controllers\Staff\OrderController as StaffOrderController;
 
 Route::get('/', function () {
 
-    // Jika belum login, arahkan ke login
     if (!Auth::check()) {
-        return redirect()->route('login');
+        return redirect()->route('home.preview');
     }
 
-    // Jika sudah login, arahkan sesuai role
-    return match (Auth::user()->role?->name) {
+    $user = Auth::user();
+
+    return match ($user->role?->name) {
 
         'admin' =>
         redirect()->route('admin.dashboard'),
@@ -37,12 +42,12 @@ Route::get('/', function () {
         redirect()->route('owner.dashboard'),
 
         'customer' =>
-        redirect()->route('customer.account'),
+        redirect()->route('home.preview'),
 
         default =>
-        abort(403, 'Role akun tidak dikenali.'),
+        redirect()->route('home.preview'),
     };
-})->name('home');
+});
 
 
 // ========================
@@ -323,6 +328,34 @@ Route::middleware('auth')->group(function () {
             })->name('admin.dashboard');
 
             Route::get(
+                '/products',
+                [ProductController::class, 'index']
+            )->name('admin.products.index');
+
+            Route::get(
+                '/products/create',
+                [ProductController::class, 'create']
+            )->name('admin.products.create');
+
+
+            Route::post(
+                '/products',
+                [ProductController::class, 'store']
+            )->name('admin.products.store');
+
+
+            Route::get(
+                '/products/{product}/edit',
+                [ProductController::class, 'edit']
+            )->name('admin.products.edit');
+
+
+            Route::put(
+                '/products/{product}',
+                [ProductController::class, 'update']
+            )->name('admin.products.update');
+
+            Route::get(
                 '/orders',
                 [OrderController::class, 'index']
             )->name('admin.orders.index');
@@ -349,6 +382,130 @@ Route::middleware('auth')->group(function () {
                 '/payments/{payment}/reject',
                 [PaymentController::class, 'reject']
             )->name('admin.payments.reject');
+
+            Route::get(
+                '/variants',
+                [ProductVariantController::class, 'index']
+            )->name('admin.variants.index');
+
+            Route::get(
+                '/variants/create',
+                [ProductVariantController::class, 'create']
+            )->name('admin.variants.create');
+
+            Route::post(
+                '/variants',
+                [ProductVariantController::class, 'store']
+            )->name('admin.variants.store');
+
+            Route::get(
+                '/variants/{variant}/edit',
+                [ProductVariantController::class, 'edit']
+            )->name('admin.variants.edit');
+
+            Route::put(
+                '/variants/{variant}',
+                [ProductVariantController::class, 'update']
+            )->name('admin.variants.update');
+
+            // ========================
+            // CATEGORIES
+            // ========================
+
+            Route::get(
+                '/categories',
+                [CategoryController::class, 'index']
+            )->name('admin.categories.index');
+
+            Route::get(
+                '/categories/create',
+                [CategoryController::class, 'create']
+            )->name('admin.categories.create');
+
+            Route::post(
+                '/categories',
+                [CategoryController::class, 'store']
+            )->name('admin.categories.store');
+
+            Route::get(
+                '/categories/{category}/edit',
+                [CategoryController::class, 'edit']
+            )->name('admin.categories.edit');
+
+            Route::put(
+                '/categories/{category}',
+                [CategoryController::class, 'update']
+            )->name('admin.categories.update');
+
+            Route::delete(
+                '/categories/{category}',
+                [CategoryController::class, 'destroy']
+            )->name('admin.categories.destroy');
+
+            // ========================
+            // COLLECTIONS
+            // ========================
+
+            Route::get(
+                '/collections',
+                [CollectionController::class, 'index']
+            )->name('admin.collections.index');
+
+            Route::get(
+                '/collections/create',
+                [CollectionController::class, 'create']
+            )->name('admin.collections.create');
+
+            Route::post(
+                '/collections',
+                [CollectionController::class, 'store']
+            )->name('admin.collections.store');
+
+            Route::get(
+                '/collections/{collection}/edit',
+                [CollectionController::class, 'edit']
+            )->name('admin.collections.edit');
+
+            Route::put(
+                '/collections/{collection}',
+                [CollectionController::class, 'update']
+            )->name('admin.collections.update');
+
+            Route::delete(
+                '/collections/{collection}',
+                [CollectionController::class, 'destroy']
+            )->name('admin.collections.destroy');
+
+
+            Route::get(
+                '/vouchers',
+                [VoucherController::class, 'index']
+            )->name('admin.vouchers.index');
+
+            Route::get(
+                '/vouchers/create',
+                [VoucherController::class, 'create']
+            )->name('admin.vouchers.create');
+
+            Route::post(
+                '/vouchers',
+                [VoucherController::class, 'store']
+            )->name('admin.vouchers.store');
+
+            Route::get(
+                '/vouchers/{voucher}/edit',
+                [VoucherController::class, 'edit']
+            )->name('admin.vouchers.edit');
+
+            Route::put(
+                '/vouchers/{voucher}',
+                [VoucherController::class, 'update']
+            )->name('admin.vouchers.update');
+
+            Route::delete(
+                '/vouchers/{voucher}',
+                [VoucherController::class, 'destroy']
+            )->name('admin.vouchers.destroy');
         });
 
 

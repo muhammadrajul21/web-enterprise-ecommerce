@@ -66,6 +66,12 @@
 
                 </a>
 
+
+                <a href="{{ route('admin.categories.index') }}">
+                    <i class="bi bi-tags"></i>
+                    Categories
+                </a>
+
                 <a href="{{ route('admin.orders.index') }}">
                     <i class="bi bi-bag-check"></i>
                     Orders

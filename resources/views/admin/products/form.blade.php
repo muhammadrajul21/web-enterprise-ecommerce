@@ -68,6 +68,19 @@
 
             </a>
 
+            <a href="{{ route('admin.variants.index') }}">
+
+                    <i class="bi bi-boxes"></i>
+
+                    Variants
+
+                </a>
+
+                <a href="{{ route('admin.categories.index') }}">
+                    <i class="bi bi-tags"></i>
+                    Categories
+                </a>
+
 
             <a href="{{ route('admin.orders.index') }}">
 

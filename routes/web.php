@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\ProductVariantController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
 use App\Http\Controllers\Staff\StockController;
 use App\Http\Controllers\Staff\OrderController as StaffOrderController;
@@ -404,6 +405,40 @@ Route::middleware('auth')->group(function () {
                 '/variants/{variant}',
                 [ProductVariantController::class, 'update']
             )->name('admin.variants.update');
+
+            // ========================
+            // CATEGORIES
+            // ========================
+
+            Route::get(
+                '/categories',
+                [CategoryController::class, 'index']
+            )->name('admin.categories.index');
+
+            Route::get(
+                '/categories/create',
+                [CategoryController::class, 'create']
+            )->name('admin.categories.create');
+
+            Route::post(
+                '/categories',
+                [CategoryController::class, 'store']
+            )->name('admin.categories.store');
+
+            Route::get(
+                '/categories/{category}/edit',
+                [CategoryController::class, 'edit']
+            )->name('admin.categories.edit');
+
+            Route::put(
+                '/categories/{category}',
+                [CategoryController::class, 'update']
+            )->name('admin.categories.update');
+
+            Route::delete(
+                '/categories/{category}',
+                [CategoryController::class, 'destroy']
+            )->name('admin.categories.destroy');
         });
 
 

@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Models\Review;
 
 use App\Http\Controllers\Customer\ReviewController;
@@ -2097,51 +2098,21 @@ Route::delete(
 
 
 
-
         /*
-
         |--------------------------------------------------------------------------
-
         | OWNER
-
         |--------------------------------------------------------------------------
-
-        \*/
-
-
+        */
 
         Route::prefix('owner')
-
             ->middleware('role:owner')
-
             ->group(function () {
 
-
-
                 Route::get(
-
                     '/dashboard',
-
-                    function () {
-
-
-
-                        return view(
-
-                            'owner.dashboard'
-
-                        );
-
-
-
-                    }
-
+                    [OwnerDashboardController::class, 'index']
                 )->name('owner.dashboard');
 
-
-
             });
-
-
 
     });

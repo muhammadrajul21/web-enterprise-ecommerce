@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\Owner\OperationalSummaryController as OwnerOperationalSummaryController;
 use App\Http\Controllers\Owner\ReportController as OwnerReportController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Models\Review;
@@ -2125,6 +2126,17 @@ Route::delete(
                     '/reports',
                     [OwnerReportController::class, 'index']
                 )->name('owner.reports.index');
+
+                /*
+|--------------------------------------------------------------------------
+| OPERATIONAL SUMMARY
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/operations',
+    [OwnerOperationalSummaryController::class, 'index']
+)->name('owner.operations.index');
 
             });
 

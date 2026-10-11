@@ -1,0 +1,366 @@
+/* =========================================================
+   OPERATIONAL SUMMARY
+========================================================= */
+
+.warning-icon {
+    background: #8a6a13;
+}
+
+.danger-icon {
+    background: #963b3b;
+}
+
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.operations-table-wrapper {
+    overflow-x: auto;
+}
+
+.operations-table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+.operations-table th {
+    padding: 14px 20px;
+
+    border-bottom: 1px solid #dddddd;
+
+    background: #fafafa;
+
+    text-align: left;
+
+    white-space: nowrap;
+
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+
+    color: #777777;
+}
+
+.operations-table td {
+    padding: 17px 20px;
+
+    border-bottom: 1px solid #ededed;
+
+    vertical-align: middle;
+
+    font-size: 11px;
+}
+
+.operations-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.operations-table tbody tr:hover {
+    background: #fafafa;
+}
+
+.table-subtext {
+    display: block;
+
+    margin-top: 5px;
+
+    font-size: 9px;
+    color: #999999;
+}
+
+
+/* =========================================================
+   STOCK TYPE
+========================================================= */
+
+.stock-type {
+    display: inline-block;
+
+    min-width: 46px;
+
+    padding: 5px 8px;
+
+    border: 1px solid #d5d5d5;
+
+    text-align: center;
+
+    font-size: 8px;
+    font-weight: 700;
+}
+
+.stock-type-in {
+    border-color: #aed8b7;
+
+    background: #edf8ef;
+    color: #397a48;
+}
+
+.stock-type-out {
+    border-color: #e4b4b4;
+
+    background: #fff1f1;
+    color: #9c3939;
+}
+
+.stock-change {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   OPERATIONS GRID
+========================================================= */
+
+.operations-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 0.85fr)
+        minmax(0, 1.15fr);
+
+    gap: 24px;
+}
+
+
+/* =========================================================
+   REVIEW SUMMARY
+========================================================= */
+
+.review-overview {
+    display: grid;
+
+    grid-template-columns:
+        160px
+        minmax(0, 1fr);
+
+    gap: 30px;
+
+    padding: 28px 24px;
+}
+
+.rating-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    padding-right: 24px;
+
+    border-right: 1px solid #e5e5e5;
+}
+
+.rating-score > strong {
+    font-size: 50px;
+    line-height: 1;
+}
+
+.rating-score > span {
+    margin: 5px 0 10px;
+
+    font-size: 12px;
+    color: #777777;
+}
+
+.rating-stars {
+    display: flex;
+    gap: 3px;
+
+    margin-bottom: 8px;
+
+    font-size: 13px;
+}
+
+.rating-score small {
+    font-size: 10px;
+    color: #888888;
+}
+
+
+/* DISTRIBUTION */
+
+.rating-distribution {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    gap: 13px;
+}
+
+.rating-row {
+    display: grid;
+
+    grid-template-columns:
+        38px
+        minmax(0, 1fr)
+        25px;
+
+    align-items: center;
+    gap: 10px;
+}
+
+.rating-row > span {
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.rating-row > strong {
+    text-align: right;
+
+    font-size: 10px;
+}
+
+.rating-bar {
+    height: 6px;
+
+    overflow: hidden;
+
+    background: #eeeeee;
+}
+
+.rating-bar-value {
+    height: 100%;
+
+    background: #111111;
+}
+
+
+/* =========================================================
+   RECENT REVIEWS
+========================================================= */
+
+.recent-review-list {
+    padding: 0 24px;
+}
+
+.recent-review-item {
+    padding: 20px 0;
+
+    border-bottom: 1px solid #ededed;
+}
+
+.recent-review-item:last-child {
+    border-bottom: 0;
+}
+
+.review-item-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+
+    margin-bottom: 12px;
+}
+
+.review-item-header strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: 12px;
+}
+
+.review-item-header span {
+    font-size: 10px;
+
+    color: #777777;
+}
+
+.review-item-rating {
+    white-space: nowrap;
+
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.recent-review-item p {
+    margin: 0 0 10px;
+
+    font-size: 11px;
+    line-height: 1.7;
+
+    color: #555555;
+}
+
+.recent-review-item small {
+    font-size: 9px;
+
+    color: #999999;
+}
+
+.review-no-comment {
+    font-style: italic;
+
+    color: #999999 !important;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.operations-empty,
+.review-empty {
+    padding: 50px 20px !important;
+
+    text-align: center;
+
+    color: #777777;
+}
+
+.operations-empty i,
+.review-empty i {
+    display: block;
+
+    margin-bottom: 10px;
+
+    font-size: 26px;
+}
+
+.operations-empty strong,
+.review-empty strong {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #111111;
+}
+
+.operations-empty span,
+.review-empty span {
+    display: block;
+
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .operations-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+@media (max-width: 768px) {
+
+    .review-overview {
+        grid-template-columns: 1fr;
+    }
+
+    .rating-score {
+        padding: 0 0 25px;
+
+        border-right: 0;
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+}

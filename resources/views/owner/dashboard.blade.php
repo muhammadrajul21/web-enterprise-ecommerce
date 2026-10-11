@@ -45,19 +45,30 @@
             </div>
 
 
-          <nav class="sidebar-menu">
+   <nav class="sidebar-menu">
 
     <a
         href="{{ route('owner.dashboard') }}"
-        class="active"
+        class="{{ request()->routeIs('owner.dashboard') ? 'active' : '' }}"
     >
         <i class="bi bi-grid"></i>
         Dashboard
     </a>
 
-    <a href="{{ route('owner.reports.index') }}">
+    <a
+        href="{{ route('owner.reports.index') }}"
+        class="{{ request()->routeIs('owner.reports.*') ? 'active' : '' }}"
+    >
         <i class="bi bi-file-earmark-bar-graph"></i>
         Reports
+    </a>
+
+    <a
+        href="{{ route('owner.operations.index') }}"
+        class="{{ request()->routeIs('owner.operations.*') ? 'active' : '' }}"
+    >
+        <i class="bi bi-activity"></i>
+        Operations
     </a>
 
 </nav>

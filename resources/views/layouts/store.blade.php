@@ -12,6 +12,7 @@
     'payment.show'    => 'payment',
     'orders.index'    => 'orders',
     'orders.show'     => 'order-detail',
+    'customer.account' => 'account',
 ];
 
     $pageCss = $pageStyles[request()->route()?->getName()] ?? null;

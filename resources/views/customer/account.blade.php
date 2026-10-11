@@ -130,12 +130,13 @@
                     </a>
 
 
-                    <span class="account-menu-disabled">
+                <a href="{{ route('customer.addresses.index') }}">
 
                         <i class="bi bi-geo-alt"></i>
+
                         Addresses
 
-                    </span>
+                </a>
 
                 </nav>
 

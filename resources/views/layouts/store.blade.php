@@ -13,6 +13,7 @@
     'orders.index'    => 'orders',
     'orders.show'     => 'order-detail',
     'customer.account' => 'account',
+    'customer.addresses.index' => 'addresses',
 ];
 
     $pageCss = $pageStyles[request()->route()?->getName()] ?? null;

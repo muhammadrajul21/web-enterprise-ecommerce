@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\Customer\AddressController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
@@ -556,6 +556,41 @@ Route::middleware('auth')
                     '/account',
                     [ProfileController::class, 'update']
                 )->name('customer.account.update');
+
+/*
+|--------------------------------------------------------------------------
+| ADDRESS MANAGEMENT
+|--------------------------------------------------------------------------
+*/
+
+Route::get(
+    '/account/addresses',
+    [AddressController::class, 'index']
+)->name('customer.addresses.index');
+
+
+Route::post(
+    '/account/addresses',
+    [AddressController::class, 'store']
+)->name('customer.addresses.store');
+
+
+Route::put(
+    '/account/addresses/{address}',
+    [AddressController::class, 'update']
+)->name('customer.addresses.update');
+
+
+Route::patch(
+    '/account/addresses/{address}/default',
+    [AddressController::class, 'setDefault']
+)->name('customer.addresses.default');
+
+
+Route::delete(
+    '/account/addresses/{address}',
+    [AddressController::class, 'destroy']
+)->name('customer.addresses.destroy');
 
 
                 /*

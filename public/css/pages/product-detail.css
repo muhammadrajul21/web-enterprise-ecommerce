@@ -516,3 +516,135 @@
             repeat(3, 1fr);
     }
 }
+
+.color-option.active,
+.size-button.active {
+    background: #111;
+    color: #fff;
+    border-color: #111;
+}
+
+
+.product-add-cart-form {
+    flex: 1;
+}
+
+
+.product-add-cart-form .add-cart-button {
+    width: 100%;
+}
+
+
+.add-cart-button:disabled {
+    cursor: not-allowed;
+    opacity: .45;
+}
+
+
+.variant-message {
+    margin-top: 10px;
+
+    color: #777;
+
+    font-size: 10px;
+}
+
+
+.product-cart-message {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 15px;
+
+    padding: 12px 14px;
+
+    font-size: 10px;
+}
+
+
+.product-cart-message.success {
+    background: #e8f5ec;
+
+    color: #207a3d;
+}
+
+
+.product-cart-message.error {
+    background: #f8e8e8;
+
+    color: #a02a2a;
+}
+/* =========================================
+   CART INTEGRATION
+========================================= */
+
+.color-option.active,
+.size-option.active {
+    background: #111;
+    color: #fff;
+    border-color: #111;
+}
+
+
+.product-add-cart-form {
+    flex: 1;
+}
+
+
+.product-add-cart-form .add-cart-button {
+    width: 100%;
+}
+
+
+.add-cart-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+
+.variant-message {
+    margin-top: 10px;
+
+    color: #777;
+
+    font-size: 10px;
+}
+
+
+.product-cart-message {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 15px;
+
+    padding: 12px 14px;
+
+    font-size: 10px;
+}
+
+
+.product-cart-message.success {
+    background: #e8f5ec;
+
+    color: #207a3d;
+}
+
+
+.product-cart-message.error {
+    background: #f8e8e8;
+
+    color: #a02a2a;
+}
+
+
+.no-variant-message {
+    color: #777;
+
+    font-size: 11px;
+}

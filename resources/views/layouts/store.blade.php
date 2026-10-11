@@ -1,12 +1,14 @@
 @php
     // CSS khusus halaman dimuat otomatis berdasarkan nama route,
     // jadi view lama tidak perlu diubah.
-    $pageStyles = [
-        'home.preview'    => 'home',
-        'catalog.preview' => 'catalog',
-        'search.preview'  => 'search',
-        'product.detail'  => 'product-detail',
-    ];
+   $pageStyles = [
+    'home.preview'    => 'home',
+    'catalog.preview' => 'catalog',
+    'search.preview'  => 'search',
+    'product.detail'  => 'product-detail',
+
+    'cart.index'      => 'cart',
+];
 
     $pageCss = $pageStyles[request()->route()?->getName()] ?? null;
 @endphp

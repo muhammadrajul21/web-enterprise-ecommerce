@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\AuthController;
 use App\Models\Category;
 use App\Models\Product;
@@ -303,16 +303,42 @@ Route::middleware('auth')->group(function () {
         ->name('logout');
 
 
+ // ========================
+// CUSTOMER
+// ========================
+
+Route::middleware('role:customer')->group(function () {
+
+    Route::get('/account', function () {
+        return view('customer.account');
+    })->name('customer.account');
+
+
     // ========================
-    // CUSTOMER
+    // CART
     // ========================
 
-    Route::middleware('role:customer')->group(function () {
+    Route::get(
+        '/cart',
+        [CartController::class, 'index']
+    )->name('cart.index');
 
-        Route::get('/account', function () {
-            return view('customer.account');
-        })->name('customer.account');
-    });
+    Route::post(
+        '/cart',
+        [CartController::class, 'store']
+    )->name('cart.store');
+
+    Route::put(
+        '/cart/{cartItem}',
+        [CartController::class, 'update']
+    )->name('cart.update');
+
+    Route::delete(
+        '/cart/{cartItem}',
+        [CartController::class, 'destroy']
+    )->name('cart.destroy');
+
+});
 
 
     // ========================

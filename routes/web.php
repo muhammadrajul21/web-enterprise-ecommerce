@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Owner\OperationalSummaryController as OwnerOperationalSummaryController;
 use App\Http\Controllers\Owner\ReportController as OwnerReportController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
@@ -1400,550 +1401,251 @@ Route::delete(
 
 
 
+        /*
+|--------------------------------------------------------------------------
+| ADMIN
+|--------------------------------------------------------------------------
+*/
+
+Route::prefix('admin')
+    ->middleware('role:admin')
+    ->group(function () {
 
         /*
-
         |--------------------------------------------------------------------------
-
-        | ADMIN
-
+        | DASHBOARD
         |--------------------------------------------------------------------------
-
-        \*/
-
-
-
-        Route::prefix('admin')
-
-            ->middleware('role:admin')
-
-            ->group(function () {
-
-
-
-
-
-                /*
-
-                |--------------------------------------------------------------------------
-
-                | DASHBOARD
-
-                |--------------------------------------------------------------------------
-
-                \*/
-
-
-
-                Route::get(
-
-                    '/dashboard',
-
-                    function () {
-
-
-
-                        return view(
-
-                            'admin.dashboard'
-
-                        );
-
-
-
-                    }
-
-                )->name('admin.dashboard');
-
-
-
-
-
-                /*
-
-                |--------------------------------------------------------------------------
-
-                | PRODUCTS
-
-                |--------------------------------------------------------------------------
-
-                \*/
-
-
-
-                Route::get(
-
-                    '/products',
-
-                    [ProductController::class, 'index']
-
-                )->name('admin.products.index');
-
-
-
-
-
-                Route::get(
-
-                    '/products/create',
-
-                    [ProductController::class, 'create']
-
-                )->name('admin.products.create');
-
-
-
-
-
-                Route::post(
-
-                    '/products',
-
-                    [ProductController::class, 'store']
-
-                )->name('admin.products.store');
-
-
-
-
-
-                Route::get(
-
-                    '/products/{product}/edit',
-
-                    [ProductController::class, 'edit']
-
-                )->name('admin.products.edit');
-
-
-
-
-
-                Route::put(
-
-                    '/products/{product}',
-
-                    [ProductController::class, 'update']
-
-                )->name('admin.products.update');
-
-
-
-
-
-                /*
-
-                |--------------------------------------------------------------------------
-
-                | ORDERS
-
-                |--------------------------------------------------------------------------
-
-                \*/
-
-
-
-                Route::get(
-
-                    '/orders',
-
-                    [OrderController::class, 'index']
-
-                )->name('admin.orders.index');
-
-
-
-
-
-                Route::get(
-
-                    '/orders/{order}',
-
-                    [OrderController::class, 'show']
-
-                )->name('admin.orders.show');
-
-
-
-
-
-                /*
-
-                |--------------------------------------------------------------------------
-
-                | PAYMENTS
-
-                |--------------------------------------------------------------------------
-
-                \*/
-
-
-
-                Route::get(
-
-                    '/payments',
-
-                    [PaymentController::class, 'index']
-
-                )->name('admin.payments.index');
-
-
-
-
-
-                Route::post(
-
-                    '/payments/{payment}/verify',
-
-                    [PaymentController::class, 'verify']
-
-                )->name('admin.payments.verify');
-
-
-
-
-
-                Route::post(
-
-                    '/payments/{payment}/reject',
-
-                    [PaymentController::class, 'reject']
-
-                )->name('admin.payments.reject');
-
-
-
-
-
-                /*
-
-                |--------------------------------------------------------------------------
-
-                | VARIANTS
-
-                |--------------------------------------------------------------------------
-
-                \*/
-
-
-
-                Route::get(
-
-                    '/variants',
-
-                    [ProductVariantController::class, 'index']
-
-                )->name('admin.variants.index');
-
-
-
-
-
-                Route::get(
-
-                    '/variants/create',
-
-                    [ProductVariantController::class, 'create']
-
-                )->name('admin.variants.create');
-
-
-
-
-
-                Route::post(
-
-                    '/variants',
-
-                    [ProductVariantController::class, 'store']
-
-                )->name('admin.variants.store');
-
-
-
-
-
-                Route::get(
-
-                    '/variants/{variant}/edit',
-
-                    [ProductVariantController::class, 'edit']
-
-                )->name('admin.variants.edit');
-
-
-
-
-
-                Route::put(
-
-                    '/variants/{variant}',
-
-                    [ProductVariantController::class, 'update']
-
-                )->name('admin.variants.update');
-
-
-
-
-
-                /*
-
-                |--------------------------------------------------------------------------
-
-                | CATEGORIES
-
-                |--------------------------------------------------------------------------
-
-                \*/
-
-
-
-                Route::get(
-
-                    '/categories',
-
-                    [CategoryController::class, 'index']
-
-                )->name('admin.categories.index');
-
-
-
-
-
-                Route::get(
-
-                    '/categories/create',
-
-                    [CategoryController::class, 'create']
-
-                )->name('admin.categories.create');
-
-
-
-
-
-                Route::post(
-
-                    '/categories',
-
-                    [CategoryController::class, 'store']
-
-                )->name('admin.categories.store');
-
-
-
-
-
-                Route::get(
-
-                    '/categories/{category}/edit',
-
-                    [CategoryController::class, 'edit']
-
-                )->name('admin.categories.edit');
-
-
-
-
-
-                Route::put(
-
-                    '/categories/{category}',
-
-                    [CategoryController::class, 'update']
-
-                )->name('admin.categories.update');
-
-
-
-
-
-                Route::delete(
-
-                    '/categories/{category}',
-
-                    [CategoryController::class, 'destroy']
-
-                )->name('admin.categories.destroy');
-
-
-
-
-
-                /*
-
-                |--------------------------------------------------------------------------
-
-                | COLLECTIONS
-
-                |--------------------------------------------------------------------------
-
-                \*/
-
-
-
-                Route::get(
-
-                    '/collections',
-
-                    [CollectionController::class, 'index']
-
-                )->name('admin.collections.index');
-
-
-
-
-
-                Route::get(
-
-                    '/collections/create',
-
-                    [CollectionController::class, 'create']
-
-                )->name('admin.collections.create');
-
-
-
-
-
-                Route::post(
-
-                    '/collections',
-
-                    [CollectionController::class, 'store']
-
-                )->name('admin.collections.store');
-
-
-
-
-
-                Route::get(
-
-                    '/collections/{collection}/edit',
-
-                    [CollectionController::class, 'edit']
-
-                )->name('admin.collections.edit');
-
-
-
-
-
-                Route::put(
-
-                    '/collections/{collection}',
-
-                    [CollectionController::class, 'update']
-
-                )->name('admin.collections.update');
-
-
-
-
-
-                Route::delete(
-
-                    '/collections/{collection}',
-
-                    [CollectionController::class, 'destroy']
-
-                )->name('admin.collections.destroy');
-
-
-
-
-
-                /*
-
-                |--------------------------------------------------------------------------
-
-                | VOUCHERS
-
-                |--------------------------------------------------------------------------
-
-                \*/
-
-
-
-                Route::get(
-
-                    '/vouchers',
-
-                    [VoucherController::class, 'index']
-
-                )->name('admin.vouchers.index');
-
-
-
-
-
-                Route::get(
-
-                    '/vouchers/create',
-
-                    [VoucherController::class, 'create']
-
-                )->name('admin.vouchers.create');
-
-
-
-
-
-                Route::post(
-
-                    '/vouchers',
-
-                    [VoucherController::class, 'store']
-
-                )->name('admin.vouchers.store');
-
-
-
-
-
-                Route::get(
-
-                    '/vouchers/{voucher}/edit',
-
-                    [VoucherController::class, 'edit']
-
-                )->name('admin.vouchers.edit');
-
-
-
-
-
-                Route::put(
-
-                    '/vouchers/{voucher}',
-
-                    [VoucherController::class, 'update']
-
-                )->name('admin.vouchers.update');
-
-
-
-
-
-                Route::delete(
-
-                    '/vouchers/{voucher}',
-
-                    [VoucherController::class, 'destroy']
-
-                )->name('admin.vouchers.destroy');
-
-
-
-            });
-
-
-
+        */
+
+        Route::get(
+            '/dashboard',
+            [AdminDashboardController::class, 'index']
+        )->name('admin.dashboard');
 
 
         /*
+        |--------------------------------------------------------------------------
+        | PRODUCTS
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/products',
+            [ProductController::class, 'index']
+        )->name('admin.products.index');
+
+        Route::get(
+            '/products/create',
+            [ProductController::class, 'create']
+        )->name('admin.products.create');
+
+        Route::post(
+            '/products',
+            [ProductController::class, 'store']
+        )->name('admin.products.store');
+
+        Route::get(
+            '/products/{product}/edit',
+            [ProductController::class, 'edit']
+        )->name('admin.products.edit');
+
+        Route::put(
+            '/products/{product}',
+            [ProductController::class, 'update']
+        )->name('admin.products.update');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | ORDERS
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/orders',
+            [OrderController::class, 'index']
+        )->name('admin.orders.index');
+
+        Route::get(
+            '/orders/{order}',
+            [OrderController::class, 'show']
+        )->name('admin.orders.show');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PAYMENTS
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/payments',
+            [PaymentController::class, 'index']
+        )->name('admin.payments.index');
+
+        Route::post(
+            '/payments/{payment}/verify',
+            [PaymentController::class, 'verify']
+        )->name('admin.payments.verify');
+
+        Route::post(
+            '/payments/{payment}/reject',
+            [PaymentController::class, 'reject']
+        )->name('admin.payments.reject');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | VARIANTS
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/variants',
+            [ProductVariantController::class, 'index']
+        )->name('admin.variants.index');
+
+        Route::get(
+            '/variants/create',
+            [ProductVariantController::class, 'create']
+        )->name('admin.variants.create');
+
+        Route::post(
+            '/variants',
+            [ProductVariantController::class, 'store']
+        )->name('admin.variants.store');
+
+        Route::get(
+            '/variants/{variant}/edit',
+            [ProductVariantController::class, 'edit']
+        )->name('admin.variants.edit');
+
+        Route::put(
+            '/variants/{variant}',
+            [ProductVariantController::class, 'update']
+        )->name('admin.variants.update');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CATEGORIES
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/categories',
+            [CategoryController::class, 'index']
+        )->name('admin.categories.index');
+
+        Route::get(
+            '/categories/create',
+            [CategoryController::class, 'create']
+        )->name('admin.categories.create');
+
+        Route::post(
+            '/categories',
+            [CategoryController::class, 'store']
+        )->name('admin.categories.store');
+
+        Route::get(
+            '/categories/{category}/edit',
+            [CategoryController::class, 'edit']
+        )->name('admin.categories.edit');
+
+        Route::put(
+            '/categories/{category}',
+            [CategoryController::class, 'update']
+        )->name('admin.categories.update');
+
+        Route::delete(
+            '/categories/{category}',
+            [CategoryController::class, 'destroy']
+        )->name('admin.categories.destroy');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | COLLECTIONS
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/collections',
+            [CollectionController::class, 'index']
+        )->name('admin.collections.index');
+
+        Route::get(
+            '/collections/create',
+            [CollectionController::class, 'create']
+        )->name('admin.collections.create');
+
+        Route::post(
+            '/collections',
+            [CollectionController::class, 'store']
+        )->name('admin.collections.store');
+
+        Route::get(
+            '/collections/{collection}/edit',
+            [CollectionController::class, 'edit']
+        )->name('admin.collections.edit');
+
+        Route::put(
+            '/collections/{collection}',
+            [CollectionController::class, 'update']
+        )->name('admin.collections.update');
+
+        Route::delete(
+            '/collections/{collection}',
+            [CollectionController::class, 'destroy']
+        )->name('admin.collections.destroy');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | VOUCHERS
+        |--------------------------------------------------------------------------
+        */
+
+        Route::get(
+            '/vouchers',
+            [VoucherController::class, 'index']
+        )->name('admin.vouchers.index');
+
+        Route::get(
+            '/vouchers/create',
+            [VoucherController::class, 'create']
+        )->name('admin.vouchers.create');
+
+        Route::post(
+            '/vouchers',
+            [VoucherController::class, 'store']
+        )->name('admin.vouchers.store');
+
+        Route::get(
+            '/vouchers/{voucher}/edit',
+            [VoucherController::class, 'edit']
+        )->name('admin.vouchers.edit');
+
+        Route::put(
+            '/vouchers/{voucher}',
+            [VoucherController::class, 'update']
+        )->name('admin.vouchers.update');
+
+        Route::delete(
+            '/vouchers/{voucher}',
+            [VoucherController::class, 'destroy']
+        )->name('admin.vouchers.destroy');
+
+    });
+        
+
+
+
+
+
+
+    /*
+        
 
         |--------------------------------------------------------------------------
 

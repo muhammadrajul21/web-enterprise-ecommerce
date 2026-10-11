@@ -45,17 +45,22 @@
             </div>
 
 
-            <nav class="sidebar-menu">
+          <nav class="sidebar-menu">
 
-                <a
-                    href="{{ route('owner.dashboard') }}"
-                    class="active"
-                >
-                    <i class="bi bi-grid"></i>
-                    Dashboard
-                </a>
+    <a
+        href="{{ route('owner.dashboard') }}"
+        class="active"
+    >
+        <i class="bi bi-grid"></i>
+        Dashboard
+    </a>
 
-            </nav>
+    <a href="{{ route('owner.reports.index') }}">
+        <i class="bi bi-file-earmark-bar-graph"></i>
+        Reports
+    </a>
+
+</nav>
 
 
             <div class="sidebar-footer">

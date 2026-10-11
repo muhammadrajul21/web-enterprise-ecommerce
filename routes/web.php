@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\Owner\ReportController as OwnerReportController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Models\Review;
 
@@ -2098,7 +2099,7 @@ Route::delete(
 
 
 
-        /*
+             /*
         |--------------------------------------------------------------------------
         | OWNER
         |--------------------------------------------------------------------------
@@ -2112,6 +2113,18 @@ Route::delete(
                     '/dashboard',
                     [OwnerDashboardController::class, 'index']
                 )->name('owner.dashboard');
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | SALES & ORDER REPORT
+                |--------------------------------------------------------------------------
+                */
+
+                Route::get(
+                    '/reports',
+                    [OwnerReportController::class, 'index']
+                )->name('owner.reports.index');
 
             });
 

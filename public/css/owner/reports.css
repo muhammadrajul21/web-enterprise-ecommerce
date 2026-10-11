@@ -1,0 +1,369 @@
+/* =========================================================
+   REPORT FILTER
+========================================================= */
+
+.report-filter-card {
+    margin-bottom: 24px;
+
+    background: #ffffff;
+    border: 1px solid #dedede;
+}
+
+.filter-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
+    padding: 20px 24px;
+
+    border-bottom: 1px solid #e5e5e5;
+}
+
+.filter-heading h2 {
+    margin: 0 0 5px;
+
+    font-size: 17px;
+}
+
+.filter-heading p {
+    margin: 0;
+
+    font-size: 11px;
+    color: #888888;
+}
+
+.filter-heading > i {
+    font-size: 21px;
+}
+
+
+/* FORM */
+
+.report-filter-form {
+    display: grid;
+
+    grid-template-columns:
+        minmax(160px, 1fr)
+        minmax(160px, 1fr)
+        minmax(190px, 1fr)
+        auto;
+
+    align-items: end;
+    gap: 16px;
+
+    padding: 22px 24px;
+}
+
+.filter-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filter-field label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+
+    color: #666666;
+}
+
+.filter-field input,
+.filter-field select {
+    width: 100%;
+    height: 42px;
+
+    padding: 0 12px;
+
+    border: 1px solid #d7d7d7;
+    background: #ffffff;
+
+    font-family: inherit;
+    font-size: 11px;
+
+    outline: none;
+}
+
+.filter-field input:focus,
+.filter-field select:focus {
+    border-color: #111111;
+}
+
+
+/* FILTER ACTIONS */
+
+.filter-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-button,
+.reset-button {
+    height: 42px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+
+    padding: 0 16px;
+
+    text-decoration: none;
+
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+
+    cursor: pointer;
+}
+
+.filter-button {
+    border: 1px solid #111111;
+
+    background: #111111;
+    color: #ffffff;
+}
+
+.filter-button:hover {
+    background: #ffffff;
+    color: #111111;
+}
+
+.reset-button {
+    border: 1px solid #d4d4d4;
+
+    color: #555555;
+    background: #ffffff;
+}
+
+.reset-button:hover {
+    border-color: #111111;
+
+    color: #111111;
+}
+
+
+/* =========================================================
+   ALERT
+========================================================= */
+
+.report-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 14px 17px;
+    margin-bottom: 20px;
+
+    border: 1px solid #e4b4b4;
+
+    background: #fff1f1;
+    color: #913c3c;
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   REPORT STATS
+========================================================= */
+
+.report-stats {
+    grid-template-columns:
+        repeat(5, minmax(0, 1fr));
+}
+
+
+/* =========================================================
+   REPORT TABLE
+========================================================= */
+
+.report-table-card {
+    overflow: hidden;
+}
+
+.report-table-wrapper {
+    overflow-x: auto;
+}
+
+.report-table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+.report-table th {
+    padding: 14px 20px;
+
+    border-bottom: 1px solid #dddddd;
+
+    background: #fafafa;
+
+    text-align: left;
+
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+
+    color: #777777;
+}
+
+.report-table td {
+    padding: 17px 20px;
+
+    border-bottom: 1px solid #ededed;
+
+    vertical-align: middle;
+
+    font-size: 11px;
+}
+
+.report-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.report-table tbody tr:hover {
+    background: #fafafa;
+}
+
+.order-code {
+    white-space: nowrap;
+
+    font-size: 11px;
+}
+
+.table-subtext {
+    display: block;
+
+    margin-top: 5px;
+
+    font-size: 9px;
+    color: #999999;
+}
+
+
+/* =========================================================
+   PAYMENT BADGE
+========================================================= */
+
+.payment-badge {
+    display: inline-block;
+
+    padding: 5px 8px;
+
+    border: 1px solid #d5d5d5;
+
+    font-size: 8px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+
+    text-transform: uppercase;
+}
+
+.payment-verified {
+    border-color: #aed8b7;
+
+    background: #edf8ef;
+    color: #397a48;
+}
+
+.payment-pending {
+    border-color: #e5d7a6;
+
+    background: #fff9e8;
+    color: #806819;
+}
+
+.payment-rejected {
+    border-color: #e4b4b4;
+
+    background: #fff1f1;
+    color: #9c3939;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.report-empty {
+    padding: 55px 20px !important;
+
+    text-align: center;
+
+    color: #777777;
+}
+
+.report-empty i {
+    display: block;
+
+    margin-bottom: 12px;
+
+    font-size: 27px;
+}
+
+.report-empty strong {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #111111;
+}
+
+.report-empty span {
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   PAGINATION
+========================================================= */
+
+.report-pagination {
+    padding: 18px 22px;
+
+    border-top: 1px solid #ededed;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1250px) {
+
+    .report-stats {
+        grid-template-columns:
+            repeat(3, minmax(0, 1fr));
+    }
+
+    .report-filter-form {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+@media (max-width: 768px) {
+
+    .report-filter-form {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .filter-button,
+    .reset-button {
+        width: 100%;
+    }
+
+    .report-stats {
+        grid-template-columns: 1fr;
+    }
+
+}

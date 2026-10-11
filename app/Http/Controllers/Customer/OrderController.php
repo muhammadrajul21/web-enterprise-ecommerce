@@ -60,15 +60,15 @@ class OrderController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $order->load([
-            'items',
+   $order->load([
+    'items.review',
 
-            'voucher',
+    'voucher',
 
-            'payments' => function ($query) {
-                $query->latest();
-            },
-        ]);
+    'payments' => function ($query) {
+        $query->latest();
+    },
+]);
 
 
         /*

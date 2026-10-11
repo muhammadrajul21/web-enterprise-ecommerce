@@ -576,6 +576,180 @@
 
 
 {{-- =========================
+    CUSTOMER REVIEWS
+========================= --}}
+
+<section class="store-section customer-reviews-section">
+
+    <div class="customer-reviews-header">
+
+        <div>
+
+            <span class="section-small-title">
+                CUSTOMER FEEDBACK
+            </span>
+
+            <h2>
+                CUSTOMER REVIEWS
+            </h2>
+
+        </div>
+
+
+        <div class="review-summary">
+
+            <div class="review-summary-score">
+
+                <strong>
+                    {{ number_format($averageRating, 1) }}
+                </strong>
+
+                <span>
+                    / 5
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <div class="review-summary-stars">
+
+                    @for($star = 1; $star <= 5; $star++)
+
+                        <i class="
+                            bi
+                            {{ $star <= round($averageRating)
+                                ? 'bi-star-fill'
+                                : 'bi-star'
+                            }}
+                        "></i>
+
+                    @endfor
+
+                </div>
+
+                <span class="review-summary-count">
+
+                    Based on
+                    {{ $reviewCount }}
+                    {{ $reviewCount === 1 ? 'review' : 'reviews' }}
+
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    @if($reviews->count())
+
+        <div class="customer-review-list">
+
+            @foreach($reviews as $review)
+
+                <article class="customer-review-card">
+
+                    <div class="customer-review-top">
+
+                        <div class="customer-review-user">
+
+                            <div class="customer-review-avatar">
+
+                                {{ strtoupper(
+                                    substr(
+                                        $review->user?->name ?? 'C',
+                                        0,
+                                        1
+                                    )
+                                ) }}
+
+                            </div>
+
+
+                            <div>
+
+                                <strong>
+                                    {{ $review->user?->name ?? 'Customer' }}
+                                </strong>
+
+                                <span>
+                                    Verified Purchase
+                                </span>
+
+                            </div>
+
+                        </div>
+
+
+                        <span class="customer-review-date">
+
+                            {{ $review->created_at->format('d M Y') }}
+
+                        </span>
+
+                    </div>
+
+
+                    <div class="customer-review-stars">
+
+                        @for($star = 1; $star <= 5; $star++)
+
+                            <i class="
+                                bi
+                                {{ $star <= $review->rating
+                                    ? 'bi-star-fill'
+                                    : 'bi-star'
+                                }}
+                            "></i>
+
+                        @endfor
+
+                        <strong>
+                            {{ $review->rating }}/5
+                        </strong>
+
+                    </div>
+
+
+                    @if($review->review)
+
+                        <p class="customer-review-text">
+                            {{ $review->review }}
+                        </p>
+
+                    @endif
+
+                </article>
+
+            @endforeach
+
+        </div>
+
+    @else
+
+        <div class="customer-review-empty">
+
+            <i class="bi bi-chat-square-text"></i>
+
+            <h3>
+                No reviews yet
+            </h3>
+
+            <p>
+                Be the first customer to review this product.
+            </p>
+
+        </div>
+
+    @endif
+
+</section>
+
+
+{{-- =========================
     RELATED PRODUCTS
 ========================= --}}
 

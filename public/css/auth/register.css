@@ -1,0 +1,78 @@
+/* =========================================================
+   REGISTER PAGE
+========================================================= */
+
+.register-section {
+    padding-top: 35px;
+    padding-bottom: 35px;
+}
+
+.register-wrapper {
+    max-width: 560px;
+}
+
+
+/* =========================================================
+   FORM
+========================================================= */
+
+.register-form {
+    gap: 18px;
+}
+
+.register-password-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 16px;
+}
+
+
+/* =========================================================
+   VISUAL
+========================================================= */
+
+.register-section .back-home {
+    margin-bottom: 35px;
+}
+
+.register-section .auth-heading {
+    margin-bottom: 28px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+
+    .register-password-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 900px) {
+
+    .register-wrapper {
+        max-width: 500px;
+    }
+
+}
+
+
+@media (max-width: 520px) {
+
+    .register-section {
+        padding-top: 35px;
+    }
+
+    .register-password-grid {
+        gap: 18px;
+    }
+
+}

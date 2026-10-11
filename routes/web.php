@@ -354,6 +354,11 @@ Route::middleware('role:customer')->group(function () {
         '/orders',
         [CustomerOrderController::class, 'index']
     )->name('orders.index');
+    
+    Route::get(
+    '/orders/{order}',
+    [CustomerOrderController::class, 'show']
+    )->name('orders.show');
 
 });
 

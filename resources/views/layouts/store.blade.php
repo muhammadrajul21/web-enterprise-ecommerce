@@ -11,6 +11,7 @@
     'checkout.index'  => 'checkout',
     'payment.show'    => 'payment',
     'orders.index'    => 'orders',
+    'orders.show'     => 'order-detail',
 ];
 
     $pageCss = $pageStyles[request()->route()?->getName()] ?? null;

@@ -8,10 +8,13 @@
 
     <div class="orders-container">
 
-        {{-- HEADER --}}
+        {{-- =========================
+            HEADER
+        ========================= --}}
         <div class="orders-header">
 
             <div>
+
                 <span class="orders-eyebrow">
                     MY ACCOUNT
                 </span>
@@ -23,7 +26,9 @@
                 <p>
                     Track and review your recent purchases.
                 </p>
+
             </div>
+
 
             <div class="orders-header-icon">
                 <i class="bi bi-bag-check"></i>
@@ -32,7 +37,9 @@
         </div>
 
 
-        {{-- ALERT --}}
+        {{-- =========================
+            ALERT
+        ========================= --}}
         @if(session('success'))
 
             <div class="orders-alert orders-alert-success">
@@ -48,7 +55,9 @@
         @endif
 
 
-        {{-- EMPTY STATE --}}
+        {{-- =========================
+            EMPTY STATE
+        ========================= --}}
         @if($orders->isEmpty())
 
             <div class="orders-empty">
@@ -77,9 +86,12 @@
 
             </div>
 
+
         @else
 
-            {{-- ORDER LIST --}}
+            {{-- =========================
+                ORDER LIST
+            ========================= --}}
             <div class="orders-list">
 
                 @foreach($orders as $order)
@@ -87,27 +99,15 @@
                     @php
 
                         $statusLabels = [
-                            'pending_payment'
-                                => 'Pending Payment',
-
-                            'waiting_verification'
-                                => 'Waiting Verification',
-
-                            'processing'
-                                => 'Processing',
-
-                            'packing'
-                                => 'Packing',
-
-                            'shipped'
-                                => 'Shipped',
-
-                            'completed'
-                                => 'Completed',
-
-                            'cancelled'
-                                => 'Cancelled',
+                            'pending_payment' => 'Pending Payment',
+                            'waiting_verification' => 'Waiting Verification',
+                            'processing' => 'Processing',
+                            'packing' => 'Packing',
+                            'shipped' => 'Shipped',
+                            'completed' => 'Completed',
+                            'cancelled' => 'Cancelled',
                         ];
+
 
                         $statusLabel =
                             $statusLabels[$order->status]
@@ -119,6 +119,7 @@
                                 )
                             );
 
+
                         $latestPayment =
                             $order->payments->first();
 
@@ -128,7 +129,9 @@
                     <article class="order-card">
 
 
-                        {{-- ORDER CARD HEADER --}}
+                        {{-- =========================
+                            ORDER HEADER
+                        ========================= --}}
                         <div class="order-card-header">
 
                             <div>
@@ -156,9 +159,13 @@
                         </div>
 
 
-                        {{-- ORDER INFO --}}
+                        {{-- =========================
+                            ORDER INFORMATION
+                        ========================= --}}
                         <div class="order-info-grid">
 
+
+                            {{-- ORDER DATE --}}
                             <div>
 
                                 <span>
@@ -166,13 +173,13 @@
                                 </span>
 
                                 <strong>
-                                    {{ $order->created_at
-                                        ->format('d M Y') }}
+                                    {{ $order->created_at->format('d M Y') }}
                                 </strong>
 
                             </div>
 
 
+                            {{-- ITEMS --}}
                             <div>
 
                                 <span>
@@ -180,14 +187,14 @@
                                 </span>
 
                                 <strong>
-                                    {{ $order->items
-                                        ->sum('quantity') }}
+                                    {{ $order->items->sum('quantity') }}
                                     Item
                                 </strong>
 
                             </div>
 
 
+                            {{-- SHIPPING --}}
                             <div>
 
                                 <span>
@@ -195,13 +202,13 @@
                                 </span>
 
                                 <strong>
-                                    {{ $order->shipping_service
-                                        ?? '-' }}
+                                    {{ $order->shipping_service ?? '-' }}
                                 </strong>
 
                             </div>
 
 
+                            {{-- TOTAL --}}
                             <div>
 
                                 <span>
@@ -209,12 +216,14 @@
                                 </span>
 
                                 <strong class="order-total">
+
                                     Rp {{ number_format(
                                         $order->total_amount,
                                         0,
                                         ',',
                                         '.'
                                     ) }}
+
                                 </strong>
 
                             </div>
@@ -222,7 +231,9 @@
                         </div>
 
 
-                        {{-- PRODUCTS --}}
+                        {{-- =========================
+                            PRODUCTS
+                        ========================= --}}
                         <div class="order-products">
 
                             @foreach(
@@ -252,6 +263,7 @@
                                             {{ $item->size ?: '-' }}
 
                                             · Qty
+
                                             {{ $item->quantity }}
 
                                         </span>
@@ -289,9 +301,13 @@
                         </div>
 
 
-                        {{-- FOOTER --}}
+                        {{-- =========================
+                            ORDER FOOTER
+                        ========================= --}}
                         <div class="order-card-footer">
 
+
+                            {{-- PAYMENT INFORMATION --}}
                             <div class="order-payment-info">
 
                                 @if($latestPayment)
@@ -301,6 +317,7 @@
                                     </span>
 
                                     <strong>
+
                                         {{ ucwords(
                                             str_replace(
                                                 '_',
@@ -309,11 +326,15 @@
                                                     ->payment_method
                                             )
                                         ) }}
+
                                         ·
+
                                         {{ ucfirst(
                                             $latestPayment->status
                                         ) }}
+
                                     </strong>
+
 
                                 @elseif(
                                     $order->status
@@ -328,13 +349,28 @@
                                         Not submitted
                                     </strong>
 
+                                @else
+
+                                    <span>
+                                        Payment
+                                    </span>
+
+                                    <strong>
+                                        -
+                                    </strong>
+
                                 @endif
 
                             </div>
 
 
+                            {{-- =========================
+                                ACTIONS
+                            ========================= --}}
                             <div class="order-actions">
 
+
+                                {{-- PAY NOW --}}
                                 @if(
                                     $order->status
                                     === 'pending_payment'
@@ -352,9 +388,11 @@
                                     >
                                         PAY NOW
 
-                                        <i class="bi bi-arrow-right"></i>
+                                        <i class="bi bi-credit-card"></i>
                                     </a>
 
+
+                                {{-- VIEW PAYMENT --}}
                                 @elseif(
                                     $order->status
                                     === 'waiting_verification'
@@ -369,23 +407,24 @@
                                     >
                                         VIEW PAYMENT
 
-                                        <i class="bi bi-arrow-right"></i>
+                                        <i class="bi bi-credit-card"></i>
                                     </a>
 
-                                @else
-
-                                    <span
-                                        class="
-                                            order-action
-                                            order-action-disabled
-                                        "
-                                    >
-                                        VIEW DETAILS
-
-                                        <i class="bi bi-arrow-right"></i>
-                                    </span>
-
                                 @endif
+
+
+                                {{-- VIEW DETAILS --}}
+                                <a
+                                    href="{{ route(
+                                        'orders.show',
+                                        $order
+                                    ) }}"
+                                    class="order-action"
+                                >
+                                    VIEW DETAILS
+
+                                    <i class="bi bi-arrow-right"></i>
+                                </a>
 
                             </div>
 
@@ -398,7 +437,9 @@
             </div>
 
 
-            {{-- PAGINATION --}}
+            {{-- =========================
+                PAGINATION
+            ========================= --}}
             @if($orders->hasPages())
 
                 <div class="orders-pagination">

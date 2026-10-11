@@ -18,6 +18,7 @@ class OrderController extends Controller
         )
             ->with([
                 'items',
+
                 'payments' => function ($query) {
                     $query->latest();
                 },
@@ -25,9 +26,73 @@ class OrderController extends Controller
             ->latest()
             ->paginate(10);
 
+
         return view(
             'customer.orders.index',
             compact('orders')
+        );
+    }
+
+
+    /**
+     * Menampilkan detail order customer.
+     */
+    public function show(Order $order)
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | AUTHORIZATION
+        |--------------------------------------------------------------------------
+        |
+        | Customer hanya boleh melihat order miliknya sendiri.
+        |
+        */
+
+        abort_unless(
+            (int) $order->user_id === (int) auth()->id(),
+            403
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | LOAD ORDER DATA
+        |--------------------------------------------------------------------------
+        */
+
+        $order->load([
+            'items',
+
+            'voucher',
+
+            'payments' => function ($query) {
+                $query->latest();
+            },
+        ]);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PAYMENT TERBARU
+        |--------------------------------------------------------------------------
+        */
+
+        $latestPayment =
+            $order->payments->first();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | VIEW
+        |--------------------------------------------------------------------------
+        */
+
+        return view(
+            'customer.orders.show',
+            compact(
+                'order',
+                'latestPayment'
+            )
         );
     }
 }

@@ -623,14 +623,15 @@ class CheckoutController extends Controller
             |
             */
 
-            return redirect()
-                ->route('cart.index')
-                ->with(
-                    'success',
-                    'Order '
-                    . $order->order_code
-                    . ' berhasil dibuat. Silakan lanjutkan pembayaran.'
-                );
+return redirect()
+    ->route(
+        'payment.show',
+        $order
+    )
+    ->with(
+        'success',
+        'Order berhasil dibuat. Silakan lakukan pembayaran.'
+    );
 
         } catch (\RuntimeException $exception) {
 

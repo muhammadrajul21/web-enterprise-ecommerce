@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\AuthController;
@@ -335,6 +336,17 @@ Route::middleware('role:customer')->group(function () {
 
     Route::post('/checkout', [CheckoutController::class, 'store'])
         ->name('checkout.store');
+    
+        // PAYMENT
+    Route::get(
+        '/orders/{order}/payment',
+        [CustomerPaymentController::class, 'show']
+    )->name('payment.show');
+
+    Route::post(
+        '/orders/{order}/payment',
+        [CustomerPaymentController::class, 'store']
+    )->name('payment.store');
 
 });
 

@@ -8,7 +8,10 @@
 
     <div class="cart-container">
 
-        {{-- PAGE HEADER --}}
+        {{-- =========================
+            PAGE HEADER
+        ========================= --}}
+
         <div class="cart-header">
 
             <div>
@@ -32,14 +35,19 @@
         </div>
 
 
-        {{-- FLASH MESSAGE --}}
+        {{-- =========================
+            FLASH MESSAGE
+        ========================= --}}
+
         @if(session('success'))
 
             <div class="cart-alert cart-alert-success">
 
                 <i class="bi bi-check-circle"></i>
 
-                {{ session('success') }}
+                <span>
+                    {{ session('success') }}
+                </span>
 
             </div>
 
@@ -52,7 +60,9 @@
 
                 <i class="bi bi-exclamation-circle"></i>
 
-                {{ session('error') }}
+                <span>
+                    {{ session('error') }}
+                </span>
 
             </div>
 
@@ -65,16 +75,21 @@
 
                 <i class="bi bi-exclamation-circle"></i>
 
-                {{ $errors->first() }}
+                <span>
+                    {{ $errors->first() }}
+                </span>
 
             </div>
 
         @endif
 
 
+        {{-- =========================
+            EMPTY CART
+        ========================= --}}
+
         @if($cart->items->isEmpty())
 
-            {{-- EMPTY CART --}}
             <div class="empty-cart">
 
                 <div class="empty-cart-icon">
@@ -88,8 +103,8 @@
                 </h2>
 
                 <p>
-                    Discover our latest products and add your favorites
-                    to the cart.
+                    Discover our latest products and add
+                    your favorites to the cart.
                 </p>
 
                 <a
@@ -107,19 +122,23 @@
 
         @else
 
+
+            {{-- =========================
+                CART LAYOUT
+            ========================= --}}
+
             <div class="cart-layout">
 
 
-                {{-- ======================
+                {{-- =========================
                     CART ITEMS
-                ======================= --}}
+                ========================= --}}
 
                 <div class="cart-items">
 
                     @foreach($cart->items as $item)
 
                         @php
-
                             $variant = $item->variant;
 
                             $product = $variant?->product;
@@ -129,24 +148,29 @@
 
                             $itemSubtotal =
                                 $item->price * $item->quantity;
-
                         @endphp
 
 
                         <article class="cart-item">
 
-                            {{-- IMAGE --}}
+
+                            {{-- PRODUCT IMAGE --}}
+
                             <div class="cart-item-image">
 
                                 @if(
                                     $image
                                     && file_exists(
-                                        public_path($image->image_path)
+                                        public_path(
+                                            $image->image_path
+                                        )
                                     )
                                 )
 
                                     <img
-                                        src="{{ asset($image->image_path) }}"
+                                        src="{{ asset(
+                                            $image->image_path
+                                        ) }}"
                                         alt="{{ $product?->name }}"
                                     >
 
@@ -163,8 +187,12 @@
                             </div>
 
 
-                            {{-- INFORMATION --}}
+                            {{-- PRODUCT INFORMATION --}}
+
                             <div class="cart-item-info">
+
+
+                                {{-- TOP --}}
 
                                 <div class="cart-item-top">
 
@@ -180,16 +208,14 @@
                                         </span>
 
                                         <h2>
-
-                                            {{ $product?->name
-                                                ?? 'Product' }}
-
+                                            {{ $product?->name ?? 'Product' }}
                                         </h2>
 
                                     </div>
 
 
-                                    {{-- REMOVE --}}
+                                    {{-- REMOVE PRODUCT --}}
+
                                     <form
                                         action="{{ route(
                                             'cart.destroy',
@@ -219,7 +245,8 @@
                                 </div>
 
 
-                                {{-- VARIANT --}}
+                                {{-- VARIANT INFORMATION --}}
+
                                 <div class="cart-variant">
 
                                     @if($variant?->color)
@@ -227,8 +254,11 @@
                                         <span>
 
                                             COLOR:
+
                                             <strong>
-                                                {{ strtoupper($variant->color) }}
+                                                {{ strtoupper(
+                                                    $variant->color
+                                                ) }}
                                             </strong>
 
                                         </span>
@@ -241,8 +271,11 @@
                                         <span>
 
                                             SIZE:
+
                                             <strong>
-                                                {{ strtoupper($variant->size) }}
+                                                {{ strtoupper(
+                                                    $variant->size
+                                                ) }}
                                             </strong>
 
                                         </span>
@@ -253,8 +286,9 @@
                                     <span>
 
                                         SKU:
+
                                         <strong>
-                                            {{ $variant?->sku }}
+                                            {{ $variant?->sku ?? '-' }}
                                         </strong>
 
                                     </span>
@@ -262,7 +296,8 @@
                                 </div>
 
 
-                                {{-- PRICE --}}
+                                {{-- UNIT PRICE --}}
+
                                 <div class="cart-unit-price">
 
                                     Rp {{ number_format(
@@ -275,10 +310,15 @@
                                 </div>
 
 
+                                {{-- =========================
+                                    ITEM BOTTOM
+                                ========================= --}}
+
                                 <div class="cart-item-bottom">
 
 
                                     {{-- QUANTITY --}}
+
                                     <form
                                         action="{{ route(
                                             'cart.update',
@@ -291,11 +331,13 @@
                                         @csrf
                                         @method('PUT')
 
+
                                         <label
                                             for="quantity-{{ $item->id }}"
                                         >
                                             QTY
                                         </label>
+
 
                                         <input
                                             id="quantity-{{ $item->id }}"
@@ -304,18 +346,19 @@
                                             min="1"
                                             max="{{ $variant?->stock ?? 1 }}"
                                             value="{{ $item->quantity }}"
+                                            required
                                         >
 
-                                        <button
-                                            type="submit"
-                                        >
+
+                                        <button type="submit">
                                             UPDATE
                                         </button>
 
                                     </form>
 
 
-                                    {{-- SUBTOTAL --}}
+                                    {{-- ITEM SUBTOTAL --}}
+
                                     <div class="cart-item-subtotal">
 
                                         <span>
@@ -338,6 +381,8 @@
                                 </div>
 
 
+                                {{-- STOCK INFORMATION --}}
+
                                 @if($variant)
 
                                     <small class="stock-information">
@@ -358,9 +403,9 @@
                 </div>
 
 
-                {{-- ======================
+                {{-- =========================
                     ORDER SUMMARY
-                ======================= --}}
+                ========================= --}}
 
                 <aside class="cart-summary">
 
@@ -370,6 +415,8 @@
                             Order Summary
                         </h2>
 
+
+                        {{-- SUBTOTAL --}}
 
                         <div class="summary-row">
 
@@ -391,6 +438,8 @@
                         </div>
 
 
+                        {{-- SHIPPING --}}
+
                         <div class="summary-row">
 
                             <span>
@@ -406,6 +455,8 @@
 
                         <div class="summary-divider"></div>
 
+
+                        {{-- TOTAL --}}
 
                         <div class="summary-total">
 
@@ -427,26 +478,23 @@
                         </div>
 
 
-                        {{-- CHECKOUT BELUM DIAKTIFKAN --}}
-                        <button
-                            type="button"
+                        {{-- =========================
+                            CHECKOUT
+                        ========================= --}}
+
+                        <a
+                            href="{{ route('checkout.index') }}"
                             class="checkout-button"
-                            disabled
                         >
 
                             PROCEED TO CHECKOUT
 
                             <i class="bi bi-arrow-right"></i>
 
-                        </button>
+                        </a>
 
 
-                        <p class="checkout-note">
-
-                            Checkout will be available in the next step.
-
-                        </p>
-
+                        {{-- CONTINUE SHOPPING --}}
 
                         <a
                             href="{{ route('catalog.preview') }}"

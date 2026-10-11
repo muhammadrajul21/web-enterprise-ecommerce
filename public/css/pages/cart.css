@@ -577,3 +577,15 @@
     }
 
 }
+/* =========================================
+   CHECKOUT LINK
+========================================= */
+
+.checkout-button {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.checkout-button:hover {
+    opacity: 0.88;
+}

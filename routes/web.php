@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\AuthController;
 use App\Models\Category;
@@ -314,32 +315,28 @@ Route::middleware('role:customer')->group(function () {
     })->name('customer.account');
 
 
-    // ========================
     // CART
-    // ========================
+    Route::get('/cart', [CartController::class, 'index'])
+        ->name('cart.index');
 
-    Route::get(
-        '/cart',
-        [CartController::class, 'index']
-    )->name('cart.index');
+    Route::post('/cart', [CartController::class, 'store'])
+        ->name('cart.store');
 
-    Route::post(
-        '/cart',
-        [CartController::class, 'store']
-    )->name('cart.store');
+    Route::put('/cart/{cartItem}', [CartController::class, 'update'])
+        ->name('cart.update');
 
-    Route::put(
-        '/cart/{cartItem}',
-        [CartController::class, 'update']
-    )->name('cart.update');
+    Route::delete('/cart/{cartItem}', [CartController::class, 'destroy'])
+        ->name('cart.destroy');
 
-    Route::delete(
-        '/cart/{cartItem}',
-        [CartController::class, 'destroy']
-    )->name('cart.destroy');
+
+    // CHECKOUT
+    Route::get('/checkout', [CheckoutController::class, 'index'])
+        ->name('checkout.index');
+
+    Route::post('/checkout', [CheckoutController::class, 'store'])
+        ->name('checkout.store');
 
 });
-
 
     // ========================
     // ADMIN

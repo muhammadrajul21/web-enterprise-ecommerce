@@ -8,6 +8,7 @@
     'product.detail'  => 'product-detail',
 
     'cart.index'      => 'cart',
+    'checkout.index'  => 'checkout',
 ];
 
     $pageCss = $pageStyles[request()->route()?->getName()] ?? null;

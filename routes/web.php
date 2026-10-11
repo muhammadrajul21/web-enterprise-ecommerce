@@ -1,4 +1,5 @@
 <?php
+use App\Http\Controllers\Customer\OrderController as CustomerOrderController;
 use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CartController;
@@ -337,7 +338,7 @@ Route::middleware('role:customer')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'store'])
         ->name('checkout.store');
     
-        // PAYMENT
+    // PAYMENT
     Route::get(
         '/orders/{order}/payment',
         [CustomerPaymentController::class, 'show']
@@ -347,6 +348,12 @@ Route::middleware('role:customer')->group(function () {
         '/orders/{order}/payment',
         [CustomerPaymentController::class, 'store']
     )->name('payment.store');
+
+    // ORDER HISTORY
+    Route::get(
+        '/orders',
+        [CustomerOrderController::class, 'index']
+    )->name('orders.index');
 
 });
 

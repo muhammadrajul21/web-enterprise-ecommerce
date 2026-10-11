@@ -10,6 +10,7 @@
     'cart.index'      => 'cart',
     'checkout.index'  => 'checkout',
     'payment.show'    => 'payment',
+    'orders.index'    => 'orders',
 ];
 
     $pageCss = $pageStyles[request()->route()?->getName()] ?? null;

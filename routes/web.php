@@ -1383,6 +1383,15 @@ Route::delete(
 
                 )->name('orders.show');
 
+
+                Route::patch(
+
+                    '/orders/{order}/complete',
+
+                    [CustomerOrderController::class, 'complete']
+
+                )->name('orders.complete');
+
                 /*
                 |--------------------------------------------------------------------------
                 | PRODUCT REVIEW

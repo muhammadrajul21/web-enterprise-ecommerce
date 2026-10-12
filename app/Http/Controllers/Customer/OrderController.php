@@ -8,6 +8,62 @@ use App\Models\Order;
 class OrderController extends Controller
 {
     /**
+     * Menyelesaikan order yang sudah diterima customer.
+     */
+    public function complete(Order $order)
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | AUTHORIZATION
+        |--------------------------------------------------------------------------
+        |
+        | Customer hanya boleh menyelesaikan order miliknya sendiri.
+        |
+        */
+
+        abort_unless(
+            (int) $order->user_id === (int) auth()->id(),
+            403
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | STATUS VALIDATION
+        |--------------------------------------------------------------------------
+        |
+        | Hanya order berstatus shipped yang boleh diselesaikan.
+        |
+        */
+
+        if ($order->status !== 'shipped') {
+            return back()->with(
+                'error',
+                'Pesanan hanya dapat diselesaikan setelah dikirim.'
+            );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | COMPLETE ORDER
+        |--------------------------------------------------------------------------
+        */
+
+        $order->update([
+            'status' => 'completed',
+            'completed_at' => now(),
+        ]);
+
+
+        return back()->with(
+            'success',
+            'Pesanan berhasil diselesaikan. Terima kasih telah berbelanja.'
+        );
+    }
+
+
+    /**
      * Menampilkan riwayat order customer.
      */
     public function index()
@@ -60,15 +116,15 @@ class OrderController extends Controller
         |--------------------------------------------------------------------------
         */
 
-   $order->load([
-    'items.review',
+        $order->load([
+            'items.review',
 
-    'voucher',
+            'voucher',
 
-    'payments' => function ($query) {
-        $query->latest();
-    },
-]);
+            'payments' => function ($query) {
+                $query->latest();
+            },
+        ]);
 
 
         /*

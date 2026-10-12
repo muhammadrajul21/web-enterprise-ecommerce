@@ -371,6 +371,62 @@
         @endif
 
 
+        {{-- CONFIRM ORDER RECEIVED --}}
+        @if($order->status === 'shipped')
+
+            <section class="order-complete-card">
+
+                <div class="order-complete-content">
+
+                    <div class="order-complete-icon">
+                        <i class="bi bi-box2-heart"></i>
+                    </div>
+
+                    <div>
+
+                        <span class="order-complete-label">
+                            ORDER DELIVERED?
+                        </span>
+
+                        <h2>
+                            Have you received your order?
+                        </h2>
+
+                        <p>
+                            Confirm that the order has arrived safely.
+                            After confirmation, the order will be marked as completed
+                            and you can review the product.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <form
+                    action="{{ route('orders.complete', $order) }}"
+                    method="POST"
+                    onsubmit="return confirm('Confirm that you have received this order?')"
+                >
+                    @csrf
+                    @method('PATCH')
+
+                    <button
+                        type="submit"
+                        class="confirm-received-button"
+                    >
+                        CONFIRM ORDER RECEIVED
+
+                        <i class="bi bi-check2-circle"></i>
+                    </button>
+
+                </form>
+
+            </section>
+
+        @endif
+
+
         <div class="order-detail-layout">
 
 

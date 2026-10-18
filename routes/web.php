@@ -1742,6 +1742,11 @@ Route::middleware('auth')
                     [OwnerReportController::class, 'index']
                 )->name('owner.reports.index');
 
+                Route::get(
+                    '/reports/print',
+                    [OwnerReportController::class, 'print']
+                )->name('owner.reports.print');
+
                 /*
 |--------------------------------------------------------------------------
 | OPERATIONAL SUMMARY

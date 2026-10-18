@@ -10,8 +10,56 @@ use Illuminate\Validation\Rule;
 
 class ReportController extends Controller
 {
+    /*
+    |--------------------------------------------------------------------------
+    | REPORT PAGE
+    |--------------------------------------------------------------------------
+    */
+
     public function index(Request $request)
     {
+        $report = $this->buildReport(
+            $request,
+            true
+        );
+
+        return view(
+            'owner.reports.index',
+            $report
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | PRINT REPORT
+    |--------------------------------------------------------------------------
+    */
+
+    public function print(Request $request)
+    {
+        $report = $this->buildReport(
+            $request,
+            false
+        );
+
+        return view(
+            'owner.reports.print',
+            $report
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | BUILD REPORT DATA
+    |--------------------------------------------------------------------------
+    */
+
+    private function buildReport(
+        Request $request,
+        bool $paginate = true
+    ): array {
         /*
         |--------------------------------------------------------------------------
         | FILTER VALIDATION
@@ -32,6 +80,7 @@ class ReportController extends Controller
 
             'status' => [
                 'nullable',
+
                 Rule::in([
                     'pending_payment',
                     'waiting_verification',
@@ -45,9 +94,14 @@ class ReportController extends Controller
         ]);
 
 
-        $startDate = $validated['start_date'] ?? null;
-        $endDate = $validated['end_date'] ?? null;
-        $status = $validated['status'] ?? null;
+        $startDate =
+            $validated['start_date'] ?? null;
+
+        $endDate =
+            $validated['end_date'] ?? null;
+
+        $status =
+            $validated['status'] ?? null;
 
 
         /*
@@ -59,6 +113,7 @@ class ReportController extends Controller
         $orderQuery = Order::query()
             ->with([
                 'user',
+
                 'payments' => function ($query) {
                     $query->latest();
                 },
@@ -78,6 +133,7 @@ class ReportController extends Controller
                 $startDate
             );
         }
+
 
         if ($endDate) {
             $orderQuery->whereDate(
@@ -130,11 +186,8 @@ class ReportController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | REVENUE
+        | VERIFIED REVENUE
         |--------------------------------------------------------------------------
-        |
-        | Revenue hanya dihitung dari payment yang sudah verified.
-        |
         */
 
         $paymentQuery = Payment::query()
@@ -149,7 +202,6 @@ class ReportController extends Controller
                     $endDate,
                     $status
                 ) {
-
                     if ($startDate) {
                         $query->whereDate(
                             'created_at',
@@ -158,6 +210,7 @@ class ReportController extends Controller
                         );
                     }
 
+
                     if ($endDate) {
                         $query->whereDate(
                             'created_at',
@@ -165,6 +218,7 @@ class ReportController extends Controller
                             $endDate
                         );
                     }
+
 
                     if ($status) {
                         $query->where(
@@ -196,33 +250,40 @@ class ReportController extends Controller
         |--------------------------------------------------------------------------
         | ORDER LIST
         |--------------------------------------------------------------------------
+        |
+        | Halaman report biasa menggunakan pagination.
+        | Halaman print mengambil semua data sesuai filter.
+        |
         */
 
-        $orders = $orderQuery
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
+        if ($paginate) {
+            $orders = $orderQuery
+                ->latest()
+                ->paginate(10)
+                ->withQueryString();
+        } else {
+            $orders = $orderQuery
+                ->latest()
+                ->get();
+        }
 
 
         /*
         |--------------------------------------------------------------------------
-        | VIEW
+        | RETURN REPORT DATA
         |--------------------------------------------------------------------------
         */
 
-        return view(
-            'owner.reports.index',
-            compact(
-                'orders',
-                'totalOrders',
-                'completedOrders',
-                'cancelledOrders',
-                'totalRevenue',
-                'averageOrderValue',
-                'startDate',
-                'endDate',
-                'status'
-            )
+        return compact(
+            'orders',
+            'totalOrders',
+            'completedOrders',
+            'cancelledOrders',
+            'totalRevenue',
+            'averageOrderValue',
+            'startDate',
+            'endDate',
+            'status'
         );
     }
 }

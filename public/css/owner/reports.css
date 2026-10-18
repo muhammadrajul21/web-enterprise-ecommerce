@@ -367,3 +367,35 @@
     }
 
 }
+.print-report-button {
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    padding: 0 16px;
+
+    border: 1px solid #111111;
+    background: #ffffff;
+    color: #111111;
+
+    text-decoration: none;
+
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+
+    white-space: nowrap;
+    transition: 0.2s ease;
+}
+
+.print-report-button:hover {
+    background: #111111;
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .print-report-button {
+        width: 100%;
+    }
+}

@@ -14,107 +14,186 @@ class OrderSeeder extends Seeder
     {
         DB::transaction(function () {
 
-            // ========================
-            // USER DEMO
-            // ========================
-
-            $customer = User::where(
-                'email',
-                'customer@example.com'
-            )->firstOrFail();
+            /*
+            |--------------------------------------------------------------------------
+            | USERS
+            |--------------------------------------------------------------------------
+            */
 
             $admin = User::where(
                 'email',
-                'admin@example.com'
+                'admin@lifestyle.test'
+            )->firstOrFail();
+
+            $staff = User::where(
+                'email',
+                'staff@lifestyle.test'
+            )->firstOrFail();
+
+            $rizky = User::where(
+                'email',
+                'rizky@lifestyle.test'
+            )->firstOrFail();
+
+            $nabila = User::where(
+                'email',
+                'nabila@lifestyle.test'
+            )->firstOrFail();
+
+            $dimas = User::where(
+                'email',
+                'dimas@lifestyle.test'
             )->firstOrFail();
 
 
-            // ========================
-            // PRODUCT VARIANTS
-            // ========================
+            /*
+            |--------------------------------------------------------------------------
+            | VOUCHER
+            |--------------------------------------------------------------------------
+            */
 
-            $variants = ProductVariant::with('product')
-                ->where('status', 'active')
-                ->take(7)
-                ->get();
-
-            if ($variants->isEmpty()) {
-                return;
-            }
+            $welcomeVoucher = DB::table('vouchers')
+                ->where('code', 'WELCOME10')
+                ->first();
 
 
-            // ========================
-            // DEMO ORDERS
-            // ========================
+            /*
+            |--------------------------------------------------------------------------
+            | DEMO ORDER DEFINITIONS
+            |--------------------------------------------------------------------------
+            */
 
             $demoOrders = [
-
                 [
-                    'code' => 'ORD-DEMO-001',
+                    'code' => 'ORD-20261018-K7M2QP',
+                    'customer' => $rizky,
+                    'sku' => 'OTS-BLK-M',
                     'status' => 'pending_payment',
                     'days_ago' => 0,
                     'quantity' => 1,
+                    'address' => 'Jl. Merdeka No. 12',
+                    'city' => 'Banda Aceh',
+                    'postal_code' => '23116',
                 ],
 
                 [
-                    'code' => 'ORD-DEMO-002',
+                    'code' => 'ORD-20261017-N4B8TX',
+                    'customer' => $nabila,
+                    'sku' => 'COS-BLU-M',
                     'status' => 'waiting_verification',
                     'days_ago' => 1,
                     'quantity' => 1,
+                    'address' => 'Jl. Malikussaleh No. 8',
+                    'city' => 'Lhokseumawe',
+                    'postal_code' => '24351',
                 ],
 
                 [
-                    'code' => 'ORD-DEMO-003',
+                    'code' => 'ORD-20261016-D6R3PL',
+                    'customer' => $dimas,
+                    'sku' => 'RP-BLK-M',
                     'status' => 'processing',
                     'days_ago' => 2,
-                    'quantity' => 2,
+                    'quantity' => 1,
+                    'address' => 'Jl. Medan Banda Aceh No. 21',
+                    'city' => 'Bireuen',
+                    'postal_code' => '24251',
                 ],
 
                 [
-                    'code' => 'ORD-DEMO-004',
+                    'code' => 'ORD-20261015-R8W5KM',
+                    'customer' => $rizky,
+                    'sku' => 'LJ-BLK-M',
                     'status' => 'packing',
                     'days_ago' => 3,
                     'quantity' => 1,
+                    'address' => 'Jl. Merdeka No. 12',
+                    'city' => 'Banda Aceh',
+                    'postal_code' => '23116',
                 ],
 
                 [
-                    'code' => 'ORD-DEMO-005',
+                    'code' => 'ORD-20261014-H3T9QX',
+                    'customer' => $nabila,
+                    'sku' => 'ES-WHT-40',
                     'status' => 'shipped',
                     'days_ago' => 4,
                     'quantity' => 1,
+                    'address' => 'Jl. Malikussaleh No. 8',
+                    'city' => 'Lhokseumawe',
+                    'postal_code' => '24351',
                 ],
 
                 [
-                    'code' => 'ORD-DEMO-006',
+                    'code' => 'ORD-20261011-M5C7ZA',
+                    'customer' => $dimas,
+                    'sku' => 'MTB-BLK-OS',
                     'status' => 'completed',
                     'days_ago' => 7,
                     'quantity' => 2,
+                    'address' => 'Jl. Medan Banda Aceh No. 21',
+                    'city' => 'Bireuen',
+                    'postal_code' => '24251',
+                    'voucher' => true,
                 ],
 
                 [
-                    'code' => 'ORD-DEMO-007',
+                    'code' => 'ORD-20261010-P2V6BN',
+                    'customer' => $rizky,
+                    'sku' => 'CBC-BLK-OS',
                     'status' => 'cancelled',
                     'days_ago' => 8,
                     'quantity' => 1,
+                    'address' => 'Jl. Merdeka No. 12',
+                    'city' => 'Banda Aceh',
+                    'postal_code' => '23116',
                 ],
             ];
 
 
-            foreach ($demoOrders as $index => $demo) {
+            foreach ($demoOrders as $demo) {
 
-                $variant = $variants[
-                    $index % $variants->count()
-                ];
+                $variant = ProductVariant::with('product')
+                    ->where(
+                        'sku',
+                        $demo['sku']
+                    )
+                    ->firstOrFail();
+
+
+                $customer = $demo['customer'];
 
                 $quantity = $demo['quantity'];
 
                 $price = (float) $variant->price;
 
-                $subtotal = $price * $quantity;
+                $subtotal =
+                    $price * $quantity;
+
+                $shippingCost = 20000;
 
                 $discountAmount = 0;
 
-                $shippingCost = 20000;
+                $voucherId = null;
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | VOUCHER
+                |--------------------------------------------------------------------------
+                */
+
+                if (!empty($demo['voucher'])) {
+                    $voucherId =
+                        $welcomeVoucher->id;
+
+                    $discountAmount =
+                        min(
+                            $subtotal * 0.10,
+                            50000
+                        );
+                }
+
 
                 $totalAmount =
                     $subtotal
@@ -122,44 +201,30 @@ class OrderSeeder extends Seeder
                     + $shippingCost;
 
 
-                // ========================
-                // HAPUS DEMO LAMA
-                // ========================
-
-                $oldOrder = Order::where(
-                    'order_code',
-                    $demo['code']
-                )->first();
-
-                if ($oldOrder) {
-
-                    $oldOrder->payments()->delete();
-
-                    $oldOrder->items()->delete();
-
-                    $oldOrder->delete();
-                }
-
-
-                // ========================
-                // WAKTU
-                // ========================
+                /*
+                |--------------------------------------------------------------------------
+                | DATE
+                |--------------------------------------------------------------------------
+                */
 
                 $createdAt = now()
-                    ->subDays($demo['days_ago']);
+                    ->subDays(
+                        $demo['days_ago']
+                    );
 
 
-                // ========================
-                // DATA ORDER
-                // ========================
+                /*
+                |--------------------------------------------------------------------------
+                | ORDER
+                |--------------------------------------------------------------------------
+                */
 
                 $orderData = [
-
                     'user_id' =>
                         $customer->id,
 
                     'voucher_id' =>
-                        null,
+                        $voucherId,
 
                     'order_code' =>
                         $demo['code'],
@@ -167,33 +232,23 @@ class OrderSeeder extends Seeder
                     'status' =>
                         $demo['status'],
 
-
-                    // Snapshot penerima
-
                     'recipient_name' =>
                         $customer->name,
 
                     'recipient_phone' =>
-                        $customer->phone
-                            ?: '081234567890',
-
-
-                    // Snapshot alamat pengiriman
+                        $customer->phone,
 
                     'shipping_address' =>
-                        'Jl. Lifestyle No. 10',
+                        $demo['address'],
 
                     'shipping_city' =>
-                        'Lhokseumawe',
+                        $demo['city'],
 
                     'shipping_province' =>
                         'Aceh',
 
                     'shipping_postal_code' =>
-                        '24351',
-
-
-                    // Nilai transaksi
+                        $demo['postal_code'],
 
                     'subtotal' =>
                         $subtotal,
@@ -207,9 +262,6 @@ class OrderSeeder extends Seeder
                     'total_amount' =>
                         $totalAmount,
 
-
-                    // Pengiriman
-
                     'courier' =>
                         null,
 
@@ -218,9 +270,6 @@ class OrderSeeder extends Seeder
 
                     'tracking_number' =>
                         null,
-
-
-                    // Status waktu
 
                     'paid_at' =>
                         null,
@@ -239,9 +288,11 @@ class OrderSeeder extends Seeder
                 ];
 
 
-                // ========================
-                // STATUS SUDAH DIBAYAR
-                // ========================
+                /*
+                |--------------------------------------------------------------------------
+                | PAID ORDERS
+                |--------------------------------------------------------------------------
+                */
 
                 if (
                     in_array(
@@ -254,19 +305,22 @@ class OrderSeeder extends Seeder
                         ]
                     )
                 ) {
-
                     $orderData['paid_at'] =
                         $createdAt->copy()
                             ->addHours(2);
                 }
 
 
-                // ========================
-                // SHIPPED
-                // ========================
+                /*
+                |--------------------------------------------------------------------------
+                | SHIPPED
+                |--------------------------------------------------------------------------
+                */
 
-                if ($demo['status'] === 'shipped') {
-
+                if (
+                    $demo['status']
+                    === 'shipped'
+                ) {
                     $orderData['courier'] =
                         'JNE';
 
@@ -274,7 +328,7 @@ class OrderSeeder extends Seeder
                         'REG';
 
                     $orderData['tracking_number'] =
-                        'JNE-DEMO-005';
+                        'JNE261018005';
 
                     $orderData['shipped_at'] =
                         $createdAt->copy()
@@ -282,20 +336,24 @@ class OrderSeeder extends Seeder
                 }
 
 
-                // ========================
-                // COMPLETED
-                // ========================
+                /*
+                |--------------------------------------------------------------------------
+                | COMPLETED
+                |--------------------------------------------------------------------------
+                */
 
-                if ($demo['status'] === 'completed') {
-
+                if (
+                    $demo['status']
+                    === 'completed'
+                ) {
                     $orderData['courier'] =
-                        'J&T';
+                        'J&T Express';
 
                     $orderData['shipping_service'] =
                         'EZ';
 
                     $orderData['tracking_number'] =
-                        'JNT-DEMO-006';
+                        'JNT261018006';
 
                     $orderData['shipped_at'] =
                         $createdAt->copy()
@@ -307,12 +365,16 @@ class OrderSeeder extends Seeder
                 }
 
 
-                // ========================
-                // CANCELLED
-                // ========================
+                /*
+                |--------------------------------------------------------------------------
+                | CANCELLED
+                |--------------------------------------------------------------------------
+                */
 
-                if ($demo['status'] === 'cancelled') {
-
+                if (
+                    $demo['status']
+                    === 'cancelled'
+                ) {
                     $orderData['cancelled_at'] =
                         $createdAt->copy()
                             ->addHours(5);
@@ -322,16 +384,10 @@ class OrderSeeder extends Seeder
                 }
 
 
-                // ========================
-                // CREATE ORDER
-                // ========================
-
                 $order = Order::create(
                     $orderData
                 );
 
-
-                // Set waktu order demo
 
                 $order->created_at =
                     $createdAt;
@@ -342,42 +398,45 @@ class OrderSeeder extends Seeder
                 $order->save();
 
 
-                // ========================
-                // ORDER ITEM
-                // ========================
+                /*
+                |--------------------------------------------------------------------------
+                | ORDER ITEM
+                |--------------------------------------------------------------------------
+                */
 
-                $order->items()->create([
+                $orderItem =
+                    $order->items()->create([
+                        'variant_id' =>
+                            $variant->id,
 
-                    'variant_id' =>
-                        $variant->id,
+                        'product_name' =>
+                            $variant->product->name,
 
-                    'product_name' =>
-                        $variant->product->name,
+                        'sku' =>
+                            $variant->sku,
 
-                    'sku' =>
-                        $variant->sku,
+                        'color' =>
+                            $variant->color,
 
-                    'color' =>
-                        $variant->color,
+                        'size' =>
+                            $variant->size,
 
-                    'size' =>
-                        $variant->size,
+                        'price' =>
+                            $price,
 
-                    'price' =>
-                        $price,
+                        'quantity' =>
+                            $quantity,
 
-                    'quantity' =>
-                        $quantity,
-
-                    'subtotal' =>
-                        $subtotal,
-                ]);
+                        'subtotal' =>
+                            $subtotal,
+                    ]);
 
 
-                // ========================
-                // PENDING PAYMENT
-                // Belum upload pembayaran
-                // ========================
+                /*
+                |--------------------------------------------------------------------------
+                | PENDING PAYMENT
+                |--------------------------------------------------------------------------
+                */
 
                 if (
                     $demo['status']
@@ -387,17 +446,17 @@ class OrderSeeder extends Seeder
                 }
 
 
-                // ========================
-                // WAITING VERIFICATION
-                // ========================
+                /*
+                |--------------------------------------------------------------------------
+                | WAITING VERIFICATION
+                |--------------------------------------------------------------------------
+                */
 
                 if (
                     $demo['status']
                     === 'waiting_verification'
                 ) {
-
                     $order->payments()->create([
-
                         'payment_method' =>
                             'bank_transfer',
 
@@ -405,7 +464,7 @@ class OrderSeeder extends Seeder
                             $totalAmount,
 
                         'proof_image' =>
-                            'images/payments/demo-002.jpg',
+                            'uploads/payments/payment-1-a40549c1-f898-47f5-b661-2d1d65e28857.png',
 
                         'status' =>
                             'pending',
@@ -428,18 +487,17 @@ class OrderSeeder extends Seeder
                 }
 
 
-                // ========================
-                // CANCELLED
-                // PAYMENT REJECTED
-                // ========================
+                /*
+                |--------------------------------------------------------------------------
+                | CANCELLED / REJECTED PAYMENT
+                |--------------------------------------------------------------------------
+                */
 
                 if (
                     $demo['status']
                     === 'cancelled'
                 ) {
-
                     $order->payments()->create([
-
                         'payment_method' =>
                             'bank_transfer',
 
@@ -447,7 +505,7 @@ class OrderSeeder extends Seeder
                             $totalAmount,
 
                         'proof_image' =>
-                            'images/payments/demo-007.jpg',
+                            'uploads/payments/payment-2-e9f20bb0-3eaf-4254-9c5b-82d4482ebeba.jpg',
 
                         'status' =>
                             'rejected',
@@ -471,12 +529,28 @@ class OrderSeeder extends Seeder
                 }
 
 
-                // ========================
-                // VERIFIED PAYMENT
-                // ========================
+                /*
+                |--------------------------------------------------------------------------
+                | VERIFIED PAYMENT
+                |--------------------------------------------------------------------------
+                */
+
+                $paymentImages = [
+                    'processing' =>
+                        'uploads/payments/payment-3-5bf19c1e-f956-420b-8b0c-2dfb90cf4142.jpg',
+
+                    'packing' =>
+                        'uploads/payments/payment-4-0459b319-e5d0-4017-a10b-c1de34ba31f2.png',
+
+                    'shipped' =>
+                        'uploads/payments/payment-5-ec0d7ab5-f196-484b-a5f4-57b1dc58e760.png',
+
+                    'completed' =>
+                        'uploads/payments/payment-3-5bf19c1e-f956-420b-8b0c-2dfb90cf4142.jpg',
+                ];
+
 
                 $order->payments()->create([
-
                     'payment_method' =>
                         'bank_transfer',
 
@@ -484,9 +558,9 @@ class OrderSeeder extends Seeder
                         $totalAmount,
 
                     'proof_image' =>
-                        'images/payments/' .
-                        strtolower($demo['code']) .
-                        '.jpg',
+                        $paymentImages[
+                            $demo['status']
+                        ],
 
                     'status' =>
                         'verified',
@@ -505,6 +579,93 @@ class OrderSeeder extends Seeder
                     'rejection_reason' =>
                         null,
                 ]);
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | POD + REVIEW FOR COMPLETED ORDER
+                |--------------------------------------------------------------------------
+                */
+
+                if (
+                    $demo['status']
+                    === 'completed'
+                ) {
+                    DB::table(
+                        'shipment_updates'
+                    )->insert([
+                        'order_id' =>
+                            $order->id,
+
+                        'updated_by' =>
+                            $staff->id,
+
+                        'status' =>
+                            'delivered',
+
+                        'location_name' =>
+                            'Bireuen, Aceh',
+
+                        'latitude' =>
+                            5.2030,
+
+                        'longitude' =>
+                            96.7009,
+
+                        'receiver_name' =>
+                            $customer->name,
+
+                        'note' =>
+                            'Barang diterima langsung oleh customer dalam kondisi baik.',
+
+                        'proof_image' =>
+                            'delivery-proofs/demo-proof.jpg',
+
+                        'occurred_at' =>
+                            $orderData[
+                                'completed_at'
+                            ],
+
+                        'created_at' =>
+                            $orderData[
+                                'completed_at'
+                            ],
+
+                        'updated_at' =>
+                            $orderData[
+                                'completed_at'
+                            ],
+                    ]);
+
+
+                    DB::table('reviews')
+                        ->insert([
+                            'user_id' =>
+                                $customer->id,
+
+                            'order_item_id' =>
+                                $orderItem->id,
+
+                            'rating' =>
+                                5,
+
+                            'review' =>
+                                'Produk sesuai deskripsi, kualitas bagus, dan pengiriman berjalan dengan baik.',
+
+                            'is_visible' =>
+                                true,
+
+                            'created_at' =>
+                                $orderData[
+                                    'completed_at'
+                                ],
+
+                            'updated_at' =>
+                                $orderData[
+                                    'completed_at'
+                                ],
+                        ]);
+                }
             }
         });
     }

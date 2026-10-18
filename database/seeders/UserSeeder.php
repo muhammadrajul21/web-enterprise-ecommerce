@@ -26,42 +26,68 @@ class UserSeeder extends Seeder
             ->where('name', 'customer')
             ->first();
 
+
         DB::table('users')->insert([
             [
                 'role_id' => $adminRole->id,
-                'name' => 'Admin',
-                'email' => 'admin@example.com',
-                'phone' => '081234567890',
+                'name' => 'Admin Lifestyle',
+                'email' => 'admin@lifestyle.test',
+                'phone' => '081234560001',
                 'status' => 'active',
                 'password' => Hash::make('password'),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+
             [
                 'role_id' => $staffRole->id,
-                'name' => 'Staff Gudang',
-                'email' => 'staff@example.com',
-                'phone' => '081234567891',
+                'name' => 'Staff Gudang Lifestyle',
+                'email' => 'staff@lifestyle.test',
+                'phone' => '081234560002',
                 'status' => 'active',
                 'password' => Hash::make('password'),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+
             [
                 'role_id' => $ownerRole->id,
-                'name' => 'Owner',
-                'email' => 'owner@example.com',
-                'phone' => '081234567892',
+                'name' => 'Owner Lifestyle',
+                'email' => 'owner@lifestyle.test',
+                'phone' => '081234560003',
                 'status' => 'active',
                 'password' => Hash::make('password'),
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+
             [
                 'role_id' => $customerRole->id,
-                'name' => 'Customer Demo',
-                'email' => 'customer@example.com',
-                'phone' => '081234567893',
+                'name' => 'Rizky Maulana',
+                'email' => 'rizky@lifestyle.test',
+                'phone' => '081234560101',
+                'status' => 'active',
+                'password' => Hash::make('password'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
+            [
+                'role_id' => $customerRole->id,
+                'name' => 'Nabila Rahma',
+                'email' => 'nabila@lifestyle.test',
+                'phone' => '081234560102',
+                'status' => 'active',
+                'password' => Hash::make('password'),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
+
+            [
+                'role_id' => $customerRole->id,
+                'name' => 'Dimas Pratama',
+                'email' => 'dimas@lifestyle.test',
+                'phone' => '081234560103',
                 'status' => 'active',
                 'password' => Hash::make('password'),
                 'created_at' => now(),

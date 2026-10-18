@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Owner\OperationalSummaryController as OwnerOperationalSummaryController;
 use App\Http\Controllers\Owner\ReportController as OwnerReportController;
@@ -86,7 +87,6 @@ Route::get('/', function () {
     if (!Auth::check()) {
 
         return redirect()->route('home.preview');
-
     }
 
 
@@ -103,30 +103,26 @@ Route::get('/', function () {
 
         'staff_gudang' =>
 
-            redirect()->route('staff.dashboard'),
+        redirect()->route('staff.dashboard'),
 
 
 
         'owner' =>
 
-            redirect()->route('owner.dashboard'),
+        redirect()->route('owner.dashboard'),
 
 
 
         'customer' =>
 
-            redirect()->route('home.preview'),
+        redirect()->route('home.preview'),
 
 
 
         default =>
 
-            redirect()->route('home.preview'),
-
+        redirect()->route('home.preview'),
     };
-
-
-
 });
 
 
@@ -212,9 +208,6 @@ Route::get('/home-preview', function () {
                     'active'
 
                 );
-
-
-
             },
 
         ])
@@ -242,9 +235,6 @@ Route::get('/home-preview', function () {
         )
 
     );
-
-
-
 })->name('home.preview');
 
 
@@ -292,9 +282,6 @@ Route::get('/catalog-preview', function () {
                     'active'
 
                 );
-
-
-
             },
 
         ], 'price')
@@ -342,15 +329,9 @@ Route::get('/catalog-preview', function () {
                     request('segment')
 
                 );
-
-
-
             }
 
         );
-
-
-
     }
 
 
@@ -404,15 +385,9 @@ Route::get('/catalog-preview', function () {
                     ]
 
                 );
-
-
-
             }
 
         );
-
-
-
     }
 
 
@@ -450,15 +425,9 @@ Route::get('/catalog-preview', function () {
                     request('category')
 
                 );
-
-
-
             }
 
         );
-
-
-
     }
 
 
@@ -496,15 +465,9 @@ Route::get('/catalog-preview', function () {
                     request('collection')
 
                 );
-
-
-
             }
 
         );
-
-
-
     }
 
 
@@ -586,9 +549,6 @@ Route::get('/catalog-preview', function () {
 
 
             break;
-
-
-
     }
 
 
@@ -652,9 +612,6 @@ Route::get('/catalog-preview', function () {
         )
 
     );
-
-
-
 })->name('catalog.preview');
 
 
@@ -756,9 +713,6 @@ Route::get('/search-preview', function () {
                                 '%' . $keyword . '%'
 
                             );
-
-
-
                         }
 
                     )
@@ -780,21 +734,12 @@ Route::get('/search-preview', function () {
                                 '%' . $keyword . '%'
 
                             );
-
-
-
                         }
 
                     );
-
-
-
             }
 
         );
-
-
-
     }
 
 
@@ -826,9 +771,6 @@ Route::get('/search-preview', function () {
         )
 
     );
-
-
-
 })->name('search.preview');
 
 
@@ -934,45 +876,42 @@ Route::get('/product/{slug}', function ($slug) {
 |--------------------------------------------------------------------------
 */
 
-$reviews = Review::with('user')
-    ->where('is_visible', true)
-    ->whereHas(
-        'orderItem.variant',
-        function ($query) use ($product) {
+    $reviews = Review::with('user')
+        ->where('is_visible', true)
+        ->whereHas(
+            'orderItem.variant',
+            function ($query) use ($product) {
 
-            $query->where(
-                'product_id',
-                $product->id
-            );
-        }
-    )
-    ->latest()
-    ->get();
-
-
-$reviewCount = $reviews->count();
+                $query->where(
+                    'product_id',
+                    $product->id
+                );
+            }
+        )
+        ->latest()
+        ->get();
 
 
-$averageRating = $reviewCount > 0
-    ? round($reviews->avg('rating'), 1)
-    : 0;
+    $reviewCount = $reviews->count();
 
 
-
-
-  return view(
-    'public.product-detail',
-    compact(
-        'product',
-        'relatedProducts',
-        'reviews',
-        'reviewCount',
-        'averageRating'
-    )
-);
+    $averageRating = $reviewCount > 0
+        ? round($reviews->avg('rating'), 1)
+        : 0;
 
 
 
+
+    return view(
+        'public.product-detail',
+        compact(
+            'product',
+            'relatedProducts',
+            'reviews',
+            'reviewCount',
+            'averageRating'
+        )
+    );
 })->name('product.detail');
 
 
@@ -1040,9 +979,6 @@ Route::middleware('guest')
             [AuthController::class, 'register']
 
         )->name('register.process');
-
-
-
     });
 
 
@@ -1147,7 +1083,7 @@ Route::middleware('auth')
 
 
 
-/*
+                /*
 
 |--------------------------------------------------------------------------
 
@@ -1159,61 +1095,61 @@ Route::middleware('auth')
 
 
 
-Route::get(
+                Route::get(
 
-    '/account/addresses',
+                    '/account/addresses',
 
-    [AddressController::class, 'index']
+                    [AddressController::class, 'index']
 
-)->name('customer.addresses.index');
-
-
-
-
-
-Route::post(
-
-    '/account/addresses',
-
-    [AddressController::class, 'store']
-
-)->name('customer.addresses.store');
+                )->name('customer.addresses.index');
 
 
 
 
 
-Route::put(
+                Route::post(
 
-    '/account/addresses/{address}',
+                    '/account/addresses',
 
-    [AddressController::class, 'update']
+                    [AddressController::class, 'store']
 
-)->name('customer.addresses.update');
-
-
-
-
-
-Route::patch(
-
-    '/account/addresses/{address}/default',
-
-    [AddressController::class, 'setDefault']
-
-)->name('customer.addresses.default');
+                )->name('customer.addresses.store');
 
 
 
 
 
-Route::delete(
+                Route::put(
 
-    '/account/addresses/{address}',
+                    '/account/addresses/{address}',
 
-    [AddressController::class, 'destroy']
+                    [AddressController::class, 'update']
 
-)->name('customer.addresses.destroy');
+                )->name('customer.addresses.update');
+
+
+
+
+
+                Route::patch(
+
+                    '/account/addresses/{address}/default',
+
+                    [AddressController::class, 'setDefault']
+
+                )->name('customer.addresses.default');
+
+
+
+
+
+                Route::delete(
+
+                    '/account/addresses/{address}',
+
+                    [AddressController::class, 'destroy']
+
+                )->name('customer.addresses.destroy');
 
 
 
@@ -1402,9 +1338,6 @@ Route::delete(
                     '/orders/{order}/items/{orderItem}/review',
                     [ReviewController::class, 'store']
                 )->name('customer.reviews.store');
-
-
-
             });
 
 
@@ -1416,244 +1349,243 @@ Route::delete(
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('admin')
-    ->middleware('role:admin')
-    ->group(function () {
+        Route::prefix('admin')
+            ->middleware('role:admin')
+            ->group(function () {
 
-        /*
+                /*
         |--------------------------------------------------------------------------
         | DASHBOARD
         |--------------------------------------------------------------------------
         */
 
-        Route::get(
-            '/dashboard',
-            [AdminDashboardController::class, 'index']
-        )->name('admin.dashboard');
+                Route::get(
+                    '/dashboard',
+                    [AdminDashboardController::class, 'index']
+                )->name('admin.dashboard');
 
 
-        /*
+                /*
         |--------------------------------------------------------------------------
         | PRODUCTS
         |--------------------------------------------------------------------------
         */
 
-        Route::get(
-            '/products',
-            [ProductController::class, 'index']
-        )->name('admin.products.index');
+                Route::get(
+                    '/products',
+                    [ProductController::class, 'index']
+                )->name('admin.products.index');
 
-        Route::get(
-            '/products/create',
-            [ProductController::class, 'create']
-        )->name('admin.products.create');
+                Route::get(
+                    '/products/create',
+                    [ProductController::class, 'create']
+                )->name('admin.products.create');
 
-        Route::post(
-            '/products',
-            [ProductController::class, 'store']
-        )->name('admin.products.store');
+                Route::post(
+                    '/products',
+                    [ProductController::class, 'store']
+                )->name('admin.products.store');
 
-        Route::get(
-            '/products/{product}/edit',
-            [ProductController::class, 'edit']
-        )->name('admin.products.edit');
+                Route::get(
+                    '/products/{product}/edit',
+                    [ProductController::class, 'edit']
+                )->name('admin.products.edit');
 
-        Route::put(
-            '/products/{product}',
-            [ProductController::class, 'update']
-        )->name('admin.products.update');
+                Route::put(
+                    '/products/{product}',
+                    [ProductController::class, 'update']
+                )->name('admin.products.update');
 
 
-        /*
+                /*
         |--------------------------------------------------------------------------
         | ORDERS
         |--------------------------------------------------------------------------
         */
 
-        Route::get(
-            '/orders',
-            [OrderController::class, 'index']
-        )->name('admin.orders.index');
+                Route::get(
+                    '/orders',
+                    [OrderController::class, 'index']
+                )->name('admin.orders.index');
 
-        Route::get(
-            '/orders/{order}',
-            [OrderController::class, 'show']
-        )->name('admin.orders.show');
+                Route::get(
+                    '/orders/{order}',
+                    [OrderController::class, 'show']
+                )->name('admin.orders.show');
 
 
-        /*
+                /*
         |--------------------------------------------------------------------------
         | PAYMENTS
         |--------------------------------------------------------------------------
         */
 
-        Route::get(
-            '/payments',
-            [PaymentController::class, 'index']
-        )->name('admin.payments.index');
+                Route::get(
+                    '/payments',
+                    [PaymentController::class, 'index']
+                )->name('admin.payments.index');
 
-        Route::post(
-            '/payments/{payment}/verify',
-            [PaymentController::class, 'verify']
-        )->name('admin.payments.verify');
+                Route::post(
+                    '/payments/{payment}/verify',
+                    [PaymentController::class, 'verify']
+                )->name('admin.payments.verify');
 
-        Route::post(
-            '/payments/{payment}/reject',
-            [PaymentController::class, 'reject']
-        )->name('admin.payments.reject');
+                Route::post(
+                    '/payments/{payment}/reject',
+                    [PaymentController::class, 'reject']
+                )->name('admin.payments.reject');
 
 
-        /*
+                /*
         |--------------------------------------------------------------------------
         | VARIANTS
         |--------------------------------------------------------------------------
         */
 
-        Route::get(
-            '/variants',
-            [ProductVariantController::class, 'index']
-        )->name('admin.variants.index');
+                Route::get(
+                    '/variants',
+                    [ProductVariantController::class, 'index']
+                )->name('admin.variants.index');
 
-        Route::get(
-            '/variants/create',
-            [ProductVariantController::class, 'create']
-        )->name('admin.variants.create');
+                Route::get(
+                    '/variants/create',
+                    [ProductVariantController::class, 'create']
+                )->name('admin.variants.create');
 
-        Route::post(
-            '/variants',
-            [ProductVariantController::class, 'store']
-        )->name('admin.variants.store');
+                Route::post(
+                    '/variants',
+                    [ProductVariantController::class, 'store']
+                )->name('admin.variants.store');
 
-        Route::get(
-            '/variants/{variant}/edit',
-            [ProductVariantController::class, 'edit']
-        )->name('admin.variants.edit');
+                Route::get(
+                    '/variants/{variant}/edit',
+                    [ProductVariantController::class, 'edit']
+                )->name('admin.variants.edit');
 
-        Route::put(
-            '/variants/{variant}',
-            [ProductVariantController::class, 'update']
-        )->name('admin.variants.update');
+                Route::put(
+                    '/variants/{variant}',
+                    [ProductVariantController::class, 'update']
+                )->name('admin.variants.update');
 
 
-        /*
+                /*
         |--------------------------------------------------------------------------
         | CATEGORIES
         |--------------------------------------------------------------------------
         */
 
-        Route::get(
-            '/categories',
-            [CategoryController::class, 'index']
-        )->name('admin.categories.index');
+                Route::get(
+                    '/categories',
+                    [CategoryController::class, 'index']
+                )->name('admin.categories.index');
 
-        Route::get(
-            '/categories/create',
-            [CategoryController::class, 'create']
-        )->name('admin.categories.create');
+                Route::get(
+                    '/categories/create',
+                    [CategoryController::class, 'create']
+                )->name('admin.categories.create');
 
-        Route::post(
-            '/categories',
-            [CategoryController::class, 'store']
-        )->name('admin.categories.store');
+                Route::post(
+                    '/categories',
+                    [CategoryController::class, 'store']
+                )->name('admin.categories.store');
 
-        Route::get(
-            '/categories/{category}/edit',
-            [CategoryController::class, 'edit']
-        )->name('admin.categories.edit');
+                Route::get(
+                    '/categories/{category}/edit',
+                    [CategoryController::class, 'edit']
+                )->name('admin.categories.edit');
 
-        Route::put(
-            '/categories/{category}',
-            [CategoryController::class, 'update']
-        )->name('admin.categories.update');
+                Route::put(
+                    '/categories/{category}',
+                    [CategoryController::class, 'update']
+                )->name('admin.categories.update');
 
-        Route::delete(
-            '/categories/{category}',
-            [CategoryController::class, 'destroy']
-        )->name('admin.categories.destroy');
+                Route::delete(
+                    '/categories/{category}',
+                    [CategoryController::class, 'destroy']
+                )->name('admin.categories.destroy');
 
 
-        /*
+                /*
         |--------------------------------------------------------------------------
         | COLLECTIONS
         |--------------------------------------------------------------------------
         */
 
-        Route::get(
-            '/collections',
-            [CollectionController::class, 'index']
-        )->name('admin.collections.index');
+                Route::get(
+                    '/collections',
+                    [CollectionController::class, 'index']
+                )->name('admin.collections.index');
 
-        Route::get(
-            '/collections/create',
-            [CollectionController::class, 'create']
-        )->name('admin.collections.create');
+                Route::get(
+                    '/collections/create',
+                    [CollectionController::class, 'create']
+                )->name('admin.collections.create');
 
-        Route::post(
-            '/collections',
-            [CollectionController::class, 'store']
-        )->name('admin.collections.store');
+                Route::post(
+                    '/collections',
+                    [CollectionController::class, 'store']
+                )->name('admin.collections.store');
 
-        Route::get(
-            '/collections/{collection}/edit',
-            [CollectionController::class, 'edit']
-        )->name('admin.collections.edit');
+                Route::get(
+                    '/collections/{collection}/edit',
+                    [CollectionController::class, 'edit']
+                )->name('admin.collections.edit');
 
-        Route::put(
-            '/collections/{collection}',
-            [CollectionController::class, 'update']
-        )->name('admin.collections.update');
+                Route::put(
+                    '/collections/{collection}',
+                    [CollectionController::class, 'update']
+                )->name('admin.collections.update');
 
-        Route::delete(
-            '/collections/{collection}',
-            [CollectionController::class, 'destroy']
-        )->name('admin.collections.destroy');
+                Route::delete(
+                    '/collections/{collection}',
+                    [CollectionController::class, 'destroy']
+                )->name('admin.collections.destroy');
 
 
-        /*
+                /*
         |--------------------------------------------------------------------------
         | VOUCHERS
         |--------------------------------------------------------------------------
         */
 
-        Route::get(
-            '/vouchers',
-            [VoucherController::class, 'index']
-        )->name('admin.vouchers.index');
+                Route::get(
+                    '/vouchers',
+                    [VoucherController::class, 'index']
+                )->name('admin.vouchers.index');
 
-        Route::get(
-            '/vouchers/create',
-            [VoucherController::class, 'create']
-        )->name('admin.vouchers.create');
+                Route::get(
+                    '/vouchers/create',
+                    [VoucherController::class, 'create']
+                )->name('admin.vouchers.create');
 
-        Route::post(
-            '/vouchers',
-            [VoucherController::class, 'store']
-        )->name('admin.vouchers.store');
+                Route::post(
+                    '/vouchers',
+                    [VoucherController::class, 'store']
+                )->name('admin.vouchers.store');
 
-        Route::get(
-            '/vouchers/{voucher}/edit',
-            [VoucherController::class, 'edit']
-        )->name('admin.vouchers.edit');
+                Route::get(
+                    '/vouchers/{voucher}/edit',
+                    [VoucherController::class, 'edit']
+                )->name('admin.vouchers.edit');
 
-        Route::put(
-            '/vouchers/{voucher}',
-            [VoucherController::class, 'update']
-        )->name('admin.vouchers.update');
+                Route::put(
+                    '/vouchers/{voucher}',
+                    [VoucherController::class, 'update']
+                )->name('admin.vouchers.update');
 
-        Route::delete(
-            '/vouchers/{voucher}',
-            [VoucherController::class, 'destroy']
-        )->name('admin.vouchers.destroy');
-
-    });
-        
+                Route::delete(
+                    '/vouchers/{voucher}',
+                    [VoucherController::class, 'destroy']
+                )->name('admin.vouchers.destroy');
+            });
 
 
 
 
 
 
-    /*
+
+        /*
         
 
         |--------------------------------------------------------------------------
@@ -1804,14 +1736,16 @@ Route::prefix('admin')
 
                 )->name('staff.orders.ship');
 
-
-
+                Route::post(
+                    '/orders/{order}/delivered',
+                    [StaffOrderController::class, 'markDelivered']
+                )->name('staff.orders.delivered');
             });
 
 
 
 
-             /*
+        /*
         |--------------------------------------------------------------------------
         | OWNER
         |--------------------------------------------------------------------------
@@ -1844,11 +1778,9 @@ Route::prefix('admin')
 |--------------------------------------------------------------------------
 */
 
-Route::get(
-    '/operations',
-    [OwnerOperationalSummaryController::class, 'index']
-)->name('owner.operations.index');
-
+                Route::get(
+                    '/operations',
+                    [OwnerOperationalSummaryController::class, 'index']
+                )->name('owner.operations.index');
             });
-
     });

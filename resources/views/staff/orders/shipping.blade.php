@@ -36,12 +36,14 @@
 
 <div class="staff-layout">
 
+    {{-- SIDEBAR --}}
     <aside class="staff-sidebar">
 
         <div class="sidebar-brand">
             <h2>LIFESTYLE</h2>
             <span>WAREHOUSE PANEL</span>
         </div>
+
 
         <nav class="sidebar-menu">
 
@@ -70,6 +72,7 @@
 
         </nav>
 
+
         <div class="sidebar-footer">
 
             <div class="staff-user">
@@ -81,6 +84,7 @@
                 </div>
 
                 <div>
+
                     <strong>
                         {{ auth()->user()->name }}
                     </strong>
@@ -88,9 +92,11 @@
                     <span>
                         Staff Gudang
                     </span>
+
                 </div>
 
             </div>
+
 
             <form
                 action="{{ route('logout') }}"
@@ -105,6 +111,7 @@
                     <i class="bi bi-box-arrow-right"></i>
                     Logout
                 </button>
+
             </form>
 
         </div>
@@ -112,11 +119,14 @@
     </aside>
 
 
+    {{-- MAIN CONTENT --}}
     <main class="staff-main">
 
+        {{-- HEADER --}}
         <div class="page-header">
 
             <div>
+
                 <span class="page-label">
                     WAREHOUSE
                 </span>
@@ -126,9 +136,12 @@
                 </h1>
 
                 <p>
-                    Input courier and tracking number for packed orders.
+                    Kelola pengiriman, nomor resi, dan verifikasi
+                    Proof of Delivery dari pihak kurir.
                 </p>
+
             </div>
+
 
             <div class="header-icon">
                 <i class="bi bi-truck"></i>
@@ -137,8 +150,7 @@
         </div>
 
 
-        {{-- ALERT --}}
-
+        {{-- SUCCESS ALERT --}}
         @if (session('success'))
 
             <div class="order-alert order-alert-success">
@@ -152,6 +164,7 @@
         @endif
 
 
+        {{-- ERROR ALERT --}}
         @if (session('error'))
 
             <div class="order-alert order-alert-error">
@@ -165,6 +178,7 @@
         @endif
 
 
+        {{-- VALIDATION ERROR --}}
         @if ($errors->any())
 
             <div class="order-alert order-alert-error">
@@ -189,7 +203,6 @@
 
 
         {{-- FILTER --}}
-
         <section class="order-filter-card">
 
             <form
@@ -238,6 +251,16 @@
                         Shipped
                     </option>
 
+                    <option
+                        value="completed"
+                        {{ request('status') === 'completed'
+                            ? 'selected'
+                            : ''
+                        }}
+                    >
+                        Completed
+                    </option>
+
                 </select>
 
 
@@ -268,13 +291,13 @@
         </section>
 
 
-        {{-- LIST --}}
-
+        {{-- SHIPPING LIST --}}
         <section class="processing-card">
 
             <div class="processing-card-header">
 
                 <div>
+
                     <h2>
                         Shipping Queue
                     </h2>
@@ -283,6 +306,7 @@
                         {{ $orders->total() }}
                         shipping records
                     </p>
+
                 </div>
 
             </div>
@@ -294,6 +318,7 @@
 
                     <article class="shipping-order-card">
 
+                        {{-- ORDER HEADER --}}
                         <div class="processing-order-top">
 
                             <div>
@@ -325,18 +350,16 @@
                                     shipping-status-{{ $order->status }}
                                 "
                             >
-
                                 {{ ucfirst($order->status) }}
-
                             </span>
 
                         </div>
 
 
+                        {{-- DESTINATION + ITEMS --}}
                         <div class="shipping-grid">
 
                             {{-- DESTINATION --}}
-
                             <div class="shipping-panel">
 
                                 <span class="shipping-section-label">
@@ -369,13 +392,11 @@
 
 
                             {{-- ITEMS --}}
-
                             <div class="shipping-panel">
 
                                 <span class="shipping-section-label">
                                     ORDER ITEMS
                                 </span>
-
 
                                 <div class="shipping-items">
 
@@ -395,7 +416,6 @@
                                                 </span>
 
                                             </div>
-
 
                                             <div>
 
@@ -424,9 +444,11 @@
                         </div>
 
 
-                        @if ($order->status === 'packing')
+                        {{-- ================================================= --}}
+                        {{-- PACKING --}}
+                        {{-- ================================================= --}}
 
-                            {{-- FORM INPUT RESI --}}
+                        @if ($order->status === 'packing')
 
                             <div class="shipping-form-wrapper">
 
@@ -441,6 +463,11 @@
                                         <h3>
                                             Input Courier & Tracking Number
                                         </h3>
+
+                                        <p>
+                                            Masukkan informasi kurir sebelum
+                                            barang dikirim ke customer.
+                                        </p>
 
                                     </div>
 
@@ -537,10 +564,14 @@
 
                             </div>
 
-                        @else
 
-                            {{-- ALREADY SHIPPED --}}
+                        {{-- ================================================= --}}
+                        {{-- SHIPPED --}}
+                        {{-- ================================================= --}}
 
+                        @elseif ($order->status === 'shipped')
+
+                            {{-- SHIPPING INFORMATION --}}
                             <div class="shipped-information">
 
                                 <div>
@@ -589,15 +620,506 @@
                                     </span>
 
                                     <strong>
-
                                         {{ $order->shipped_at
                                             ?->format('d M Y, H:i')
                                             ?? '-'
                                         }}
-
                                     </strong>
 
                                 </div>
+
+                            </div>
+
+
+                            {{-- DELIVERY VERIFICATION --}}
+                            <div
+                                class="
+                                    shipping-form-wrapper
+                                    delivery-confirmation
+                                "
+                            >
+
+                                <div class="shipping-form-heading">
+
+                                    <div>
+
+                                        <span>
+                                            DELIVERY VERIFICATION
+                                        </span>
+
+                                        <h3>
+                                            Verify Proof of Delivery
+                                        </h3>
+
+                                        <p>
+                                            Verifikasi informasi dan bukti
+                                            pengantaran yang diterima dari
+                                            pihak kurir. Setelah Proof of
+                                            Delivery diverifikasi, status
+                                            order otomatis menjadi completed.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+
+                                <form
+                                    action="{{ route(
+                                        'staff.orders.delivered',
+                                        $order
+                                    ) }}"
+                                    method="POST"
+                                    enctype="multipart/form-data"
+                                    class="shipping-form delivery-form"
+                                    onsubmit="
+                                        return confirm(
+                                            'Pastikan Proof of Delivery dari kurir sudah benar. Lanjutkan verifikasi?'
+                                        );
+                                    "
+                                >
+
+                                    @csrf
+
+
+                                    {{-- RECEIVER --}}
+                                    <div class="shipping-form-group">
+
+                                        <label>
+                                            Received By
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            name="receiver_name"
+                                            value="{{ old('receiver_name') }}"
+                                            placeholder="Nama penerima barang"
+                                            maxlength="255"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    {{-- LOCATION --}}
+                                    <div class="shipping-form-group">
+
+                                        <label>
+                                            Delivery Location
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            name="location_name"
+                                            value="{{ old('location_name') }}"
+                                            placeholder="Contoh: Banda Aceh, Aceh"
+                                            maxlength="255"
+                                            required
+                                        >
+
+                                    </div>
+
+
+                                    {{-- LATITUDE --}}
+                                    <div class="shipping-form-group">
+
+                                        <label>
+                                            Latitude
+                                            <small>
+                                                (optional)
+                                            </small>
+                                        </label>
+
+                                        <input
+                                            type="number"
+                                            step="0.0000001"
+                                            name="latitude"
+                                            value="{{ old('latitude') }}"
+                                            placeholder="Example: 5.5483"
+                                        >
+
+                                    </div>
+
+
+                                    {{-- LONGITUDE --}}
+                                    <div class="shipping-form-group">
+
+                                        <label>
+                                            Longitude
+                                            <small>
+                                                (optional)
+                                            </small>
+                                        </label>
+
+                                        <input
+                                            type="number"
+                                            step="0.0000001"
+                                            name="longitude"
+                                            value="{{ old('longitude') }}"
+                                            placeholder="Example: 95.3238"
+                                        >
+
+                                    </div>
+
+
+                                    {{-- PROOF PHOTO --}}
+                                    <div
+                                        class="
+                                            shipping-form-group
+                                            shipping-form-full
+                                        "
+                                    >
+
+                                        <label>
+                                            Proof of Delivery Photo
+                                        </label>
+
+                                        <input
+                                            type="file"
+                                            name="proof_image"
+                                            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                            required
+                                        >
+
+                                        <small>
+                                            JPG, JPEG, PNG atau WEBP.
+                                            Maksimal 5 MB.
+                                        </small>
+
+                                    </div>
+
+
+                                    {{-- NOTE --}}
+                                    <div
+                                        class="
+                                            shipping-form-group
+                                            shipping-form-full
+                                        "
+                                    >
+
+                                        <label>
+                                            Delivery Note
+                                            <small>
+                                                (optional)
+                                            </small>
+                                        </label>
+
+                                        <textarea
+                                            name="note"
+                                            rows="4"
+                                            maxlength="1000"
+                                            placeholder="Contoh: Barang diterima langsung oleh customer dalam kondisi baik."
+                                        >{{ old('note') }}</textarea>
+
+                                    </div>
+
+
+                                    {{-- SUBMIT --}}
+                                    <div
+                                        class="
+                                            shipping-submit
+                                            shipping-form-full
+                                        "
+                                    >
+
+                                        <button
+                                            type="submit"
+                                            class="
+                                                ship-button
+                                                delivered-button
+                                            "
+                                        >
+
+                                            <i class="bi bi-check-circle"></i>
+
+                                            VERIFY PROOF OF DELIVERY
+
+                                        </button>
+
+                                    </div>
+
+                                </form>
+
+                            </div>
+
+
+                        {{-- ================================================= --}}
+                        {{-- COMPLETED --}}
+                        {{-- ================================================= --}}
+
+                        @elseif ($order->status === 'completed')
+
+                            @php
+
+                                $delivery = $order
+                                    ->shipmentUpdates
+                                    ->where(
+                                        'status',
+                                        'delivered'
+                                    )
+                                    ->sortByDesc(
+                                        'occurred_at'
+                                    )
+                                    ->first();
+
+                            @endphp
+
+
+                            {{-- COMPLETED INFORMATION --}}
+                            <div class="shipped-information">
+
+                                <div>
+
+                                    <span>
+                                        Courier
+                                    </span>
+
+                                    <strong>
+                                        {{ $order->courier ?? '-' }}
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Service
+                                    </span>
+
+                                    <strong>
+                                        {{ $order->shipping_service ?? '-' }}
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Tracking Number
+                                    </span>
+
+                                    <strong class="tracking-number">
+                                        {{ $order->tracking_number ?? '-' }}
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Completed At
+                                    </span>
+
+                                    <strong>
+                                        {{ $order->completed_at
+                                            ?->format('d M Y, H:i')
+                                            ?? '-'
+                                        }}
+                                    </strong>
+
+                                </div>
+
+
+                                <div>
+
+                                    <span>
+                                        Received By
+                                    </span>
+
+                                    <strong>
+                                        {{ $delivery?->receiver_name ?? '-' }}
+                                    </strong>
+
+                                </div>
+
+                            </div>
+
+
+                            {{-- DELIVERY COMPLETED --}}
+                            <div
+                                class="
+                                    shipping-form-wrapper
+                                    delivery-completed
+                                "
+                            >
+
+                                <div class="shipping-form-heading">
+
+                                    <div>
+
+                                        <span>
+                                            DELIVERY COMPLETED
+                                        </span>
+
+                                        <h3>
+                                            Order Successfully Delivered
+                                        </h3>
+
+
+                                        @if ($delivery)
+
+                                            <p>
+                                                Proof of Delivery telah
+                                                diverifikasi. Barang telah
+                                                diterima customer dan status
+                                                order otomatis berubah menjadi
+                                                completed.
+                                            </p>
+
+                                        @else
+
+                                            <p>
+                                                Order ini sudah berstatus
+                                                completed sebelum fitur
+                                                Proof of Delivery diterapkan.
+                                            </p>
+
+                                        @endif
+
+                                    </div>
+
+                                </div>
+
+
+                                @if ($delivery)
+
+                                    <div class="delivery-result-grid">
+
+                                        <div>
+
+                                            <span>
+                                                Received By
+                                            </span>
+
+                                            <strong>
+                                                {{ $delivery->receiver_name ?? '-' }}
+                                            </strong>
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <span>
+                                                Delivery Location
+                                            </span>
+
+                                            <strong>
+                                                {{ $delivery->location_name ?? '-' }}
+                                            </strong>
+
+                                        </div>
+
+
+                                        <div>
+
+                                            <span>
+                                                Delivered At
+                                            </span>
+
+                                            <strong>
+                                                {{ $delivery->occurred_at
+                                                    ?->format('d M Y, H:i')
+                                                    ?? '-'
+                                                }}
+                                            </strong>
+
+                                        </div>
+
+
+                                        @if (
+                                            $delivery->latitude
+                                            && $delivery->longitude
+                                        )
+
+                                            <div>
+
+                                                <span>
+                                                    Coordinates
+                                                </span>
+
+                                                <strong>
+                                                    {{ $delivery->latitude }},
+                                                    {{ $delivery->longitude }}
+                                                </strong>
+
+                                            </div>
+
+                                        @endif
+
+
+                                        @if ($delivery->note)
+
+                                            <div class="delivery-result-note">
+
+                                                <span>
+                                                    Delivery Note
+                                                </span>
+
+                                                <p>
+                                                    {{ $delivery->note }}
+                                                </p>
+
+                                            </div>
+
+                                        @endif
+
+                                    </div>
+
+
+                                    @if ($delivery->proof_image)
+
+                                        <div class="delivery-proof-preview">
+
+                                            <span>
+                                                PROOF OF DELIVERY
+                                            </span>
+
+                                            <a
+                                                href="{{ asset(
+                                                    'storage/' .
+                                                    $delivery->proof_image
+                                                ) }}"
+                                                target="_blank"
+                                            >
+
+                                                <img
+                                                    src="{{ asset(
+                                                        'storage/' .
+                                                        $delivery->proof_image
+                                                    ) }}"
+                                                    alt="Proof of delivery"
+                                                >
+
+                                            </a>
+
+                                        </div>
+
+                                    @endif
+
+
+                                @else
+
+                                    <div class="processing-empty">
+
+                                        <i class="bi bi-check-circle"></i>
+
+                                        <h3>
+                                            Order Completed
+                                        </h3>
+
+                                        <p>
+                                            Order sudah selesai tetapi tidak
+                                            memiliki data Proof of Delivery
+                                            karena berasal dari transaksi lama.
+                                        </p>
+
+                                    </div>
+
+                                @endif
 
                             </div>
 
@@ -616,7 +1138,8 @@
                         </h3>
 
                         <p>
-                            Packed orders will appear here.
+                            Packed, shipped, and completed orders
+                            will appear here.
                         </p>
 
                     </div>
@@ -626,6 +1149,7 @@
             </div>
 
 
+            {{-- PAGINATION --}}
             @if ($orders->hasPages())
 
                 <div class="processing-pagination">
@@ -633,40 +1157,57 @@
                     @if ($orders->onFirstPage())
 
                         <span class="disabled">
+
                             <i class="bi bi-arrow-left"></i>
+
                             Previous
+
                         </span>
 
                     @else
 
                         <a href="{{ $orders->previousPageUrl() }}">
+
                             <i class="bi bi-arrow-left"></i>
+
                             Previous
+
                         </a>
 
                     @endif
 
 
                     <span>
+
                         Page
+
                         {{ $orders->currentPage() }}
+
                         of
+
                         {{ $orders->lastPage() }}
+
                     </span>
 
 
                     @if ($orders->hasMorePages())
 
                         <a href="{{ $orders->nextPageUrl() }}">
+
                             Next
+
                             <i class="bi bi-arrow-right"></i>
+
                         </a>
 
                     @else
 
                         <span class="disabled">
+
                             Next
+
                             <i class="bi bi-arrow-right"></i>
+
                         </span>
 
                     @endif
@@ -682,4 +1223,5 @@
 </div>
 
 </body>
+
 </html>

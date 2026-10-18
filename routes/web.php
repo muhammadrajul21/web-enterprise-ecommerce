@@ -917,6 +917,38 @@ Route::get('/product/{slug}', function ($slug) {
 
 
 
+/*
+|--------------------------------------------------------------------------
+| PUBLIC CART
+|--------------------------------------------------------------------------
+|
+| Guest dan customer dapat menggunakan keranjang.
+| Login hanya diwajibkan saat checkout.
+|
+*/
+
+Route::get(
+    '/cart',
+    [CartController::class, 'index']
+)->name('cart.index');
+
+Route::post(
+    '/cart',
+    [CartController::class, 'store']
+)->name('cart.store');
+
+Route::put(
+    '/cart/{variantId}',
+    [CartController::class, 'update']
+)->name('cart.update');
+
+Route::delete(
+    '/cart/{variantId}',
+    [CartController::class, 'destroy']
+)->name('cart.destroy');
+
+
+
 
 /*
 
@@ -1154,62 +1186,6 @@ Route::middleware('auth')
 
 
 
-
-                /*
-
-                |--------------------------------------------------------------------------
-
-                | CART
-
-                |--------------------------------------------------------------------------
-
-                \*/
-
-
-
-                Route::get(
-
-                    '/cart',
-
-                    [CartController::class, 'index']
-
-                )->name('cart.index');
-
-
-
-
-
-                Route::post(
-
-                    '/cart',
-
-                    [CartController::class, 'store']
-
-                )->name('cart.store');
-
-
-
-
-
-                Route::put(
-
-                    '/cart/{cartItem}',
-
-                    [CartController::class, 'update']
-
-                )->name('cart.update');
-
-
-
-
-
-                Route::delete(
-
-                    '/cart/{cartItem}',
-
-                    [CartController::class, 'destroy']
-
-                )->name('cart.destroy');
 
 
 
@@ -1586,7 +1562,7 @@ Route::middleware('auth')
 
 
         /*
-        
+
 
         |--------------------------------------------------------------------------
 

@@ -219,7 +219,7 @@
                                     <form
                                         action="{{ route(
                                             'cart.destroy',
-                                            $item
+                                            $item->variant_id
                                         ) }}"
                                         method="POST"
                                         onsubmit="return confirm(
@@ -322,7 +322,7 @@
                                     <form
                                         action="{{ route(
                                             'cart.update',
-                                            $item
+                                            $item->variant_id
                                         ) }}"
                                         method="POST"
                                         class="quantity-form"
@@ -333,14 +333,14 @@
 
 
                                         <label
-                                            for="quantity-{{ $item->id }}"
+                                            for="quantity-{{ $item->variant_id }}"
                                         >
                                             QTY
                                         </label>
 
 
                                         <input
-                                            id="quantity-{{ $item->id }}"
+                                            id="quantity-{{ $item->variant_id }}"
                                             type="number"
                                             name="quantity"
                                             min="1"

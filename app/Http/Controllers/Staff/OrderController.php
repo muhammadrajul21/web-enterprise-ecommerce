@@ -265,6 +265,8 @@ class OrderController extends Controller
     }
 
 
+
+
     /**
      * Mengkonfirmasi barang sudah diterima customer.
      * Order otomatis berubah dari Shipped

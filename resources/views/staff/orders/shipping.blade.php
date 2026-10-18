@@ -6,152 +6,144 @@
 
     <meta
         name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+        content="width=device-width, initial-scale=1.0">
 
     <title>Shipping Orders</title>
 
     <link
         rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    >
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
     <link
         rel="stylesheet"
-        href="{{ asset('css/staff/dashboard.css') }}"
-    >
+        href="{{ asset('css/staff/dashboard.css') }}">
 
     <link
         rel="stylesheet"
-        href="{{ asset('css/staff/orders.css') }}"
-    >
+        href="{{ asset('css/staff/orders.css') }}">
 
     <link
         rel="stylesheet"
-        href="{{ asset('css/staff/shipping.css') }}"
-    >
+        href="{{ asset('css/staff/shipping.css') }}">
 </head>
 
 <body>
 
-<div class="staff-layout">
+    <div class="staff-layout">
 
-    {{-- SIDEBAR --}}
-    <aside class="staff-sidebar">
+        {{-- SIDEBAR --}}
+        <aside class="staff-sidebar">
 
-        <div class="sidebar-brand">
-            <h2>LIFESTYLE</h2>
-            <span>WAREHOUSE PANEL</span>
-        </div>
-
-
-        <nav class="sidebar-menu">
-
-            <a href="{{ route('staff.dashboard') }}">
-                <i class="bi bi-grid"></i>
-                Dashboard
-            </a>
-
-            <a href="{{ route('staff.stock.index') }}">
-                <i class="bi bi-box-seam"></i>
-                Stock
-            </a>
-
-            <a href="{{ route('staff.orders.processing') }}">
-                <i class="bi bi-box2-heart"></i>
-                Processing
-            </a>
-
-            <a
-                href="{{ route('staff.orders.shipping') }}"
-                class="active"
-            >
-                <i class="bi bi-truck"></i>
-                Shipping
-            </a>
-
-        </nav>
+            <div class="sidebar-brand">
+                <h2>LIFESTYLE</h2>
+                <span>WAREHOUSE PANEL</span>
+            </div>
 
 
-        <div class="sidebar-footer">
+            <nav class="sidebar-menu">
 
-            <div class="staff-user">
+                <a href="{{ route('staff.dashboard') }}">
+                    <i class="bi bi-grid"></i>
+                    Dashboard
+                </a>
 
-                <div class="staff-avatar">
-                    {{ strtoupper(
+                <a href="{{ route('staff.stock.index') }}">
+                    <i class="bi bi-box-seam"></i>
+                    Stock
+                </a>
+
+                <a href="{{ route('staff.orders.processing') }}">
+                    <i class="bi bi-box2-heart"></i>
+                    Processing
+                </a>
+
+                <a
+                    href="{{ route('staff.orders.shipping') }}"
+                    class="active">
+                    <i class="bi bi-truck"></i>
+                    Shipping
+                </a>
+
+            </nav>
+
+
+            <div class="sidebar-footer">
+
+                <div class="staff-user">
+
+                    <div class="staff-avatar">
+                        {{ strtoupper(
                         substr(auth()->user()->name, 0, 1)
                     ) }}
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            {{ auth()->user()->name }}
+                        </strong>
+
+                        <span>
+                            Staff Gudang
+                        </span>
+
+                    </div>
+
                 </div>
+
+
+                <form
+                    action="{{ route('logout') }}"
+                    method="POST">
+                    @csrf
+
+                    <button
+                        type="submit"
+                        class="logout-button">
+                        <i class="bi bi-box-arrow-right"></i>
+                        Logout
+                    </button>
+
+                </form>
+
+            </div>
+
+        </aside>
+
+
+        {{-- MAIN CONTENT --}}
+        <main class="staff-main">
+
+            {{-- HEADER --}}
+            <div class="page-header">
 
                 <div>
 
-                    <strong>
-                        {{ auth()->user()->name }}
-                    </strong>
-
-                    <span>
-                        Staff Gudang
+                    <span class="page-label">
+                        WAREHOUSE
                     </span>
 
+                    <h1>
+                        Shipping Orders
+                    </h1>
+
+                    <p>
+                        Kelola pengiriman, nomor resi, dan verifikasi
+                        Proof of Delivery dari pihak kurir.
+                    </p>
+
+                </div>
+
+
+                <div class="header-icon">
+                    <i class="bi bi-truck"></i>
                 </div>
 
             </div>
 
 
-            <form
-                action="{{ route('logout') }}"
-                method="POST"
-            >
-                @csrf
-
-                <button
-                    type="submit"
-                    class="logout-button"
-                >
-                    <i class="bi bi-box-arrow-right"></i>
-                    Logout
-                </button>
-
-            </form>
-
-        </div>
-
-    </aside>
-
-
-    {{-- MAIN CONTENT --}}
-    <main class="staff-main">
-
-        {{-- HEADER --}}
-        <div class="page-header">
-
-            <div>
-
-                <span class="page-label">
-                    WAREHOUSE
-                </span>
-
-                <h1>
-                    Shipping Orders
-                </h1>
-
-                <p>
-                    Kelola pengiriman, nomor resi, dan verifikasi
-                    Proof of Delivery dari pihak kurir.
-                </p>
-
-            </div>
-
-
-            <div class="header-icon">
-                <i class="bi bi-truck"></i>
-            </div>
-
-        </div>
-
-
-        {{-- SUCCESS ALERT --}}
-        @if (session('success'))
+            {{-- SUCCESS ALERT --}}
+            @if (session('success'))
 
             <div class="order-alert order-alert-success">
 
@@ -161,11 +153,11 @@
 
             </div>
 
-        @endif
+            @endif
 
 
-        {{-- ERROR ALERT --}}
-        @if (session('error'))
+            {{-- ERROR ALERT --}}
+            @if (session('error'))
 
             <div class="order-alert order-alert-error">
 
@@ -175,11 +167,11 @@
 
             </div>
 
-        @endif
+            @endif
 
 
-        {{-- VALIDATION ERROR --}}
-        @if ($errors->any())
+            {{-- VALIDATION ERROR --}}
+            @if ($errors->any())
 
             <div class="order-alert order-alert-error">
 
@@ -189,9 +181,9 @@
 
                     @foreach ($errors->all() as $error)
 
-                        <div>
-                            {{ $error }}
-                        </div>
+                    <div>
+                        {{ $error }}
+                    </div>
 
                     @endforeach
 
@@ -199,122 +191,115 @@
 
             </div>
 
-        @endif
+            @endif
 
 
-        {{-- FILTER --}}
-        <section class="order-filter-card">
+            {{-- FILTER --}}
+            <section class="order-filter-card">
 
-            <form
-                action="{{ route('staff.orders.shipping') }}"
-                method="GET"
-                class="order-filter-form"
-            >
+                <form
+                    action="{{ route('staff.orders.shipping') }}"
+                    method="GET"
+                    class="order-filter-form">
 
-                <div class="order-search">
+                    <div class="order-search">
 
-                    <i class="bi bi-search"></i>
+                        <i class="bi bi-search"></i>
 
-                    <input
-                        type="text"
-                        name="search"
-                        value="{{ request('search') }}"
-                        placeholder="Search order, customer or tracking number..."
-                    >
+                        <input
+                            type="text"
+                            name="search"
+                            value="{{ request('search') }}"
+                            placeholder="Search order, customer or tracking number...">
 
-                </div>
+                    </div>
 
 
-                <select name="status">
+                    <select name="status">
 
-                    <option value="">
-                        All Status
-                    </option>
+                        <option value="">
+                            All Status
+                        </option>
 
-                    <option
-                        value="packing"
-                        {{ request('status') === 'packing'
+                        <option
+                            value="packing"
+                            {{ request('status') === 'packing'
                             ? 'selected'
                             : ''
-                        }}
-                    >
-                        Packing
-                    </option>
+                        }}>
+                            Packing
+                        </option>
 
-                    <option
-                        value="shipped"
-                        {{ request('status') === 'shipped'
+                        <option
+                            value="shipped"
+                            {{ request('status') === 'shipped'
                             ? 'selected'
                             : ''
-                        }}
-                    >
-                        Shipped
-                    </option>
+                        }}>
+                            Shipped
+                        </option>
 
-                    <option
-                        value="completed"
-                        {{ request('status') === 'completed'
+                        <option
+                            value="completed"
+                            {{ request('status') === 'completed'
                             ? 'selected'
                             : ''
-                        }}
-                    >
-                        Completed
-                    </option>
+                        }}>
+                            Completed
+                        </option>
 
-                </select>
-
-
-                <button
-                    type="submit"
-                    class="order-filter-button"
-                >
-                    FILTER
-                </button>
+                    </select>
 
 
-                @if (
+                    <button
+                        type="submit"
+                        class="order-filter-button">
+                        FILTER
+                    </button>
+
+
+                    @if (
                     request('search')
                     || request('status')
-                )
+                    )
 
                     <a
                         href="{{ route('staff.orders.shipping') }}"
-                        class="order-reset-button"
-                    >
+                        class="order-reset-button">
                         RESET
                     </a>
 
-                @endif
+                    @endif
 
-            </form>
+                </form>
 
-        </section>
+            </section>
 
 
-        {{-- SHIPPING LIST --}}
-        <section class="processing-card">
+            {{-- SHIPPING LIST --}}
+            <section class="processing-card">
 
-            <div class="processing-card-header">
+                <div class="processing-card-header">
 
-                <div>
+                    <div>
 
-                    <h2>
-                        Shipping Queue
-                    </h2>
+                        <h2>
+                            Shipping Queue
+                        </h2>
 
-                    <p>
-                        {{ $orders->total() }}
-                        shipping records
-                    </p>
+                        <p>
+                            {{ $orders->total() }}
+                            shipping records
+                        </p>
+
+                    </div>
 
                 </div>
 
-            </div>
 
+                <div class="processing-list">
 
-            <div class="processing-list">
-
-                @forelse ($orders as $order)
+                    @forelse ($orders as $order)
 
                     <article class="shipping-order-card">
 
@@ -348,8 +333,7 @@
                                 class="
                                     shipping-status
                                     shipping-status-{{ $order->status }}
-                                "
-                            >
+                                ">
                                 {{ ucfirst($order->status) }}
                             </span>
 
@@ -402,38 +386,38 @@
 
                                     @foreach ($order->items as $item)
 
-                                        <div class="shipping-item">
+                                    <div class="shipping-item">
 
-                                            <div>
+                                        <div>
 
-                                                <strong>
-                                                    {{ $item->product_name }}
-                                                </strong>
+                                            <strong>
+                                                {{ $item->product_name }}
+                                            </strong>
 
-                                                <span>
-                                                    SKU:
-                                                    {{ $item->sku ?? '-' }}
-                                                </span>
-
-                                            </div>
-
-                                            <div>
-
-                                                <span>
-                                                    {{ $item->color ?? '-' }}
-                                                </span>
-
-                                                <span>
-                                                    {{ $item->size ?? '-' }}
-                                                </span>
-
-                                                <strong>
-                                                    × {{ $item->quantity }}
-                                                </strong>
-
-                                            </div>
+                                            <span>
+                                                SKU:
+                                                {{ $item->sku ?? '-' }}
+                                            </span>
 
                                         </div>
+
+                                        <div>
+
+                                            <span>
+                                                {{ $item->color ?? '-' }}
+                                            </span>
+
+                                            <span>
+                                                {{ $item->size ?? '-' }}
+                                            </span>
+
+                                            <strong>
+                                                × {{ $item->quantity }}
+                                            </strong>
+
+                                        </div>
+
+                                    </div>
 
                                     @endforeach
 
@@ -450,119 +434,114 @@
 
                         @if ($order->status === 'packing')
 
-                            <div class="shipping-form-wrapper">
+                        <div class="shipping-form-wrapper">
 
-                                <div class="shipping-form-heading">
+                            <div class="shipping-form-heading">
 
-                                    <div>
+                                <div>
 
-                                        <span>
-                                            SHIPPING INFORMATION
-                                        </span>
+                                    <span>
+                                        SHIPPING INFORMATION
+                                    </span>
 
-                                        <h3>
-                                            Input Courier & Tracking Number
-                                        </h3>
+                                    <h3>
+                                        Input Courier & Tracking Number
+                                    </h3>
 
-                                        <p>
-                                            Masukkan informasi kurir sebelum
-                                            barang dikirim ke customer.
-                                        </p>
+                                    <p>
+                                        Masukkan informasi kurir sebelum
+                                        barang dikirim ke customer.
+                                    </p>
 
-                                    </div>
+                                </div>
+
+                            </div>
+
+
+                            <form
+                                action="{{ route(
+                                        'staff.orders.ship',
+                                        $order
+                                    ) }}"
+                                method="POST"
+                                class="shipping-form"
+                                onsubmit="
+                                        return confirm(
+                                            'Mark this order as shipped?'
+                                        );
+                                    ">
+
+                                @csrf
+
+
+                                <div class="shipping-form-group">
+
+                                    <label>
+                                        Courier
+                                    </label>
+
+                                    <input
+                                        type="text"
+                                        name="courier"
+                                        value="{{ old('courier') }}"
+                                        placeholder="Example: JNE"
+                                        maxlength="100"
+                                        required>
 
                                 </div>
 
 
-                                <form
-                                    action="{{ route(
-                                        'staff.orders.ship',
-                                        $order
-                                    ) }}"
-                                    method="POST"
-                                    class="shipping-form"
-                                    onsubmit="
-                                        return confirm(
-                                            'Mark this order as shipped?'
-                                        );
-                                    "
-                                >
+                                <div class="shipping-form-group">
 
-                                    @csrf
+                                    <label>
+                                        Shipping Service
+                                    </label>
 
+                                    <input
+                                        type="text"
+                                        name="shipping_service"
+                                        value="{{ old('shipping_service') }}"
+                                        placeholder="Example: REG"
+                                        maxlength="100"
+                                        required>
 
-                                    <div class="shipping-form-group">
-
-                                        <label>
-                                            Courier
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            name="courier"
-                                            value="{{ old('courier') }}"
-                                            placeholder="Example: JNE"
-                                            maxlength="100"
-                                            required
-                                        >
-
-                                    </div>
+                                </div>
 
 
-                                    <div class="shipping-form-group">
+                                <div class="shipping-form-group">
 
-                                        <label>
-                                            Shipping Service
-                                        </label>
+                                    <label>
+                                        Tracking Number
+                                    </label>
 
-                                        <input
-                                            type="text"
-                                            name="shipping_service"
-                                            value="{{ old('shipping_service') }}"
-                                            placeholder="Example: REG"
-                                            maxlength="100"
-                                            required
-                                        >
+                                    <input
+                                        type="text"
+                                        name="tracking_number"
+                                        value="{{ old('tracking_number') }}"
+                                        placeholder="Example: JNE123456789"
+                                        maxlength="255"
+                                        required>
 
-                                    </div>
-
-
-                                    <div class="shipping-form-group">
-
-                                        <label>
-                                            Tracking Number
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            name="tracking_number"
-                                            value="{{ old('tracking_number') }}"
-                                            placeholder="Example: JNE123456789"
-                                            maxlength="255"
-                                            required
-                                        >
-
-                                    </div>
+                                </div>
 
 
-                                    <div class="shipping-submit">
+                                <div class="shipping-submit">
 
-                                        <button
-                                            type="submit"
-                                            class="ship-button"
-                                        >
+                                    <button
+                                        type="submit"
+                                        class="ship-button">
 
-                                            <i class="bi bi-truck"></i>
+                                        <i class="bi bi-truck"></i>
 
-                                            MARK AS SHIPPED
+                                        MARK AS SHIPPED
 
-                                        </button>
+                                    </button>
 
-                                    </div>
+                                </div>
 
-                                </form>
+                            </form>
 
-                            </div>
+                        </div>
 
 
                         {{-- ================================================= --}}
@@ -571,276 +550,265 @@
 
                         @elseif ($order->status === 'shipped')
 
-                            {{-- SHIPPING INFORMATION --}}
-                            <div class="shipped-information">
+                        {{-- SHIPPING INFORMATION --}}
+                        <div class="shipped-information">
 
-                                <div>
+                            <div>
 
-                                    <span>
-                                        Courier
-                                    </span>
+                                <span>
+                                    Courier
+                                </span>
 
-                                    <strong>
-                                        {{ $order->courier ?? '-' }}
-                                    </strong>
+                                <strong>
+                                    {{ $order->courier ?? '-' }}
+                                </strong>
 
-                                </div>
-
-
-                                <div>
-
-                                    <span>
-                                        Service
-                                    </span>
-
-                                    <strong>
-                                        {{ $order->shipping_service ?? '-' }}
-                                    </strong>
-
-                                </div>
+                            </div>
 
 
-                                <div>
+                            <div>
 
-                                    <span>
-                                        Tracking Number
-                                    </span>
+                                <span>
+                                    Service
+                                </span>
 
-                                    <strong class="tracking-number">
-                                        {{ $order->tracking_number ?? '-' }}
-                                    </strong>
+                                <strong>
+                                    {{ $order->shipping_service ?? '-' }}
+                                </strong>
 
-                                </div>
+                            </div>
 
 
-                                <div>
+                            <div>
 
-                                    <span>
-                                        Shipped At
-                                    </span>
+                                <span>
+                                    Tracking Number
+                                </span>
 
-                                    <strong>
-                                        {{ $order->shipped_at
+                                <strong class="tracking-number">
+                                    {{ $order->tracking_number ?? '-' }}
+                                </strong>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>
+                                    Shipped At
+                                </span>
+
+                                <strong>
+                                    {{ $order->shipped_at
                                             ?->format('d M Y, H:i')
                                             ?? '-'
                                         }}
-                                    </strong>
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+
+                        {{-- DELIVERY VERIFICATION --}}
+                        <div
+                            class="
+                                    shipping-form-wrapper
+                                    delivery-confirmation
+                                ">
+
+                            <div class="shipping-form-heading">
+
+                                <div>
+
+                                    <span>
+                                        DELIVERY VERIFICATION
+                                    </span>
+
+                                    <h3>
+                                        Verify Proof of Delivery
+                                    </h3>
+
+                                    <p>
+                                        Verifikasi informasi dan bukti
+                                        pengantaran yang diterima dari
+                                        pihak kurir. Setelah Proof of
+                                        Delivery diverifikasi, status
+                                        order otomatis menjadi completed.
+                                    </p>
 
                                 </div>
 
                             </div>
 
 
-                            {{-- DELIVERY VERIFICATION --}}
-                            <div
-                                class="
-                                    shipping-form-wrapper
-                                    delivery-confirmation
-                                "
-                            >
-
-                                <div class="shipping-form-heading">
-
-                                    <div>
-
-                                        <span>
-                                            DELIVERY VERIFICATION
-                                        </span>
-
-                                        <h3>
-                                            Verify Proof of Delivery
-                                        </h3>
-
-                                        <p>
-                                            Verifikasi informasi dan bukti
-                                            pengantaran yang diterima dari
-                                            pihak kurir. Setelah Proof of
-                                            Delivery diverifikasi, status
-                                            order otomatis menjadi completed.
-                                        </p>
-
-                                    </div>
-
-                                </div>
-
-
-                                <form
-                                    action="{{ route(
+                            <form
+                                action="{{ route(
                                         'staff.orders.delivered',
                                         $order
                                     ) }}"
-                                    method="POST"
-                                    enctype="multipart/form-data"
-                                    class="shipping-form delivery-form"
-                                    onsubmit="
+                                method="POST"
+                                enctype="multipart/form-data"
+                                class="shipping-form delivery-form"
+                                onsubmit="
                                         return confirm(
                                             'Pastikan Proof of Delivery dari kurir sudah benar. Lanjutkan verifikasi?'
                                         );
-                                    "
-                                >
+                                    ">
 
-                                    @csrf
-
-
-                                    {{-- RECEIVER --}}
-                                    <div class="shipping-form-group">
-
-                                        <label>
-                                            Received By
-                                        </label>
-
-                                        <input
-                                            type="text"
-                                            name="receiver_name"
-                                            value="{{ old('receiver_name') }}"
-                                            placeholder="Nama penerima barang"
-                                            maxlength="255"
-                                            required
-                                        >
-
-                                    </div>
+                                @csrf
 
 
-                                    {{-- LOCATION --}}
-                                    <div class="shipping-form-group">
+                                {{-- RECEIVER --}}
+                                <div class="shipping-form-group">
 
-                                        <label>
-                                            Delivery Location
-                                        </label>
+                                    <label>
+                                        Received By
+                                    </label>
 
-                                        <input
-                                            type="text"
-                                            name="location_name"
-                                            value="{{ old('location_name') }}"
-                                            placeholder="Contoh: Banda Aceh, Aceh"
-                                            maxlength="255"
-                                            required
-                                        >
+                                    <input
+                                        type="text"
+                                        name="receiver_name"
+                                        value="{{ old('receiver_name') }}"
+                                        placeholder="Nama penerima barang"
+                                        maxlength="255"
+                                        required>
 
-                                    </div>
-
-
-                                    {{-- LATITUDE --}}
-                                    <div class="shipping-form-group">
-
-                                        <label>
-                                            Latitude
-                                            <small>
-                                                (optional)
-                                            </small>
-                                        </label>
-
-                                        <input
-                                            type="number"
-                                            step="0.0000001"
-                                            name="latitude"
-                                            value="{{ old('latitude') }}"
-                                            placeholder="Example: 5.5483"
-                                        >
-
-                                    </div>
+                                </div>
 
 
-                                    {{-- LONGITUDE --}}
-                                    <div class="shipping-form-group">
+                                {{-- LOCATION --}}
+                                <div class="shipping-form-group">
 
-                                        <label>
-                                            Longitude
-                                            <small>
-                                                (optional)
-                                            </small>
-                                        </label>
+                                    <label>
+                                        Delivery Location
+                                    </label>
 
-                                        <input
-                                            type="number"
-                                            step="0.0000001"
-                                            name="longitude"
-                                            value="{{ old('longitude') }}"
-                                            placeholder="Example: 95.3238"
-                                        >
+                                    <input
+                                        type="text"
+                                        name="location_name"
+                                        value="{{ old('location_name') }}"
+                                        placeholder="Contoh: Banda Aceh, Aceh"
+                                        maxlength="255"
+                                        required>
 
-                                    </div>
+                                </div>
 
 
-                                    {{-- PROOF PHOTO --}}
-                                    <div
-                                        class="
-                                            shipping-form-group
-                                            shipping-form-full
-                                        "
-                                    >
+                                {{-- LATITUDE --}}
+                                <div class="shipping-form-group">
 
-                                        <label>
-                                            Proof of Delivery Photo
-                                        </label>
-
-                                        <input
-                                            type="file"
-                                            name="proof_image"
-                                            accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                                            required
-                                        >
-
+                                    <label>
+                                        Latitude
                                         <small>
-                                            JPG, JPEG, PNG atau WEBP.
-                                            Maksimal 5 MB.
+                                            (optional)
                                         </small>
+                                    </label>
 
-                                    </div>
+                                    <input
+                                        type="number"
+                                        step="0.0000001"
+                                        name="latitude"
+                                        value="{{ old('latitude') }}"
+                                        placeholder="Example: 5.5483">
+
+                                </div>
 
 
-                                    {{-- NOTE --}}
-                                    <div
-                                        class="
+                                {{-- LONGITUDE --}}
+                                <div class="shipping-form-group">
+
+                                    <label>
+                                        Longitude
+                                        <small>
+                                            (optional)
+                                        </small>
+                                    </label>
+
+                                    <input
+                                        type="number"
+                                        step="0.0000001"
+                                        name="longitude"
+                                        value="{{ old('longitude') }}"
+                                        placeholder="Example: 95.3238">
+
+                                </div>
+
+
+                                {{-- PROOF PHOTO --}}
+                                <div
+                                    class="
                                             shipping-form-group
                                             shipping-form-full
-                                        "
-                                    >
+                                        ">
 
-                                        <label>
-                                            Delivery Note
-                                            <small>
-                                                (optional)
-                                            </small>
-                                        </label>
+                                    <label>
+                                        Proof of Delivery Photo
+                                    </label>
 
-                                        <textarea
-                                            name="note"
-                                            rows="4"
-                                            maxlength="1000"
-                                            placeholder="Contoh: Barang diterima langsung oleh customer dalam kondisi baik."
-                                        >{{ old('note') }}</textarea>
+                                    <input
+                                        type="file"
+                                        name="proof_image"
+                                        accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                                        required>
 
-                                    </div>
+                                    <small>
+                                        JPG, JPEG, PNG atau WEBP.
+                                        Maksimal 5 MB.
+                                    </small>
+
+                                </div>
 
 
-                                    {{-- SUBMIT --}}
-                                    <div
-                                        class="
+                                {{-- NOTE --}}
+                                <div
+                                    class="
+                                            shipping-form-group
+                                            shipping-form-full
+                                        ">
+
+                                    <label>
+                                        Delivery Note
+                                        <small>
+                                            (optional)
+                                        </small>
+                                    </label>
+
+                                    <textarea
+                                        name="note"
+                                        rows="4"
+                                        maxlength="1000"
+                                        placeholder="Contoh: Barang diterima langsung oleh customer dalam kondisi baik.">{{ old('note') }}</textarea>
+
+                                </div>
+
+
+                                {{-- SUBMIT --}}
+                                <div
+                                    class="
                                             shipping-submit
                                             shipping-form-full
-                                        "
-                                    >
+                                        ">
 
-                                        <button
-                                            type="submit"
-                                            class="
+                                    <button
+                                        type="submit"
+                                        class="
                                                 ship-button
                                                 delivered-button
-                                            "
-                                        >
+                                            ">
 
-                                            <i class="bi bi-check-circle"></i>
+                                        <i class="bi bi-check-circle"></i>
 
-                                            VERIFY PROOF OF DELIVERY
+                                        VERIFY PROOF OF DELIVERY
 
-                                        </button>
+                                    </button>
 
-                                    </div>
+                                </div>
 
-                                </form>
+                            </form>
 
-                            </div>
+                        </div>
 
 
                         {{-- ================================================= --}}
@@ -849,79 +817,143 @@
 
                         @elseif ($order->status === 'completed')
 
-                            @php
+                        @php
 
-                                $delivery = $order
-                                    ->shipmentUpdates
-                                    ->where(
-                                        'status',
-                                        'delivered'
-                                    )
-                                    ->sortByDesc(
-                                        'occurred_at'
-                                    )
-                                    ->first();
+                        $delivery = $order
+                        ->shipmentUpdates
+                        ->where(
+                        'status',
+                        'delivered'
+                        )
+                        ->sortByDesc(
+                        'occurred_at'
+                        )
+                        ->first();
 
-                            @endphp
-
-
-                            {{-- COMPLETED INFORMATION --}}
-                            <div class="shipped-information">
-
-                                <div>
-
-                                    <span>
-                                        Courier
-                                    </span>
-
-                                    <strong>
-                                        {{ $order->courier ?? '-' }}
-                                    </strong>
-
-                                </div>
+                        @endphp
 
 
-                                <div>
+                        {{-- COMPLETED INFORMATION --}}
+                        <div class="shipped-information">
 
-                                    <span>
-                                        Service
-                                    </span>
+                            <div>
 
-                                    <strong>
-                                        {{ $order->shipping_service ?? '-' }}
-                                    </strong>
+                                <span>
+                                    Courier
+                                </span>
 
-                                </div>
+                                <strong>
+                                    {{ $order->courier ?? '-' }}
+                                </strong>
 
-
-                                <div>
-
-                                    <span>
-                                        Tracking Number
-                                    </span>
-
-                                    <strong class="tracking-number">
-                                        {{ $order->tracking_number ?? '-' }}
-                                    </strong>
-
-                                </div>
+                            </div>
 
 
-                                <div>
+                            <div>
 
-                                    <span>
-                                        Completed At
-                                    </span>
+                                <span>
+                                    Service
+                                </span>
 
-                                    <strong>
-                                        {{ $order->completed_at
+                                <strong>
+                                    {{ $order->shipping_service ?? '-' }}
+                                </strong>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>
+                                    Tracking Number
+                                </span>
+
+                                <strong class="tracking-number">
+                                    {{ $order->tracking_number ?? '-' }}
+                                </strong>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>
+                                    Completed At
+                                </span>
+
+                                <strong>
+                                    {{ $order->completed_at
                                             ?->format('d M Y, H:i')
                                             ?? '-'
                                         }}
-                                    </strong>
+                                </strong>
+
+                            </div>
+
+
+                            <div>
+
+                                <span>
+                                    Received By
+                                </span>
+
+                                <strong>
+                                    {{ $delivery?->receiver_name ?? '-' }}
+                                </strong>
+
+                            </div>
+
+                        </div>
+
+
+                        {{-- DELIVERY COMPLETED --}}
+                        <div
+                            class="
+                                    shipping-form-wrapper
+                                    delivery-completed
+                                ">
+
+                            <div class="shipping-form-heading">
+
+                                <div>
+
+                                    <span>
+                                        DELIVERY COMPLETED
+                                    </span>
+
+                                    <h3>
+                                        Order Successfully Delivered
+                                    </h3>
+
+
+                                    @if ($delivery)
+
+                                    <p>
+                                        Proof of Delivery telah
+                                        diverifikasi. Barang telah
+                                        diterima customer dan status
+                                        order otomatis berubah menjadi
+                                        completed.
+                                    </p>
+
+                                    @else
+
+                                    <p>
+                                        Order ini sudah berstatus
+                                        completed sebelum fitur
+                                        Proof of Delivery diterapkan.
+                                    </p>
+
+                                    @endif
 
                                 </div>
 
+                            </div>
+
+
+                            @if ($delivery)
+
+                            <div class="delivery-result-grid">
 
                                 <div>
 
@@ -930,204 +962,137 @@
                                     </span>
 
                                     <strong>
-                                        {{ $delivery?->receiver_name ?? '-' }}
+                                        {{ $delivery->receiver_name ?? '-' }}
                                     </strong>
 
                                 </div>
 
-                            </div>
 
+                                <div>
 
-                            {{-- DELIVERY COMPLETED --}}
-                            <div
-                                class="
-                                    shipping-form-wrapper
-                                    delivery-completed
-                                "
-                            >
+                                    <span>
+                                        Delivery Location
+                                    </span>
 
-                                <div class="shipping-form-heading">
-
-                                    <div>
-
-                                        <span>
-                                            DELIVERY COMPLETED
-                                        </span>
-
-                                        <h3>
-                                            Order Successfully Delivered
-                                        </h3>
-
-
-                                        @if ($delivery)
-
-                                            <p>
-                                                Proof of Delivery telah
-                                                diverifikasi. Barang telah
-                                                diterima customer dan status
-                                                order otomatis berubah menjadi
-                                                completed.
-                                            </p>
-
-                                        @else
-
-                                            <p>
-                                                Order ini sudah berstatus
-                                                completed sebelum fitur
-                                                Proof of Delivery diterapkan.
-                                            </p>
-
-                                        @endif
-
-                                    </div>
+                                    <strong>
+                                        {{ $delivery->location_name ?? '-' }}
+                                    </strong>
 
                                 </div>
 
 
-                                @if ($delivery)
+                                <div>
 
-                                    <div class="delivery-result-grid">
+                                    <span>
+                                        Delivered At
+                                    </span>
 
-                                        <div>
-
-                                            <span>
-                                                Received By
-                                            </span>
-
-                                            <strong>
-                                                {{ $delivery->receiver_name ?? '-' }}
-                                            </strong>
-
-                                        </div>
-
-
-                                        <div>
-
-                                            <span>
-                                                Delivery Location
-                                            </span>
-
-                                            <strong>
-                                                {{ $delivery->location_name ?? '-' }}
-                                            </strong>
-
-                                        </div>
-
-
-                                        <div>
-
-                                            <span>
-                                                Delivered At
-                                            </span>
-
-                                            <strong>
-                                                {{ $delivery->occurred_at
+                                    <strong>
+                                        {{ $delivery->occurred_at
                                                     ?->format('d M Y, H:i')
                                                     ?? '-'
                                                 }}
-                                            </strong>
+                                    </strong>
 
-                                        </div>
-
-
-                                        @if (
-                                            $delivery->latitude
-                                            && $delivery->longitude
-                                        )
-
-                                            <div>
-
-                                                <span>
-                                                    Coordinates
-                                                </span>
-
-                                                <strong>
-                                                    {{ $delivery->latitude }},
-                                                    {{ $delivery->longitude }}
-                                                </strong>
-
-                                            </div>
-
-                                        @endif
+                                </div>
 
 
-                                        @if ($delivery->note)
+                                @if (
+                                $delivery->latitude
+                                && $delivery->longitude
+                                )
 
-                                            <div class="delivery-result-note">
+                                <div>
 
-                                                <span>
-                                                    Delivery Note
-                                                </span>
+                                    <span>
+                                        Coordinates
+                                    </span>
 
-                                                <p>
-                                                    {{ $delivery->note }}
-                                                </p>
+                                    <strong>
+                                        {{ $delivery->latitude }},
+                                        {{ $delivery->longitude }}
+                                    </strong>
 
-                                            </div>
+                                </div>
 
-                                        @endif
-
-                                    </div>
-
-
-                                    @if ($delivery->proof_image)
-
-                                        <div class="delivery-proof-preview">
-
-                                            <span>
-                                                PROOF OF DELIVERY
-                                            </span>
-
-                                            <a
-                                                href="{{ asset(
-                                                    'storage/' .
-                                                    $delivery->proof_image
-                                                ) }}"
-                                                target="_blank"
-                                            >
-
-                                                <img
-                                                    src="{{ asset(
-                                                        'storage/' .
-                                                        $delivery->proof_image
-                                                    ) }}"
-                                                    alt="Proof of delivery"
-                                                >
-
-                                            </a>
-
-                                        </div>
-
-                                    @endif
+                                @endif
 
 
-                                @else
+                                @if ($delivery->note)
 
-                                    <div class="processing-empty">
+                                <div class="delivery-result-note">
 
-                                        <i class="bi bi-check-circle"></i>
+                                    <span>
+                                        Delivery Note
+                                    </span>
 
-                                        <h3>
-                                            Order Completed
-                                        </h3>
+                                    <p>
+                                        {{ $delivery->note }}
+                                    </p>
 
-                                        <p>
-                                            Order sudah selesai tetapi tidak
-                                            memiliki data Proof of Delivery
-                                            karena berasal dari transaksi lama.
-                                        </p>
-
-                                    </div>
+                                </div>
 
                                 @endif
 
                             </div>
 
+
+                            @if ($delivery->proof_image)
+
+                            <div class="delivery-proof-preview">
+
+                                <span>
+                                    PROOF OF DELIVERY
+                                </span>
+
+                                <a
+                                    href="{{ asset(
+                                                    'storage/' .
+                                                    $delivery->proof_image
+                                                ) }}"
+                                    target="_blank">
+
+                                    <img
+                                        src="{{ asset(
+                                                        'storage/' .
+                                                        $delivery->proof_image
+                                                    ) }}"
+                                        alt="Proof of delivery">
+
+                                </a>
+
+                            </div>
+
+                            @endif
+
+
+                            @else
+
+                            <div class="processing-empty">
+
+                                <i class="bi bi-check-circle"></i>
+
+                                <h3>
+                                    Order Completed
+                                </h3>
+
+                                <p>
+                                    Order sudah selesai tetapi tidak
+                                    memiliki data Proof of Delivery
+                                    karena berasal dari transaksi lama.
+                                </p>
+
+                            </div>
+
+                            @endif
+
+                        </div>
+
                         @endif
 
                     </article>
 
-                @empty
+                    @empty
 
                     <div class="processing-empty">
 
@@ -1144,35 +1109,35 @@
 
                     </div>
 
-                @endforelse
+                    @endforelse
 
-            </div>
+                </div>
 
 
-            {{-- PAGINATION --}}
-            @if ($orders->hasPages())
+                {{-- PAGINATION --}}
+                @if ($orders->hasPages())
 
                 <div class="processing-pagination">
 
                     @if ($orders->onFirstPage())
 
-                        <span class="disabled">
+                    <span class="disabled">
 
-                            <i class="bi bi-arrow-left"></i>
+                        <i class="bi bi-arrow-left"></i>
 
-                            Previous
+                        Previous
 
-                        </span>
+                    </span>
 
                     @else
 
-                        <a href="{{ $orders->previousPageUrl() }}">
+                    <a href="{{ $orders->previousPageUrl() }}">
 
-                            <i class="bi bi-arrow-left"></i>
+                        <i class="bi bi-arrow-left"></i>
 
-                            Previous
+                        Previous
 
-                        </a>
+                    </a>
 
                     @endif
 
@@ -1192,35 +1157,35 @@
 
                     @if ($orders->hasMorePages())
 
-                        <a href="{{ $orders->nextPageUrl() }}">
+                    <a href="{{ $orders->nextPageUrl() }}">
 
-                            Next
+                        Next
 
-                            <i class="bi bi-arrow-right"></i>
+                        <i class="bi bi-arrow-right"></i>
 
-                        </a>
+                    </a>
 
                     @else
 
-                        <span class="disabled">
+                    <span class="disabled">
 
-                            Next
+                        Next
 
-                            <i class="bi bi-arrow-right"></i>
+                        <i class="bi bi-arrow-right"></i>
 
-                        </span>
+                    </span>
 
                     @endif
 
                 </div>
 
-            @endif
+                @endif
 
-        </section>
+            </section>
 
-    </main>
+        </main>
 
-</div>
+    </div>
 
 </body>
 

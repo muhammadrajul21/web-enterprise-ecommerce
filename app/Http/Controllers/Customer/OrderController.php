@@ -8,62 +8,6 @@ use App\Models\Order;
 class OrderController extends Controller
 {
     /**
-     * Menyelesaikan order yang sudah diterima customer.
-     */
-    public function complete(Order $order)
-    {
-        /*
-        |--------------------------------------------------------------------------
-        | AUTHORIZATION
-        |--------------------------------------------------------------------------
-        |
-        | Customer hanya boleh menyelesaikan order miliknya sendiri.
-        |
-        */
-
-        abort_unless(
-            (int) $order->user_id === (int) auth()->id(),
-            403
-        );
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | STATUS VALIDATION
-        |--------------------------------------------------------------------------
-        |
-        | Hanya order berstatus shipped yang boleh diselesaikan.
-        |
-        */
-
-        if ($order->status !== 'shipped') {
-            return back()->with(
-                'error',
-                'Pesanan hanya dapat diselesaikan setelah dikirim.'
-            );
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | COMPLETE ORDER
-        |--------------------------------------------------------------------------
-        */
-
-        $order->update([
-            'status' => 'completed',
-            'completed_at' => now(),
-        ]);
-
-
-        return back()->with(
-            'success',
-            'Pesanan berhasil diselesaikan. Terima kasih telah berbelanja.'
-        );
-    }
-
-
-    /**
      * Menampilkan riwayat order customer.
      */
     public function index()
@@ -99,9 +43,6 @@ class OrderController extends Controller
         |--------------------------------------------------------------------------
         | AUTHORIZATION
         |--------------------------------------------------------------------------
-        |
-        | Customer hanya boleh melihat order miliknya sendiri.
-        |
         */
 
         abort_unless(
@@ -114,9 +55,14 @@ class OrderController extends Controller
         |--------------------------------------------------------------------------
         | LOAD ORDER DATA
         |--------------------------------------------------------------------------
+        |
+        | Shipment update yang dibutuhkan customer sekarang
+        | hanya data final "delivered" dari Proof of Delivery.
+        |
         */
 
         $order->load([
+
             'items.review',
 
             'voucher',
@@ -124,6 +70,19 @@ class OrderController extends Controller
             'payments' => function ($query) {
                 $query->latest();
             },
+
+            'shipmentUpdates' => function ($query) {
+
+                $query
+                    ->where(
+                        'status',
+                        'delivered'
+                    )
+                    ->orderBy('occurred_at')
+                    ->orderBy('id');
+
+            },
+
         ]);
 
 
@@ -139,6 +98,33 @@ class OrderController extends Controller
 
         /*
         |--------------------------------------------------------------------------
+        | DELIVERY DATA
+        |--------------------------------------------------------------------------
+        */
+
+        $delivery =
+            $order->shipmentUpdates
+                ->last();
+
+
+        /*
+         * Map hanya ditampilkan jika POD memiliki
+         * latitude dan longitude.
+         *
+         * Lokasi ini adalah lokasi penerimaan terakhir,
+         * bukan live GPS kurir.
+         */
+
+        $lastKnownLocation =
+            $delivery
+            && $delivery->latitude !== null
+            && $delivery->longitude !== null
+                ? $delivery
+                : null;
+
+
+        /*
+        |--------------------------------------------------------------------------
         | VIEW
         |--------------------------------------------------------------------------
         */
@@ -147,7 +133,9 @@ class OrderController extends Controller
             'customer.orders.show',
             compact(
                 'order',
-                'latestPayment'
+                'latestPayment',
+                'delivery',
+                'lastKnownLocation'
             )
         );
     }

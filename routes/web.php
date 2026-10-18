@@ -1296,13 +1296,6 @@ Route::middleware('auth')
                 )->name('orders.show');
 
 
-                Route::patch(
-
-                    '/orders/{order}/complete',
-
-                    [CustomerOrderController::class, 'complete']
-
-                )->name('orders.complete');
 
                 /*
                 |--------------------------------------------------------------------------
@@ -1705,12 +1698,13 @@ Route::middleware('auth')
 
 
                 Route::post(
-
                     '/orders/{order}/ship',
-
                     [StaffOrderController::class, 'ship']
-
                 )->name('staff.orders.ship');
+
+
+
+
 
                 Route::post(
                     '/orders/{order}/delivered',

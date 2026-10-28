@@ -270,35 +270,135 @@ $lastKnownLocation ?? null;
 </section>
 
 
-{{-- ================================================= --}}
-{{-- POD INFORMATION --}}
-{{-- ================================================= --}}
+{{-- DELIVERY STATUS AND CUSTOMER ACTIONS --}}
 
-@if($order->status === 'shipped')
+@if(
+$order->status === 'shipped'
+|| (
+$order->status === 'completed'
+&& $order->completion_reason === 'auto_timeout'
+)
+)
 
 <section class="detail-card">
 
     <div class="detail-card-heading">
-
         <div class="detail-heading-icon">
-            <i class="bi bi-box-seam"></i>
+            <i class="bi bi-truck"></i>
         </div>
 
         <div>
-
-            <h2>
-                Delivery in Progress
-            </h2>
+            <h2>Delivery Information</h2>
 
             <p>
-                Your package is being handled by the courier.
-                The order will be completed automatically after
-                Proof of Delivery is verified.
+                Check your estimated delivery date and
+                confirm when your package has arrived.
             </p>
+        </div>
+    </div>
+
+    <div class="shipping-estimate-info">
+
+        <p>
+            <strong>Estimated Arrival</strong>
+        </p>
+
+        <p>
+            @if($order->estimated_delivery_start && $order->estimated_delivery_end)
+            {{ $order->estimated_delivery_start->format('d M Y') }}
+            –
+            {{ $order->estimated_delivery_end->format('d M Y') }}
+            @else
+            Estimated arrival date is not available.
+            @endif
+        </p>
+
+        <p>
+            Courier:
+            <strong>{{ $order->courier ?? '-' }}</strong>
+        </p>
+
+        <p>
+            Tracking Number:
+            <strong>{{ $order->tracking_number ?? '-' }}</strong>
+        </p>
+
+    </div>
+
+    @php
+    $activeComplaint = $order->complaints
+    ->whereIn('status', ['open', 'investigating'])
+    ->sortByDesc('created_at')
+    ->first();
+
+    $latestComplaint = $order->complaints
+    ->sortByDesc('created_at')
+    ->first();
+    @endphp
+
+    {{-- STATUS KOMPLAIN TERAKHIR --}}
+        @if($latestComplaint)
+
+        <div class="complaint-status-card">
+
+            <div class="complaint-status-heading">
+                <i class="bi bi-chat-left-text"></i>
+                <h3>Status Komplain</h3>
+            </div>
+
+            <div class="complaint-status-grid">
+
+                <div class="complaint-status-item">
+                    <span>Status Laporan</span>
+
+                    <strong class="complaint-status-badge status-{{ $latestComplaint->status }}">
+                        {{ ucfirst(str_replace('_', ' ', $latestComplaint->status)) }}
+                    </strong>
+                </div>
+
+                <div class="complaint-status-item">
+                    <span>Kategori</span>
+
+                    <strong>
+                        {{ ucfirst(str_replace('_', ' ', $latestComplaint->category)) }}
+                    </strong>
+                </div>
+
+                <div class="complaint-status-item complaint-status-full">
+                    <span>Pesan Pelanggan</span>
+
+                    <p>{{ $latestComplaint->message }}</p>
+                </div>
+
+                <div class="complaint-status-item complaint-status-full">
+                    <span>Tanggapan Admin</span>
+
+                    @if($latestComplaint->admin_response)
+                    <p>{{ $latestComplaint->admin_response }}</p>
+                    @else
+                    <p class="complaint-no-response">
+                        Admin belum memberikan tanggapan.
+                    </p>
+                    @endif
+                </div>
+
+                @if($activeComplaint)
+                <div class="complaint-status-note complaint-status-full">
+                    <i class="bi bi-info-circle"></i>
+
+                    Komplain kamu masih diproses. Konfirmasi penerimaan
+                    dan pengajuan komplain baru dinonaktifkan sampai
+                    Admin menyelesaikan laporan ini.
+                </div>
+                @endif
+
+            </div>
 
         </div>
 
-    </div>
+        @endif
+
+
 
 </section>
 

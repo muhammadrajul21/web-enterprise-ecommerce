@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Staff;
 
+use App\Services\ShippingEstimateService;
+use Carbon\CarbonImmutable;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\Models\ShipmentUpdate;
@@ -196,21 +198,22 @@ class OrderController extends Controller
      * Input informasi pengiriman dan nomor resi.
      * Mengubah Packing menjadi Shipped.
      */
+    /**
+     * Mengirim pesanan dan memperbarui estimasi kedatangan.
+     */
     public function ship(
         Request $request,
-        Order $order
+        Order $order,
+        ShippingEstimateService $shippingEstimateService
     ) {
         if ($order->status !== 'packing') {
-
             return back()->with(
                 'error',
                 'Hanya order berstatus packing yang dapat dikirim.'
             );
         }
 
-
-        $request->validate([
-
+        $validated = $request->validate([
             'courier' => [
                 'required',
                 'string',
@@ -228,39 +231,68 @@ class OrderController extends Controller
                 'string',
                 'max:255',
             ],
-
         ]);
 
+        // Gunakan waktu pengiriman aktual sebagai dasar estimasi.
+        $shippedAt = now();
+
+        // Pertahankan pilihan awal Customer.
+        // Pesanan lama tanpa pilihan akan menggunakan Regular.
+        $method = in_array(
+            $order->shipping_method,
+            ['regular', 'express'],
+            true
+        )
+            ? $order->shipping_method
+            : 'regular';
+
+        $estimate = $shippingEstimateService->quote(
+            $order->shipping_province,
+            $method,
+            CarbonImmutable::instance($shippedAt)
+        );
 
         DB::transaction(function () use (
-            $request,
-            $order
+            $validated,
+            $order,
+            $shippedAt,
+            $estimate,
+            $method
         ) {
+            $lockedOrder = Order::query()
+                ->lockForUpdate()
+                ->findOrFail($order->id);
 
-            $order->update([
+            if ($lockedOrder->status !== 'packing') {
+                throw new \RuntimeException(
+                    'Status pesanan berubah. Silakan muat ulang halaman.'
+                );
+            }
 
-                'courier' =>
-                $request->courier,
+            $lockedOrder->update([
+                'courier' => $validated['courier'],
 
-                'shipping_service' =>
-                $request->shipping_service,
+                // Nama layanan aktual yang diisi Staff.
+                'shipping_service' => $validated['shipping_service'],
+                'shipping_method' => $method,
 
-                'tracking_number' =>
-                $request->tracking_number,
+                'tracking_number' => $validated['tracking_number'],
 
-                'status' =>
-                'shipped',
+                'status' => 'shipped',
 
-                'shipped_at' =>
-                now(),
+                'shipped_at' => $shippedAt,
 
+                'estimated_delivery_start' =>
+                $estimate['estimated_delivery_start'],
+
+                'estimated_delivery_end' =>
+                $estimate['estimated_delivery_end'],
             ]);
         });
 
-
         return back()->with(
             'success',
-            'Order berhasil dikirim dan nomor resi telah disimpan.'
+            'Order berhasil dikirim dan estimasi kedatangan telah diperbarui.'
         );
     }
 
@@ -272,170 +304,17 @@ class OrderController extends Controller
      * Order otomatis berubah dari Shipped
      * menjadi Completed.
      */
-    public function markDelivered(
-        Request $request,
-        Order $order
-    ) {
-        if ($order->status !== 'shipped') {
-
-            return back()->with(
-                'error',
-                'Hanya order berstatus shipped yang dapat dikonfirmasi sebagai delivered.'
-            );
-        }
-
-
-        $request->validate([
-
-            'receiver_name' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'location_name' => [
-                'required',
-                'string',
-                'max:255',
-            ],
-
-            'latitude' => [
-                'nullable',
-                'numeric',
-                'between:-90,90',
-            ],
-
-            'longitude' => [
-                'nullable',
-                'numeric',
-                'between:-180,180',
-            ],
-
-            'note' => [
-                'nullable',
-                'string',
-                'max:1000',
-            ],
-
-            'proof_image' => [
-                'required',
-                'image',
-                'mimes:jpg,jpeg,png,webp',
-                'max:5120',
-            ],
-
-        ]);
-
-
-        $proofPath = $request
-            ->file('proof_image')
-            ->store(
-                'delivery-proofs',
-                'public'
-            );
-
-
-        try {
-
-            DB::transaction(function () use (
-                $request,
-                $order,
-                $proofPath
-            ) {
-
-                /*
-                 * Mengunci order agar tidak dapat
-                 * dikonfirmasi dua kali bersamaan.
-                 */
-                $lockedOrder = Order::query()
-                    ->lockForUpdate()
-                    ->findOrFail($order->id);
-
-
-                if ($lockedOrder->status !== 'shipped') {
-
-                    throw new \RuntimeException(
-                        'Status order sudah berubah.'
-                    );
-                }
-
-
-                /*
-                 * Menyimpan bukti barang diterima.
-                 */
-                ShipmentUpdate::create([
-
-                    'order_id' =>
-                    $lockedOrder->id,
-
-                    'updated_by' =>
-                    auth()->id(),
-
-                    'status' =>
-                    'delivered',
-
-                    'location_name' =>
-                    $request->location_name,
-
-                    'latitude' =>
-                    $request->latitude,
-
-                    'longitude' =>
-                    $request->longitude,
-
-                    'receiver_name' =>
-                    $request->receiver_name,
-
-                    'note' =>
-                    $request->note,
-
-                    'proof_image' =>
-                    $proofPath,
-
-                    'occurred_at' =>
-                    now(),
-
-                ]);
-
-
-                /*
-                 * Setelah barang diterima,
-                 * status order otomatis selesai.
-                 */
-                $lockedOrder->update([
-
-                    'status' =>
-                    'completed',
-
-                    'completed_at' =>
-                    now(),
-
-                ]);
-            });
-        } catch (\Throwable $exception) {
-
-            /*
-             * Jika penyimpanan database gagal,
-             * hapus kembali foto yang sudah
-             * ter-upload.
-             */
-            Storage::disk('public')
-                ->delete($proofPath);
-
-
-            report($exception);
-
-
-            return back()->with(
-                'error',
-                'Verifikasi Proof of Delivery gagal. Silakan coba kembali.'
-            );
-        }
-
-
+    /**
+     * Endpoint lama POD dinonaktifkan.
+     * Pesanan dikonfirmasi oleh pelanggan atau
+     * diselesaikan otomatis setelah masa tenggang.
+     */
+    public function markDelivered(Request $request, Order $order)
+    {
         return back()->with(
-            'success',
-            'Proof of Delivery berhasil diverifikasi dan order otomatis diselesaikan.'
+            'error',
+            'Verifikasi POD oleh Staff sudah dinonaktifkan. ' .
+                'Pesanan dikonfirmasi oleh pelanggan atau diselesaikan otomatis setelah masa tenggang.'
         );
     }
 }

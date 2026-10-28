@@ -1173,3 +1173,153 @@
     }
 
 }
+/* =====================================================
+   CUSTOMER COMPLAINT STATUS
+===================================================== */
+
+.complaint-status-card {
+    margin: 20px 0;
+    padding: 22px;
+    background: #ffffff;
+    border: 1px solid #e2e5e9;
+    border-radius: 8px;
+}
+
+.complaint-status-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.complaint-status-heading > i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    background: #111111;
+    color: #ffffff;
+    font-size: 18px;
+}
+
+.complaint-status-heading h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.complaint-status-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.complaint-status-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    min-width: 0;
+    padding: 14px;
+    background: #f8f9fa;
+    border: 1px solid #e8eaed;
+    border-radius: 6px;
+}
+
+.complaint-status-item > span {
+    color: #68717d;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.complaint-status-item > strong {
+    max-width: 100%;
+    color: #222222;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+.complaint-status-item > p {
+    margin: 0;
+    color: #30343b;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+    white-space: pre-line;
+}
+
+.complaint-status-full {
+    grid-column: 1 / -1;
+}
+
+.complaint-status-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 11px;
+    border-radius: 20px;
+    font-size: 12px !important;
+    font-weight: 700;
+    background: #eef0f3;
+    color: #3d4652 !important;
+}
+
+.complaint-status-badge.status-open {
+    background: #fff0d6;
+    color: #8a5100 !important;
+}
+
+.complaint-status-badge.status-investigating {
+    background: #dcecff;
+    color: #174ea6 !important;
+}
+
+.complaint-status-badge.status-resolved {
+    background: #d9f4e2;
+    color: #176b39 !important;
+}
+
+.complaint-status-badge.status-rejected {
+    background: #fde2e2;
+    color: #a12626 !important;
+}
+
+.complaint-no-response {
+    color: #7a818b !important;
+    font-style: italic;
+}
+
+.complaint-status-note {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 13px 15px;
+    background: #fff8e8;
+    border: 1px solid #f0d9a6;
+    border-radius: 6px;
+    color: #78531c;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.complaint-status-note i {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+@media (max-width: 640px) {
+    .complaint-status-card {
+        padding: 15px;
+    }
+
+    .complaint-status-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .complaint-status-full {
+        grid-column: auto;
+    }
+}

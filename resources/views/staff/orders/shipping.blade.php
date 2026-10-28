@@ -611,202 +611,64 @@
 
 
 
-                        {{-- DELIVERY VERIFICATION --}}
-                        <div
-                            class="
-                                    shipping-form-wrapper
-                                    delivery-confirmation
-                                ">
+                        {{-- DELIVERY STATUS --}}
+                        <div class="shipping-form-wrapper delivery-confirmation">
 
                             <div class="shipping-form-heading">
-
                                 <div>
+                                    <span>DELIVERY STATUS</span>
 
-                                    <span>
-                                        DELIVERY VERIFICATION
-                                    </span>
-
-                                    <h3>
-                                        Verify Proof of Delivery
-                                    </h3>
+                                    <h3>Menunggu Konfirmasi Penerimaan</h3>
 
                                     <p>
-                                        Verifikasi informasi dan bukti
-                                        pengantaran yang diterima dari
-                                        pihak kurir. Setelah Proof of
-                                        Delivery diverifikasi, status
-                                        order otomatis menjadi completed.
+                                        Pesanan sudah dikirim. Staff tidak perlu mengunggah
+                                        foto Proof of Delivery atau memasukkan koordinat.
+                                        Pelanggan dapat mengonfirmasi penerimaan barang
+                                        atau mengajukan komplain jika paket belum diterima.
                                     </p>
+                                </div>
+                            </div>
 
+                            <div class="shipped-information">
+
+                                <div>
+                                    <span>Kurir</span>
+                                    <strong>{{ $order->courier ?? '-' }}</strong>
+                                </div>
+
+                                <div>
+                                    <span>Layanan Pengiriman</span>
+                                    <strong>{{ $order->shipping_service ?? '-' }}</strong>
+                                </div>
+
+                                <div>
+                                    <span>Nomor Resi</span>
+                                    <strong>{{ $order->tracking_number ?? '-' }}</strong>
+                                </div>
+
+                                <div>
+                                    <span>Estimasi Mulai Tiba</span>
+                                    <strong>
+                                        {{ $order->estimated_delivery_start?->format('d M Y') ?? '-' }}
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>Estimasi Akhir Tiba</span>
+                                    <strong>
+                                        {{ $order->estimated_delivery_end?->format('d M Y') ?? '-' }}
+                                    </strong>
                                 </div>
 
                             </div>
 
-
-                            <form
-                                action="{{ route(
-                                        'staff.orders.delivered',
-                                        $order
-                                    ) }}"
-                                method="POST"
-                                enctype="multipart/form-data"
-                                class="shipping-form delivery-form"
-                                onsubmit="
-                                        return confirm(
-                                            'Pastikan Proof of Delivery dari kurir sudah benar. Lanjutkan verifikasi?'
-                                        );
-                                    ">
-
-                                @csrf
-
-
-                                {{-- RECEIVER --}}
-                                <div class="shipping-form-group">
-
-                                    <label>
-                                        Received By
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="receiver_name"
-                                        value="{{ old('receiver_name') }}"
-                                        placeholder="Nama penerima barang"
-                                        maxlength="255"
-                                        required>
-
-                                </div>
-
-
-                                {{-- LOCATION --}}
-                                <div class="shipping-form-group">
-
-                                    <label>
-                                        Delivery Location
-                                    </label>
-
-                                    <input
-                                        type="text"
-                                        name="location_name"
-                                        value="{{ old('location_name') }}"
-                                        placeholder="Contoh: Banda Aceh, Aceh"
-                                        maxlength="255"
-                                        required>
-
-                                </div>
-
-
-                                {{-- LATITUDE --}}
-                                <div class="shipping-form-group">
-
-                                    <label>
-                                        Latitude
-                                        <small>
-                                            (optional)
-                                        </small>
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        step="0.0000001"
-                                        name="latitude"
-                                        value="{{ old('latitude') }}"
-                                        placeholder="Example: 5.5483">
-
-                                </div>
-
-
-                                {{-- LONGITUDE --}}
-                                <div class="shipping-form-group">
-
-                                    <label>
-                                        Longitude
-                                        <small>
-                                            (optional)
-                                        </small>
-                                    </label>
-
-                                    <input
-                                        type="number"
-                                        step="0.0000001"
-                                        name="longitude"
-                                        value="{{ old('longitude') }}"
-                                        placeholder="Example: 95.3238">
-
-                                </div>
-
-
-                                {{-- PROOF PHOTO --}}
-                                <div
-                                    class="
-                                            shipping-form-group
-                                            shipping-form-full
-                                        ">
-
-                                    <label>
-                                        Proof of Delivery Photo
-                                    </label>
-
-                                    <input
-                                        type="file"
-                                        name="proof_image"
-                                        accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
-                                        required>
-
-                                    <small>
-                                        JPG, JPEG, PNG atau WEBP.
-                                        Maksimal 5 MB.
-                                    </small>
-
-                                </div>
-
-
-                                {{-- NOTE --}}
-                                <div
-                                    class="
-                                            shipping-form-group
-                                            shipping-form-full
-                                        ">
-
-                                    <label>
-                                        Delivery Note
-                                        <small>
-                                            (optional)
-                                        </small>
-                                    </label>
-
-                                    <textarea
-                                        name="note"
-                                        rows="4"
-                                        maxlength="1000"
-                                        placeholder="Contoh: Barang diterima langsung oleh customer dalam kondisi baik.">{{ old('note') }}</textarea>
-
-                                </div>
-
-
-                                {{-- SUBMIT --}}
-                                <div
-                                    class="
-                                            shipping-submit
-                                            shipping-form-full
-                                        ">
-
-                                    <button
-                                        type="submit"
-                                        class="
-                                                ship-button
-                                                delivered-button
-                                            ">
-
-                                        <i class="bi bi-check-circle"></i>
-
-                                        VERIFY PROOF OF DELIVERY
-
-                                    </button>
-
-                                </div>
-
-                            </form>
+                            <p>
+                                <i class="bi bi-info-circle"></i>
+                                Pesanan akan selesai setelah pelanggan mengonfirmasi
+                                penerimaan atau setelah masa tenggang berakhir tanpa
+                                komplain aktif. Jika ada komplain, Admin akan meninjau
+                                laporan dan berkoordinasi dengan Staff.
+                            </p>
 
                         </div>
 

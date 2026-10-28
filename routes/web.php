@@ -5,7 +5,7 @@ use App\Http\Controllers\Owner\OperationalSummaryController as OwnerOperationalS
 use App\Http\Controllers\Owner\ReportController as OwnerReportController;
 use App\Http\Controllers\Owner\DashboardController as OwnerDashboardController;
 use App\Models\Review;
-
+use App\Http\Controllers\Admin\OrderComplaintController as AdminOrderComplaintController;
 use App\Http\Controllers\Customer\ReviewController;
 
 use App\Http\Controllers\Customer\AddressController;
@@ -1294,6 +1294,15 @@ Route::middleware('auth')
                     [CustomerOrderController::class, 'show']
 
                 )->name('orders.show');
+                Route::post(
+                    '/orders/{order}/confirm-received',
+                    [CustomerOrderController::class, 'confirmReceived']
+                )->name('orders.confirm-received');
+
+                Route::post(
+                    '/orders/{order}/complaints',
+                    [CustomerOrderController::class, 'storeComplaint']
+                )->name('orders.complaints.store');
 
 
 
@@ -1381,6 +1390,21 @@ Route::middleware('auth')
                     '/orders/{order}',
                     [OrderController::class, 'show']
                 )->name('admin.orders.show');
+                                /*
+                |--------------------------------------------------------------------------
+                | ORDER COMPLAINTS
+                |--------------------------------------------------------------------------
+                */
+
+                Route::get(
+                    '/complaints',
+                    [AdminOrderComplaintController::class, 'index']
+                )->name('admin.complaints.index');
+
+                Route::put(
+                    '/complaints/{complaint}',
+                    [AdminOrderComplaintController::class, 'update']
+                )->name('admin.complaints.update');
 
 
                 /*

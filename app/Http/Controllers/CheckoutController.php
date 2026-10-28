@@ -11,13 +11,14 @@ use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Services\ShippingEstimateService;
 
 class CheckoutController extends Controller
 {
     /**
      * Menampilkan halaman checkout.
      */
-    public function index()
+    public function index(ShippingEstimateService $shippingEstimateService)
     {
         $cart = Cart::with([
             'items.variant.product',
@@ -88,6 +89,28 @@ class CheckoutController extends Controller
         $subtotal = $cart->items->sum(function ($item) {
             return $item->variant->price * $item->quantity;
         });
+        /*
+|--------------------------------------------------------------------------
+| AVAILABLE VOUCHERS
+|--------------------------------------------------------------------------
+*/
+
+        $availableVouchers = Voucher::query()
+            ->where('is_active', true)
+            ->where(function ($query) {
+                $query->whereNull('starts_at')
+                    ->orWhere('starts_at', '<=', now());
+            })
+            ->where(function ($query) {
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>=', now());
+            })
+            ->where(function ($query) {
+                $query->whereNull('usage_limit')
+                    ->orWhereColumn('used_count', '<', 'usage_limit');
+            })
+            ->orderBy('expires_at')
+            ->get();
 
         /*
         |--------------------------------------------------------------------------
@@ -113,17 +136,46 @@ class CheckoutController extends Controller
         |
         */
 
-        $shippingOptions = [
-            'regular' => [
-                'label' => 'Regular Shipping',
-                'cost' => 15000,
-            ],
+        $provinceOptions = $shippingEstimateService->supportedProvinces();
 
-            'express' => [
-                'label' => 'Express Shipping',
-                'cost' => 30000,
-            ],
-        ];
+        $defaultAddress = $addresses->firstWhere('is_default', true)
+            ?? $addresses->first();
+
+        $selectedProvince = old(
+            'shipping_province',
+            $defaultAddress?->province ?? 'Aceh'
+        );
+
+        if (!in_array($selectedProvince, $provinceOptions, true)) {
+            $selectedProvince = 'Aceh';
+        }
+
+        $selectedShipping = old('shipping_method', 'regular');
+
+        if (!in_array($selectedShipping, ['regular', 'express'], true)) {
+            $selectedShipping = 'regular';
+        }
+
+        // Menyiapkan ongkir untuk provinsi yang sedang dipilih.
+        $shippingOptions = [];
+
+        foreach (['regular', 'express'] as $method) {
+            $shippingOptions[$method] = $shippingEstimateService->quote(
+                $selectedProvince,
+                $method
+            );
+        }
+
+        // Menyiapkan ongkir dan estimasi untuk semua provinsi.
+        // Data ini digunakan JavaScript saat provinsi diubah.
+        $shippingQuotes = [];
+
+        foreach ($provinceOptions as $province) {
+            foreach (['regular', 'express'] as $method) {
+                $shippingQuotes[$province][$method] =
+                    $shippingEstimateService->quote($province, $method);
+            }
+        }
 
         return view(
             'customer.checkout.index',
@@ -131,7 +183,12 @@ class CheckoutController extends Controller
                 'cart',
                 'subtotal',
                 'addresses',
-                'shippingOptions'
+                'shippingOptions',
+                'provinceOptions',
+                'selectedProvince',
+                'shippingQuotes',
+                'selectedShipping',
+                'availableVouchers'
             )
         );
     }
@@ -140,8 +197,10 @@ class CheckoutController extends Controller
     /**
      * Membuat order dari cart.
      */
-    public function store(Request $request)
-    {
+    public function store(
+        Request $request,
+        ShippingEstimateService $shippingEstimateService
+    ) {
         /*
         |--------------------------------------------------------------------------
         | VALIDATION
@@ -195,33 +254,12 @@ class CheckoutController extends Controller
                 'string',
                 'max:50',
             ],
+
         ]);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | SHIPPING OPTIONS
-        |--------------------------------------------------------------------------
-        |
-        | Jangan percaya biaya ongkir yang dikirim browser.
-        | Server menentukan biayanya.
-        |
-        */
-
-        $shippingOptions = [
-            'regular' => [
-                'label' => 'Regular Shipping',
-                'cost' => 15000,
-            ],
-
-            'express' => [
-                'label' => 'Express Shipping',
-                'cost' => 30000,
-            ],
-        ];
-
-        $shipping =
-            $shippingOptions[$validated['shipping_method']];
+        $shipping = $shippingEstimateService->quote(
+            $validated['shipping_province'],
+            $validated['shipping_method']
+        );
 
 
         /*
@@ -318,9 +356,7 @@ class CheckoutController extends Controller
 
 
                     if (
-                        !empty(
-                            $validated['voucher_code']
-                        )
+                        !empty($validated['voucher_code'])
                     ) {
 
                         $voucher = Voucher::where(
@@ -372,7 +408,7 @@ class CheckoutController extends Controller
                         if (
                             $voucher->usage_limit !== null
                             && $voucher->used_count
-                                >= $voucher->usage_limit
+                            >= $voucher->usage_limit
                         ) {
                             throw new \RuntimeException(
                                 'Batas penggunaan voucher telah habis.'
@@ -412,14 +448,11 @@ class CheckoutController extends Controller
                                     $discountAmount,
                                     $voucher->max_discount_amount
                                 );
-
                             }
-
                         } else {
 
                             $discountAmount =
                                 $voucher->discount_value;
-
                         }
 
 
@@ -431,7 +464,6 @@ class CheckoutController extends Controller
                             $discountAmount,
                             $subtotal
                         );
-
                     }
 
 
@@ -466,7 +498,6 @@ class CheckoutController extends Controller
                             . strtoupper(
                                 Str::random(6)
                             );
-
                     } while (
                         Order::where(
                             'order_code',
@@ -483,56 +514,62 @@ class CheckoutController extends Controller
 
                     $order = Order::create([
                         'user_id' =>
-                            auth()->id(),
+                        auth()->id(),
 
                         'voucher_id' =>
-                            $voucher?->id,
+                        $voucher?->id,
 
                         'order_code' =>
-                            $orderCode,
+                        $orderCode,
 
                         'status' =>
-                            'pending_payment',
+                        'pending_payment',
 
                         'recipient_name' =>
-                            $validated['recipient_name'],
+                        $validated['recipient_name'],
 
                         'recipient_phone' =>
-                            $validated['recipient_phone'],
+                        $validated['recipient_phone'],
 
                         'shipping_address' =>
-                            $validated['shipping_address'],
+                        $validated['shipping_address'],
 
                         'shipping_city' =>
-                            $validated['shipping_city'],
+                        $validated['shipping_city'],
 
                         'shipping_province' =>
-                            $validated['shipping_province'],
+                        $validated['shipping_province'],
 
                         'shipping_postal_code' =>
-                            $validated['shipping_postal_code'],
+                        $validated['shipping_postal_code'],
 
                         'subtotal' =>
-                            $subtotal,
+                        $subtotal,
 
                         'discount_amount' =>
-                            $discountAmount,
+                        $discountAmount,
 
                         'shipping_cost' =>
-                            $shippingCost,
+                        $shippingCost,
 
                         'total_amount' =>
-                            $totalAmount,
+                        $totalAmount,
 
                         /*
                          * Belum menyimpan nama kurir.
                          * Staff akan mengisinya saat shipping.
                          */
-                        'courier' =>
-                            null,
+                        'courier' => null,
 
-                        'shipping_service' =>
-                            $shipping['label'],
+                        'shipping_service' => $shipping['label'],
+
+                        'shipping_method' => $validated['shipping_method'],
+
+                        'estimated_delivery_start' =>
+                        $shipping['estimated_delivery_start'],
+
+                        'estimated_delivery_end' =>
+                        $shipping['estimated_delivery_end'],
                     ]);
 
 
@@ -556,31 +593,31 @@ class CheckoutController extends Controller
 
                         OrderItem::create([
                             'order_id' =>
-                                $order->id,
+                            $order->id,
 
                             'variant_id' =>
-                                $variant->id,
+                            $variant->id,
 
                             'product_name' =>
-                                $variant->product->name,
+                            $variant->product->name,
 
                             'sku' =>
-                                $variant->sku,
+                            $variant->sku,
 
                             'color' =>
-                                $variant->color,
+                            $variant->color,
 
                             'size' =>
-                                $variant->size,
+                            $variant->size,
 
                             'price' =>
-                                $price,
+                            $price,
 
                             'quantity' =>
-                                $item->quantity,
+                            $item->quantity,
 
                             'subtotal' =>
-                                $price
+                            $price
                                 * $item->quantity,
                         ]);
                     }
@@ -608,7 +645,6 @@ class CheckoutController extends Controller
 
 
                     return $order;
-
                 }
             );
 
@@ -623,16 +659,15 @@ class CheckoutController extends Controller
             |
             */
 
-return redirect()
-    ->route(
-        'payment.show',
-        $order
-    )
-    ->with(
-        'success',
-        'Order berhasil dibuat. Silakan lakukan pembayaran.'
-    );
-
+            return redirect()
+                ->route(
+                    'payment.show',
+                    $order
+                )
+                ->with(
+                    'success',
+                    'Order berhasil dibuat. Silakan lakukan pembayaran.'
+                );
         } catch (\RuntimeException $exception) {
 
             return back()
@@ -641,8 +676,6 @@ return redirect()
                     'error',
                     $exception->getMessage()
                 );
-
         }
-
     }
 }

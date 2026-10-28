@@ -28,11 +28,16 @@ class Order extends Model
 
         'courier',
         'shipping_service',
+        'shipping_method',
         'tracking_number',
+
+        'estimated_delivery_start',
+        'estimated_delivery_end',
 
         'paid_at',
         'shipped_at',
         'completed_at',
+        'completion_reason',
         'cancelled_at',
         'cancel_reason',
     ];
@@ -49,6 +54,9 @@ class Order extends Model
             'shipped_at' => 'datetime',
             'completed_at' => 'datetime',
             'cancelled_at' => 'datetime',
+
+            'estimated_delivery_start' => 'date',
+            'estimated_delivery_end' => 'date',
         ];
     }
 
@@ -71,8 +79,14 @@ class Order extends Model
     {
         return $this->hasMany(Payment::class);
     }
+
     public function shipmentUpdates(): HasMany
     {
         return $this->hasMany(ShipmentUpdate::class);
+    }
+
+    public function complaints(): HasMany
+    {
+        return $this->hasMany(OrderComplaint::class);
     }
 }

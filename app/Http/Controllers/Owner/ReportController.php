@@ -10,12 +10,9 @@ use Illuminate\Validation\Rule;
 
 class ReportController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | REPORT PAGE
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * Menampilkan halaman pengaturan laporan Owner.
+     */
     public function index(Request $request)
     {
         $report = $this->buildReport(
@@ -30,12 +27,9 @@ class ReportController extends Controller
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | PRINT REPORT
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * Menampilkan dokumen laporan untuk dicetak atau disimpan PDF.
+     */
     public function print(Request $request)
     {
         $report = $this->buildReport(
@@ -50,12 +44,9 @@ class ReportController extends Controller
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | BUILD REPORT DATA
-    |--------------------------------------------------------------------------
-    */
-
+    /**
+     * Mengumpulkan data aktivitas sistem untuk laporan.
+     */
     private function buildReport(
         Request $request,
         bool $paginate = true
@@ -80,7 +71,6 @@ class ReportController extends Controller
 
             'status' => [
                 'nullable',
-
                 Rule::in([
                     'pending_payment',
                     'waiting_verification',
@@ -93,38 +83,27 @@ class ReportController extends Controller
             ],
         ]);
 
-
-        $startDate =
-            $validated['start_date'] ?? null;
-
-        $endDate =
-            $validated['end_date'] ?? null;
-
-        $status =
-            $validated['status'] ?? null;
+        $startDate = $validated['start_date'] ?? null;
+        $endDate = $validated['end_date'] ?? null;
+        $status = $validated['status'] ?? null;
 
 
         /*
         |--------------------------------------------------------------------------
-        | BASE ORDER QUERY
+        | ORDER QUERY
         |--------------------------------------------------------------------------
+        |
+        | Periode pesanan berdasarkan tanggal pesanan dibuat.
+        |
         */
 
         $orderQuery = Order::query()
             ->with([
                 'user',
-
                 'payments' => function ($query) {
                     $query->latest();
                 },
             ]);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | DATE FILTER
-        |--------------------------------------------------------------------------
-        */
 
         if ($startDate) {
             $orderQuery->whereDate(
@@ -134,7 +113,6 @@ class ReportController extends Controller
             );
         }
 
-
         if ($endDate) {
             $orderQuery->whereDate(
                 'created_at',
@@ -142,13 +120,6 @@ class ReportController extends Controller
                 $endDate
             );
         }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | STATUS FILTER
-        |--------------------------------------------------------------------------
-        */
 
         if ($status) {
             $orderQuery->where(
@@ -160,90 +131,146 @@ class ReportController extends Controller
 
         /*
         |--------------------------------------------------------------------------
-        | REPORT SUMMARY
+        | ORDER SUMMARY
         |--------------------------------------------------------------------------
         */
 
         $totalOrders = (clone $orderQuery)
             ->count();
 
-
         $completedOrders = (clone $orderQuery)
-            ->where(
-                'status',
-                'completed'
-            )
+            ->where('status', 'completed')
             ->count();
-
 
         $cancelledOrders = (clone $orderQuery)
-            ->where(
-                'status',
-                'cancelled'
-            )
+            ->where('status', 'cancelled')
             ->count();
+
+        $orderStatusSummary = (clone $orderQuery)
+            ->selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->get()
+            ->keyBy('status');
 
 
         /*
         |--------------------------------------------------------------------------
-        | VERIFIED REVENUE
+        | PAYMENT QUERY
         |--------------------------------------------------------------------------
+        |
+        | Aktivitas pembayaran menggunakan tanggal aktivitas:
+        | verified_at, paid_at, atau created_at.
+        |
+        | Jika filter status pesanan digunakan, pembayaran
+        | dibatasi pada pesanan dengan status tersebut.
+        |
         */
 
         $paymentQuery = Payment::query()
-            ->where(
-                'status',
-                'verified'
-            )
-            ->whereHas(
+            ->with([
+                'order.user',
+                'verifier',
+            ]);
+
+        if ($startDate) {
+            $paymentQuery->whereRaw(
+                'DATE(COALESCE(
+                    payments.verified_at,
+                    payments.paid_at,
+                    payments.created_at
+                )) >= ?',
+                [$startDate]
+            );
+        }
+
+        if ($endDate) {
+            $paymentQuery->whereRaw(
+                'DATE(COALESCE(
+                    payments.verified_at,
+                    payments.paid_at,
+                    payments.created_at
+                )) <= ?',
+                [$endDate]
+            );
+        }
+
+        if ($status) {
+            $paymentQuery->whereHas(
                 'order',
-                function ($query) use (
-                    $startDate,
-                    $endDate,
-                    $status
-                ) {
-                    if ($startDate) {
-                        $query->whereDate(
-                            'created_at',
-                            '>=',
-                            $startDate
-                        );
-                    }
-
-
-                    if ($endDate) {
-                        $query->whereDate(
-                            'created_at',
-                            '<=',
-                            $endDate
-                        );
-                    }
-
-
-                    if ($status) {
-                        $query->where(
-                            'status',
-                            $status
-                        );
-                    }
+                function ($query) use ($status) {
+                    $query->where('status', $status);
                 }
             );
-
-
-        $totalRevenue = $paymentQuery
-            ->sum('amount');
+        }
 
 
         /*
         |--------------------------------------------------------------------------
-        | AVERAGE ORDER VALUE
+        | PAYMENT SUMMARY
         |--------------------------------------------------------------------------
         */
 
-        $averageOrderValue =
-            $totalOrders > 0
-                ? $totalRevenue / $totalOrders
-                : 0;
+        $totalPaymentRecords = (clone $paymentQuery)
+            ->count();
+
+        $paymentStatusSummary = (clone $paymentQuery)
+            ->selectRaw(
+                'status, COUNT(*) as total, COALESCE(SUM(amount), 0) as amount'
+            )
+            ->groupBy('status')
+            ->get()
+            ->keyBy('status');
+
+        $verifiedPaymentCount = (int) (
+            $paymentStatusSummary->get('verified')->total ?? 0
+        );
+
+        $pendingPaymentCount = (int) (
+            $paymentStatusSummary->get('pending')->total ?? 0
+        );
+
+        $rejectedPaymentCount = (int) (
+            $paymentStatusSummary->get('rejected')->total ?? 0
+        );
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | VERIFIED PAYMENT ACTIVITY
+        |--------------------------------------------------------------------------
+        |
+        | Nominal pembayaran terverifikasi ditampilkan sebagai
+        | catatan pemasukan pembayaran, bukan laba bersih.
+        |
+        */
+
+        $totalRevenue = (clone $paymentQuery)
+            ->where('status', 'verified')
+            ->sum('amount');
+
+        $averageOrderValue = $totalOrders > 0
+            ? $totalRevenue / $totalOrders
+            : 0;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PAYMENT METHOD SUMMARY
+        |--------------------------------------------------------------------------
+        |
+        | Rekap metode pembayaran hanya menggunakan pembayaran
+        | yang sudah diverifikasi.
+        |
+        */
+
+        $paymentMethodSummary = (clone $paymentQuery)
+            ->where('status', 'verified')
+            ->selectRaw(
+                'payment_method, COUNT(*) as total, COALESCE(SUM(amount), 0) as amount'
+            )
+            ->groupBy('payment_method')
+            ->orderBy('payment_method')
+            ->get();
 
 
         /*
@@ -251,8 +278,8 @@ class ReportController extends Controller
         | ORDER LIST
         |--------------------------------------------------------------------------
         |
-        | Halaman report biasa menggunakan pagination.
-        | Halaman print mengambil semua data sesuai filter.
+        | Halaman Reports menggunakan pagination.
+        | Dokumen cetak mengambil semua pesanan sesuai filter.
         |
         */
 
@@ -261,11 +288,36 @@ class ReportController extends Controller
                 ->latest()
                 ->paginate(10)
                 ->withQueryString();
+
+            $payments = collect();
+
         } else {
-            $orders = $orderQuery
+            $orders = (clone $orderQuery)
                 ->latest()
                 ->get();
+
+            $payments = (clone $paymentQuery)
+                ->orderByRaw(
+                    'COALESCE(
+                        payments.verified_at,
+                        payments.paid_at,
+                        payments.created_at
+                    ) DESC'
+                )
+                ->get();
         }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | REPORT INFORMATION
+        |--------------------------------------------------------------------------
+        */
+
+        $generatedAt = now();
+
+        $reportPreparedBy = auth()->user()?->name
+            ?? 'Owner';
 
 
         /*
@@ -276,14 +328,24 @@ class ReportController extends Controller
 
         return compact(
             'orders',
+            'payments',
             'totalOrders',
             'completedOrders',
             'cancelledOrders',
+            'orderStatusSummary',
+            'totalPaymentRecords',
+            'paymentStatusSummary',
+            'verifiedPaymentCount',
+            'pendingPaymentCount',
+            'rejectedPaymentCount',
             'totalRevenue',
             'averageOrderValue',
+            'paymentMethodSummary',
             'startDate',
             'endDate',
-            'status'
+            'status',
+            'generatedAt',
+            'reportPreparedBy'
         );
     }
 }

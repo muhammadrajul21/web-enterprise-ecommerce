@@ -1,20 +1,12 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>Sales & Order Report - Lifestyle</title>
-
-    <link
-        rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"
-    >
+    <title>Laporan Aktivitas E-Commerce LIFESTYLE</title>
 
     <style>
         * {
@@ -23,738 +15,1167 @@
 
         body {
             margin: 0;
-
-            background: #f4f4f4;
-
-            font-family:
-                Arial,
-                Helvetica,
-                sans-serif;
-
-            color: #111111;
+            background: #eeeeee;
+            color: #222222;
+            font-family: "Times New Roman", serif;
+            font-size: 11pt;
+            line-height: 1.65;
         }
 
         .print-toolbar {
-            width: 100%;
-            max-width: 1200px;
-
-            margin: 24px auto 0;
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 15px;
-        }
-
-        .back-button,
-        .print-button {
-            height: 42px;
-
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 9px;
-
-            padding: 0 18px;
-
-            border: 1px solid #111111;
-
-            font-size: 11px;
-            font-weight: 700;
-
-            text-decoration: none;
-
-            cursor: pointer;
-        }
-
-        .back-button {
-            background: #ffffff;
-            color: #111111;
-        }
-
-        .print-button {
-            background: #111111;
-            color: #ffffff;
-        }
-
-        .report-page {
-            width: 100%;
-            max-width: 1200px;
-
-            margin: 20px auto 40px;
-
-            padding: 45px;
-
-            background: #ffffff;
-
-            box-shadow:
-                0 2px 15px
-                rgba(0, 0, 0, 0.08);
-        }
-
-        .report-header {
+            max-width: 900px;
+            margin: 22px auto;
             display: flex;
             justify-content: space-between;
-            gap: 30px;
-
-            padding-bottom: 25px;
-
-            border-bottom: 2px solid #111111;
-        }
-
-        .brand {
-            margin: 0 0 7px;
-
-            font-size: 25px;
-            letter-spacing: 3px;
-        }
-
-        .report-title {
-            margin: 0;
-
-            font-size: 16px;
-            font-weight: 600;
-
-            color: #555555;
-        }
-
-        .report-meta {
-            text-align: right;
-
-            font-size: 11px;
-            line-height: 1.8;
-
-            color: #555555;
-        }
-
-        .report-meta strong {
-            color: #111111;
-        }
-
-        .filter-info {
-            margin-top: 22px;
-
-            display: grid;
-            grid-template-columns:
-                repeat(3, minmax(0, 1fr));
-
             gap: 12px;
         }
 
-        .filter-item {
-            padding: 12px 14px;
-
-            border: 1px solid #dddddd;
-        }
-
-        .filter-item span {
-            display: block;
-
-            margin-bottom: 5px;
-
-            font-size: 8px;
+        .print-toolbar a,
+        .print-toolbar button {
+            padding: 10px 18px;
+            border: 1px solid #222;
+            background: #fff;
+            color: #222;
+            font-family: Arial, sans-serif;
+            font-size: 12px;
             font-weight: 700;
-
-            letter-spacing: 0.7px;
-
-            color: #888888;
+            text-decoration: none;
+            cursor: pointer;
         }
 
-        .filter-item strong {
-            font-size: 11px;
+        .print-toolbar .print-button {
+            background: #222;
+            color: #fff;
         }
 
-        .summary-grid {
-            margin-top: 25px;
-
-            display: grid;
-
-            grid-template-columns:
-                repeat(5, minmax(0, 1fr));
-
-            gap: 10px;
+        .report-page {
+            width: 210mm;
+            min-height: 297mm;
+            margin: 20px auto 35px;
+            padding: 20mm 19mm;
+            background: #fff;
+            box-shadow: 0 2px 18px rgba(0, 0, 0, .12);
         }
 
-        .summary-card {
-            padding: 15px;
-
-            border: 1px solid #dddddd;
+        .report-header {
+            text-align: center;
+            padding-bottom: 18px;
+            border-bottom: 3px double #222;
         }
 
-        .summary-card span {
-            display: block;
-
-            margin-bottom: 8px;
-
-            font-size: 8px;
-            font-weight: 700;
-
-            color: #777777;
-
-            letter-spacing: 0.5px;
-        }
-
-        .summary-card strong {
-            font-size: 15px;
-        }
-
-        .table-section {
-            margin-top: 30px;
-        }
-
-        .section-header {
-            margin-bottom: 13px;
-
-            display: flex;
-            align-items: end;
-            justify-content: space-between;
-        }
-
-        .section-header h2 {
-            margin: 0 0 4px;
-
-            font-size: 15px;
-        }
-
-        .section-header p {
+        .brand {
             margin: 0;
-
-            font-size: 9px;
-
-            color: #777777;
+            font-family: Arial, sans-serif;
+            font-size: 27px;
+            font-weight: 800;
+            letter-spacing: 5px;
         }
 
-        .section-header strong {
+        .brand-subtitle {
+            margin: 2px 0 15px;
+            font-family: Arial, sans-serif;
             font-size: 10px;
+            letter-spacing: 2px;
         }
 
-        table {
-            width: 100%;
-
-            border-collapse: collapse;
-        }
-
-        th {
-            padding: 10px 9px;
-
-            border-top: 1px solid #222222;
-            border-bottom: 1px solid #222222;
-
-            background: #f5f5f5;
-
-            text-align: left;
-
-            font-size: 8px;
-            letter-spacing: 0.4px;
-        }
-
-        td {
-            padding: 10px 9px;
-
-            border-bottom: 1px solid #dddddd;
-
-            vertical-align: top;
-
-            font-size: 9px;
-        }
-
-        .customer-email,
-        .date-time {
-            display: block;
-
-            margin-top: 3px;
-
-            color: #777777;
-
-            font-size: 8px;
-        }
-
-        .status {
-            font-size: 8px;
+        .report-title {
+            margin: 12px 0 4px;
+            font-size: 18px;
             font-weight: 700;
-
             text-transform: uppercase;
         }
 
-        .empty-row {
-            padding: 35px;
+        .report-subtitle {
+            margin: 0;
+            font-size: 11pt;
+        }
 
+        .document-label {
+            display: inline-block;
+            margin-top: 12px;
+            padding: 4px 12px;
+            border: 1px solid #555;
+            font-family: Arial, sans-serif;
+            font-size: 9px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .identity-section {
+            margin-top: 25px;
+        }
+
+        .identity-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .identity-table td {
+            padding: 3px 0;
+            vertical-align: top;
+            font-size: 10.5pt;
+        }
+
+        .identity-table td:first-child {
+            width: 165px;
+        }
+
+        .identity-table td:nth-child(2) {
+            width: 15px;
+        }
+
+        .section {
+            margin-top: 24px;
+        }
+
+        .section-title {
+            margin: 0 0 11px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #555;
+            font-size: 12pt;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .section p {
+            margin: 7px 0;
+            text-align: justify;
+        }
+
+        .report-paragraph {
+            text-indent: 30px;
+        }
+
+        .summary-text {
+            margin-top: 10px;
+            padding: 12px 15px;
+            border-left: 3px solid #333;
+            background: #f7f7f7;
+        }
+
+        .summary-text p {
+            margin: 0;
+        }
+
+        table.data-table {
+            width: 100%;
+            margin-top: 12px;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            padding: 8px 7px;
+            border: 1px solid #777;
+            background: #eeeeee;
+            text-align: left;
+            font-size: 9.5pt;
+        }
+
+        .data-table td {
+            padding: 7px;
+            border: 1px solid #999;
+            vertical-align: top;
+            font-size: 9.5pt;
+        }
+
+        .data-table tfoot td {
+            font-weight: 700;
+            background: #f4f4f4;
+        }
+
+        .text-right {
+            text-align: right !important;
+        }
+
+        .text-center {
+            text-align: center !important;
+        }
+
+        .number {
+            white-space: nowrap;
+        }
+
+        .method-list {
+            margin: 8px 0;
+            padding-left: 23px;
+        }
+
+        .method-list li {
+            margin-bottom: 4px;
+        }
+
+        .note {
+            margin-top: 10px !important;
+            color: #555;
+            font-size: 9.5pt;
+            font-style: italic;
+        }
+
+        .conclusion {
+            margin-top: 20px;
+        }
+
+        .appendix {
+            page-break-before: always;
+        }
+
+        .appendix-heading {
+            margin-bottom: 20px;
             text-align: center;
+        }
 
-            color: #777777;
+        .appendix-heading h2 {
+            margin: 0;
+            font-size: 15pt;
+            text-transform: uppercase;
+        }
+
+        .appendix-heading p {
+            margin: 5px 0;
+            font-size: 10pt;
+        }
+
+        .appendix + .appendix {
+            page-break-before: always;
+        }
+
+        .small-text {
+            font-size: 9pt !important;
+        }
+
+        .report-signature {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 38px;
+            page-break-inside: avoid;
+        }
+
+        .signature-content {
+            width: 230px;
+            text-align: center;
+        }
+
+        .signature-space {
+            height: 75px;
+        }
+
+        .signature-name {
+            display: inline-block;
+            min-width: 180px;
+            padding-bottom: 3px;
+            border-bottom: 1px solid #222;
+            font-weight: 700;
+        }
+
+        .signature-role {
+            margin-top: 3px;
+            font-size: 10pt;
         }
 
         .report-footer {
             margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid #aaa;
+            text-align: center;
+            font-size: 9pt;
+            color: #555;
+        }
 
-            padding-top: 15px;
+        .empty-message {
+            padding: 15px;
+            text-align: center;
+            color: #666;
+            font-style: italic;
+        }
 
-            border-top: 1px solid #dddddd;
-
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-
-            font-size: 8px;
-
-            color: #777777;
+        .keep-together {
+            page-break-inside: avoid;
         }
 
         @page {
-            size: A4 landscape;
-            margin: 12mm;
+            size: A4 portrait;
+            margin: 15mm;
         }
 
         @media print {
-
             body {
-                background: #ffffff;
+                background: #fff;
             }
 
             .print-toolbar {
-                display: none;
+                display: none !important;
             }
 
             .report-page {
-                max-width: none;
-
+                width: auto;
+                min-height: 0;
                 margin: 0;
                 padding: 0;
-
                 box-shadow: none;
             }
 
-            thead {
+            .data-table thead {
                 display: table-header-group;
             }
 
-            tr {
+            .data-table tr {
                 page-break-inside: avoid;
             }
 
-            .summary-card,
-            .filter-item {
-                page-break-inside: avoid;
+            .section-title {
+                page-break-after: avoid;
             }
         }
 
-        @media screen and (max-width: 800px) {
-
-            .print-toolbar,
-            .report-page {
-                width: calc(100% - 30px);
-            }
-
-            .report-page {
-                padding: 25px;
-            }
-
-            .summary-grid {
-                grid-template-columns:
-                    repeat(2, minmax(0, 1fr));
-            }
-
-            .filter-info {
-                grid-template-columns: 1fr;
-            }
-
-            .report-header {
+        @media screen and (max-width: 750px) {
+            .print-toolbar {
+                margin: 15px;
                 flex-direction: column;
             }
 
-            .report-meta {
-                text-align: left;
+            .report-page {
+                width: calc(100% - 20px);
+                min-height: 0;
+                padding: 25px 18px;
+            }
+
+            .data-table {
+                font-size: 9px;
             }
         }
     </style>
 </head>
 
+@php
+    $periodLabel = 'Seluruh periode data';
+
+    if ($startDate && $endDate) {
+        $periodLabel = \Carbon\Carbon::parse($startDate)->format('d/m/Y')
+            . ' s.d. '
+            . \Carbon\Carbon::parse($endDate)->format('d/m/Y');
+    } elseif ($startDate) {
+        $periodLabel = 'Mulai ' .
+            \Carbon\Carbon::parse($startDate)->format('d/m/Y')
+            . ' hingga tanggal laporan';
+    } elseif ($endDate) {
+        $periodLabel = 'Sampai ' .
+            \Carbon\Carbon::parse($endDate)->format('d/m/Y');
+    }
+
+    $orderStatusLabels = [
+        'pending_payment' => 'Menunggu Pembayaran',
+        'waiting_verification' => 'Menunggu Verifikasi',
+        'processing' => 'Diproses',
+        'packing' => 'Dikemas',
+        'shipped' => 'Dikirim',
+        'completed' => 'Selesai',
+        'cancelled' => 'Dibatalkan',
+    ];
+
+    $paymentStatusLabels = [
+        'verified' => 'Terverifikasi',
+        'pending' => 'Menunggu Verifikasi',
+        'rejected' => 'Ditolak',
+    ];
+
+    $paymentMethodLabels = [
+        'bank_transfer' => 'Transfer Bank',
+        'e_wallet' => 'E-Wallet',
+        'cash' => 'Tunai',
+        'cod' => 'Cash on Delivery',
+    ];
+@endphp
 
 <body>
 
-<div class="print-toolbar">
+    {{-- TOOLBAR --}}
+    <div class="print-toolbar">
 
-    <a
-        href="{{ route('owner.reports.index', array_filter([
+        <a href="{{ route('owner.reports.index', array_filter([
             'start_date' => $startDate,
             'end_date' => $endDate,
             'status' => $status,
-        ])) }}"
-        class="back-button"
-    >
-        <i class="bi bi-arrow-left"></i>
+        ])) }}">
+            KEMBALI KE REPORTS
+        </a>
 
-        BACK TO REPORT
-    </a>
+        <button
+            type="button"
+            class="print-button"
+            onclick="window.print()">
+            CETAK / SIMPAN PDF
+        </button>
 
-
-    <button
-        type="button"
-        class="print-button"
-        onclick="window.print()"
-    >
-        <i class="bi bi-printer"></i>
-
-        PRINT / SAVE AS PDF
-    </button>
-
-</div>
+    </div>
 
 
-<main class="report-page">
+    <main class="report-page">
 
-    <header class="report-header">
+        {{-- ================================================= --}}
+        {{-- HEADER --}}
+        {{-- ================================================= --}}
 
-        <div>
+        <header class="report-header">
 
-            <h1 class="brand">
-                LIFESTYLE
-            </h1>
+            <h1 class="brand">LIFESTYLE</h1>
 
-            <p class="report-title">
-                Sales & Order Report
+            <p class="brand-subtitle">
+                E-COMMERCE BUSINESS
             </p>
 
-        </div>
+            <h2 class="report-title">
+                Laporan Aktivitas E-Commerce
+            </h2>
 
+            <p class="report-subtitle">
+                Laporan Penjualan, Pesanan, dan Pembayaran
+            </p>
 
-        <div class="report-meta">
-
-            <div>
-                <strong>Generated:</strong>
-
-                {{ now()->format('d M Y, H:i') }}
-            </div>
-
-            <div>
-                <strong>Generated By:</strong>
-
-                {{ auth()->user()->name }}
-            </div>
-
-            <div>
-                <strong>Role:</strong>
-
-                Owner
-            </div>
-
-        </div>
-
-    </header>
-
-
-    <section class="filter-info">
-
-        <div class="filter-item">
-
-            <span>
-                START DATE
+            <span class="document-label">
+                DOKUMEN LAPORAN RESMI
             </span>
 
-            <strong>
-                {{ $startDate
-                    ? \Carbon\Carbon::parse($startDate)->format('d M Y')
-                    : 'All Dates' }}
-            </strong>
-
-        </div>
+        </header>
 
 
-        <div class="filter-item">
+        {{-- ================================================= --}}
+        {{-- IDENTITAS LAPORAN --}}
+        {{-- ================================================= --}}
 
-            <span>
-                END DATE
-            </span>
+        <section class="identity-section">
 
-            <strong>
-                {{ $endDate
-                    ? \Carbon\Carbon::parse($endDate)->format('d M Y')
-                    : 'All Dates' }}
-            </strong>
+            <h3 class="section-title">
+                Identitas Laporan
+            </h3>
 
-        </div>
+            <table class="identity-table">
 
+                <tr>
+                    <td>Nama Usaha</td>
+                    <td>:</td>
+                    <td><strong>LIFESTYLE E-Commerce</strong></td>
+                </tr>
 
-        <div class="filter-item">
+                <tr>
+                    <td>Jenis Laporan</td>
+                    <td>:</td>
+                    <td>Laporan Aktivitas Penjualan dan Pembayaran</td>
+                </tr>
 
-            <span>
-                ORDER STATUS
-            </span>
+                <tr>
+                    <td>Periode Laporan</td>
+                    <td>:</td>
+                    <td>{{ $periodLabel }}</td>
+                </tr>
 
-            <strong>
-                {{ $status
-                    ? ucwords(str_replace('_', ' ', $status))
-                    : 'All Statuses' }}
-            </strong>
+                <tr>
+                    <td>Filter Status Pesanan</td>
+                    <td>:</td>
+                    <td>
+                        {{ $status
+                            ? ($orderStatusLabels[$status] ?? $status)
+                            : 'Seluruh Status'
+                        }}
+                    </td>
+                </tr>
 
-        </div>
+                <tr>
+                    <td>Tanggal Pembuatan</td>
+                    <td>:</td>
+                    <td>
+                        {{ $generatedAt->format('d/m/Y H:i') }}
+                    </td>
+                </tr>
 
-    </section>
+                <tr>
+                    <td>Disusun Oleh</td>
+                    <td>:</td>
+                    <td>{{ $reportPreparedBy }}</td>
+                </tr>
 
+                <tr>
+                    <td>Jabatan</td>
+                    <td>:</td>
+                    <td>Owner LIFESTYLE</td>
+                </tr>
 
-    <section class="summary-grid">
+            </table>
 
-        <div class="summary-card">
-
-            <span>
-                TOTAL REVENUE
-            </span>
-
-            <strong>
-                Rp {{ number_format(
-                    $totalRevenue,
-                    0,
-                    ',',
-                    '.'
-                ) }}
-            </strong>
-
-        </div>
-
-
-        <div class="summary-card">
-
-            <span>
-                TOTAL ORDERS
-            </span>
-
-            <strong>
-                {{ $totalOrders }}
-            </strong>
-
-        </div>
-
-
-        <div class="summary-card">
-
-            <span>
-                COMPLETED
-            </span>
-
-            <strong>
-                {{ $completedOrders }}
-            </strong>
-
-        </div>
+        </section>
 
 
-        <div class="summary-card">
+        {{-- ================================================= --}}
+        {{-- PENDAHULUAN --}}
+        {{-- ================================================= --}}
 
-            <span>
-                CANCELLED
-            </span>
+        <section class="section">
 
-            <strong>
-                {{ $cancelledOrders }}
-            </strong>
+            <h3 class="section-title">
+                I. Pendahuluan
+            </h3>
 
-        </div>
+            <p class="report-paragraph">
+                Laporan Aktivitas E-Commerce LIFESTYLE disusun sebagai
+                bentuk dokumentasi dan pertanggungjawaban atas kegiatan
+                transaksi yang tercatat di dalam sistem selama periode
+                {{ $periodLabel }}.
+            </p>
+
+            <p class="report-paragraph">
+                Laporan ini memberikan gambaran mengenai aktivitas
+                pemesanan pelanggan, perkembangan status pesanan,
+                pencatatan pembayaran, serta proses verifikasi pembayaran
+                yang dilaksanakan dalam operasional sistem e-commerce
+                LIFESTYLE.
+            </p>
+
+            <p class="report-paragraph">
+                Seluruh informasi dan angka yang disajikan berasal
+                dari catatan transaksi yang tersimpan di dalam database
+                aplikasi. Laporan ini disusun oleh Owner sebagai bahan
+                dokumentasi, pemantauan, dan evaluasi aktivitas sistem.
+            </p>
+
+        </section>
 
 
-        <div class="summary-card">
+        {{-- ================================================= --}}
+        {{-- RINGKASAN PESANAN --}}
+        {{-- ================================================= --}}
 
-            <span>
-                AVG. ORDER VALUE
-            </span>
+        <section class="section">
 
-            <strong>
-                Rp {{ number_format(
-                    $averageOrderValue,
-                    0,
-                    ',',
-                    '.'
-                ) }}
-            </strong>
+            <h3 class="section-title">
+                II. Rekapitulasi Aktivitas Pemesanan
+            </h3>
 
-        </div>
+            <p class="report-paragraph">
+                Berdasarkan catatan transaksi dalam periode laporan,
+                sistem LIFESTYLE mencatat sebanyak
+                <strong>{{ number_format($totalOrders, 0, ',', '.') }}
+                pesanan</strong>.
+                Dari keseluruhan pesanan tersebut, terdapat
+                <strong>{{ number_format($completedOrders, 0, ',', '.') }}
+                pesanan selesai</strong> dan
+                <strong>{{ number_format($cancelledOrders, 0, ',', '.') }}
+                pesanan dibatalkan</strong>.
+            </p>
 
-    </section>
+            <p>
+                Rincian status pesanan yang tercatat pada periode
+                pelaporan disajikan sebagai berikut.
+            </p>
+
+            <table class="data-table">
+
+                <thead>
+                    <tr>
+                        <th width="8%">No.</th>
+                        <th>Status Pesanan</th>
+                        <th width="25%" class="text-center">
+                            Jumlah
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @php
+                        $number = 1;
+                    @endphp
+
+                    @foreach($orderStatusLabels as $key => $label)
+
+                        @php
+                            $statusTotal =
+                                $orderStatusSummary->get($key)->total ?? 0;
+                        @endphp
+
+                        <tr>
+                            <td class="text-center">
+                                {{ $number++ }}
+                            </td>
+
+                            <td>{{ $label }}</td>
+
+                            <td class="text-center">
+                                {{ number_format($statusTotal, 0, ',', '.') }}
+                            </td>
+                        </tr>
+
+                    @endforeach
+
+                    <tr>
+                        <td colspan="2">
+                            <strong>Total Pesanan</strong>
+                        </td>
+
+                        <td class="text-center">
+                            <strong>
+                                {{ number_format($totalOrders, 0, ',', '.') }}
+                            </strong>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </section>
 
 
-    <section class="table-section">
+        {{-- ================================================= --}}
+        {{-- AKTIVITAS PEMBAYARAN --}}
+        {{-- ================================================= --}}
 
-        <div class="section-header">
+        <section class="section">
 
-            <div>
+            <h3 class="section-title">
+                III. Rekapitulasi Aktivitas Pembayaran
+            </h3>
 
-                <h2>
-                    Transaction Details
-                </h2>
+            <p class="report-paragraph">
+                Selain aktivitas pemesanan, sistem juga mencatat
+                proses pembayaran yang dilakukan pelanggan.
+                Pembayaran dikelompokkan berdasarkan status verifikasi
+                yang tersimpan pada sistem.
+            </p>
+
+            <p>
+                Selama periode laporan terdapat
+                <strong>
+                    {{ number_format($totalPaymentRecords, 0, ',', '.') }}
+                    catatan pembayaran
+                </strong>, dengan rincian status sebagai berikut.
+            </p>
+
+            <table class="data-table">
+
+                <thead>
+                    <tr>
+                        <th width="8%">No.</th>
+                        <th>Status Pembayaran</th>
+                        <th width="19%" class="text-center">
+                            Jumlah
+                        </th>
+                        <th width="30%" class="text-right">
+                            Nominal Tercatat
+                        </th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @php
+                        $paymentNumber = 1;
+                    @endphp
+
+                    @foreach($paymentStatusLabels as $key => $label)
+
+                        @php
+                            $paymentSummary =
+                                $paymentStatusSummary->get($key);
+
+                            $paymentCount =
+                                $paymentSummary->total ?? 0;
+
+                            $paymentAmount =
+                                $paymentSummary->amount ?? 0;
+                        @endphp
+
+                        <tr>
+                            <td class="text-center">
+                                {{ $paymentNumber++ }}
+                            </td>
+
+                            <td>{{ $label }}</td>
+
+                            <td class="text-center">
+                                {{ number_format($paymentCount, 0, ',', '.') }}
+                            </td>
+
+                            <td class="text-right number">
+                                Rp {{ number_format(
+                                    (float) $paymentAmount,
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}
+                            </td>
+                        </tr>
+
+                    @endforeach
+
+                </tbody>
+
+            </table>
+
+            <div class="summary-text">
 
                 <p>
-                    Detailed orders based on the selected report filters.
+                    Berdasarkan data pembayaran, terdapat
+                    <strong>
+                        {{ number_format($verifiedPaymentCount, 0, ',', '.') }}
+                        pembayaran yang telah terverifikasi
+                    </strong>
+                    dengan total nominal sebesar
+                    <strong>
+                        Rp {{ number_format(
+                            $totalRevenue,
+                            0,
+                            ',',
+                            '.'
+                        ) }}
+                    </strong>.
+                    Nilai tersebut merupakan akumulasi pembayaran
+                    terverifikasi yang tercatat di dalam sistem,
+                    bukan perhitungan laba atau keuntungan usaha.
                 </p>
 
             </div>
 
-
-            <strong>
-                {{ $totalOrders }} ORDER(S)
-            </strong>
-
-        </div>
+        </section>
 
 
-        <table>
+        {{-- ================================================= --}}
+        {{-- METODE PEMBAYARAN --}}
+        {{-- ================================================= --}}
 
-            <thead>
+        <section class="section">
 
-                <tr>
-                    <th>ORDER</th>
-                    <th>CUSTOMER</th>
-                    <th>DATE</th>
-                    <th>TOTAL</th>
-                    <th>PAYMENT</th>
-                    <th>STATUS</th>
-                </tr>
+            <h3 class="section-title">
+                IV. Rekapitulasi Metode Pembayaran
+            </h3>
 
-            </thead>
+            <p class="report-paragraph">
+                Pembayaran yang telah terverifikasi juga dikelompokkan
+                berdasarkan metode pembayaran yang digunakan pelanggan.
+                Rekapitulasi ini memberikan gambaran mengenai metode
+                transaksi yang tercatat dalam sistem.
+            </p>
 
+            <table class="data-table">
 
-            <tbody>
+                <thead>
+                    <tr>
+                        <th width="8%">No.</th>
+                        <th>Metode Pembayaran</th>
+                        <th width="18%" class="text-center">
+                            Transaksi
+                        </th>
+                        <th width="30%" class="text-right">
+                            Nominal
+                        </th>
+                    </tr>
+                </thead>
 
-            @forelse($orders as $order)
+                <tbody>
 
-                @php
-                    $latestPayment =
-                        $order->payments->first();
+                    @forelse($paymentMethodSummary as $index => $method)
 
-                    $statusLabel = [
-                        'pending_payment' =>
-                            'Pending Payment',
+                        <tr>
+                            <td class="text-center">
+                                {{ $index + 1 }}
+                            </td>
 
-                        'waiting_verification' =>
-                            'Waiting Verification',
+                            <td>
+                                {{ $paymentMethodLabels[$method->payment_method]
+                                    ?? ucwords(str_replace(
+                                        '_',
+                                        ' ',
+                                        $method->payment_method
+                                    ))
+                                }}
+                            </td>
 
-                        'processing' =>
-                            'Processing',
+                            <td class="text-center">
+                                {{ number_format($method->total, 0, ',', '.') }}
+                            </td>
 
-                        'packing' =>
-                            'Packing',
+                            <td class="text-right number">
+                                Rp {{ number_format(
+                                    (float) $method->amount,
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}
+                            </td>
+                        </tr>
 
-                        'shipped' =>
-                            'Shipped',
+                    @empty
 
-                        'completed' =>
-                            'Completed',
+                        <tr>
+                            <td colspan="4" class="empty-message">
+                                Tidak terdapat pembayaran terverifikasi
+                                pada periode laporan.
+                            </td>
+                        </tr>
 
-                        'cancelled' =>
-                            'Cancelled',
-                    ][$order->status]
-                    ?? ucwords(
-                        str_replace(
-                            '_',
-                            ' ',
-                            $order->status
-                        )
-                    );
-                @endphp
+                    @endforelse
 
+                </tbody>
 
-                <tr>
+            </table>
 
-                    <td>
-                        <strong>
-                            {{ $order->order_code }}
-                        </strong>
-                    </td>
-
-
-                    <td>
-
-                        <strong>
-                            {{ $order->user?->name ?? '-' }}
-                        </strong>
-
-                        <span class="customer-email">
-                            {{ $order->user?->email ?? '-' }}
-                        </span>
-
-                    </td>
-
-
-                    <td>
-
-                        {{ $order->created_at
-                            ->format('d M Y') }}
-
-                        <span class="date-time">
-                            {{ $order->created_at
-                                ->format('H:i') }}
-                        </span>
-
-                    </td>
+        </section>
 
 
-                    <td>
+        {{-- ================================================= --}}
+        {{-- CATATAN PENYUSUNAN DATA --}}
+        {{-- ================================================= --}}
 
-                        <strong>
-                            Rp {{ number_format(
-                                $order->total_amount,
-                                0,
-                                ',',
-                                '.'
-                            ) }}
-                        </strong>
+        <section class="section">
 
-                    </td>
+            <h3 class="section-title">
+                V. Keterangan dan Dasar Penyusunan
+            </h3>
 
+            <p>
+                Penyusunan laporan ini menggunakan ketentuan pencatatan
+                sebagai berikut:
+            </p>
 
-                    <td>
+            <ol class="method-list">
 
-                        {{ $latestPayment
-                            ? ucfirst($latestPayment->status)
-                            : 'No Payment' }}
+                <li>
+                    Data pesanan dikelompokkan berdasarkan tanggal
+                    pembuatan pesanan di dalam sistem.
+                </li>
 
-                    </td>
+                <li>
+                    Data pembayaran dikelompokkan berdasarkan tanggal
+                    verifikasi pembayaran, waktu pembayaran, atau
+                    tanggal pencatatan apabila informasi tanggal
+                    sebelumnya tidak tersedia.
+                </li>
 
+                <li>
+                    Pembayaran terverifikasi merupakan pembayaran
+                    yang telah memperoleh status verified di dalam sistem.
+                </li>
 
-                    <td>
+                <li>
+                    Status pesanan dan pembayaran menggambarkan
+                    kondisi yang tercatat pada saat laporan dibuat.
+                </li>
 
-                        <span class="status">
-                            {{ $statusLabel }}
-                        </span>
+                <li>
+                    Nilai pembayaran dalam laporan tidak dikurangi
+                    biaya operasional dan tidak dinyatakan sebagai
+                    laba bersih.
+                </li>
 
-                    </td>
+            </ol>
 
-                </tr>
-
-            @empty
-
-                <tr>
-
-                    <td
-                        colspan="6"
-                        class="empty-row"
-                    >
-                        No orders found for the selected filters.
-                    </td>
-
-                </tr>
-
-            @endforelse
-
-            </tbody>
-
-        </table>
-
-    </section>
+        </section>
 
 
-    <footer class="report-footer">
+        {{-- ================================================= --}}
+        {{-- KESIMPULAN --}}
+        {{-- ================================================= --}}
 
-        <span>
+        <section class="section conclusion">
+
+            <h3 class="section-title">
+                VI. Kesimpulan
+            </h3>
+
+            <p class="report-paragraph">
+                Berdasarkan hasil rekapitulasi, kegiatan operasional
+                sistem e-commerce LIFESTYLE selama periode laporan
+                telah menghasilkan catatan aktivitas pemesanan dan
+                pembayaran sebagaimana diuraikan dalam dokumen ini.
+            </p>
+
+            <p class="report-paragraph">
+                Data tersebut diharapkan dapat menjadi bahan
+                pemantauan bagi Owner dalam melihat perkembangan
+                transaksi, mengetahui status pesanan, serta mengevaluasi
+                proses pembayaran yang berlangsung pada sistem.
+            </p>
+
+            <p class="report-paragraph">
+                Demikian laporan aktivitas E-Commerce LIFESTYLE ini
+                disusun berdasarkan data yang tersedia di dalam sistem
+                dan dapat digunakan sebagaimana mestinya.
+            </p>
+
+        </section>
+
+
+        {{-- ================================================= --}}
+        {{-- LAMPIRAN I - RINCIAN PESANAN --}}
+        {{-- ================================================= --}}
+
+        <section class="section appendix">
+
+            <div class="appendix-heading">
+
+                <h2>Lampiran I</h2>
+
+                <p>
+                    Rincian Data Pesanan
+                </p>
+
+                <p>
+                    Periode: {{ $periodLabel }}
+                </p>
+
+            </div>
+
+            <table class="data-table">
+
+                <thead>
+                    <tr>
+                        <th width="5%">No.</th>
+                        <th>Nomor Pesanan</th>
+                        <th>Pelanggan</th>
+                        <th>Tanggal</th>
+                        <th class="text-right">Total Pesanan</th>
+                        <th>Pembayaran</th>
+                        <th>Status Pesanan</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @forelse($orders as $index => $order)
+
+                        @php
+                            $latestPayment = $order->payments->first();
+                        @endphp
+
+                        <tr>
+
+                            <td class="text-center">
+                                {{ $index + 1 }}
+                            </td>
+
+                            <td>
+                                <strong>
+                                    {{ $order->order_code }}
+                                </strong>
+                            </td>
+
+                            <td>
+                                {{ $order->user?->name ?? '-' }}
+                                <span class="small-text">
+                                    {{ $order->user?->email ?? '' }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {{ $order->created_at->format('d/m/Y') }}
+                            </td>
+
+                            <td class="text-right number">
+                                Rp {{ number_format(
+                                    $order->total_amount,
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}
+                            </td>
+
+                            <td>
+                                {{ $latestPayment
+                                    ? ($paymentStatusLabels[$latestPayment->status]
+                                        ?? ucfirst($latestPayment->status))
+                                    : 'Belum ada'
+                                }}
+                            </td>
+
+                            <td>
+                                {{ $orderStatusLabels[$order->status]
+                                    ?? ucfirst($order->status)
+                                }}
+                            </td>
+
+                        </tr>
+
+                    @empty
+
+                        <tr>
+                            <td colspan="7" class="empty-message">
+                                Tidak terdapat data pesanan pada periode ini.
+                            </td>
+                        </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
+
+            <p class="note">
+                Catatan: nominal pada rincian pesanan merupakan total
+                pesanan, bukan seluruhnya pembayaran yang telah terverifikasi.
+            </p>
+
+        </section>
+
+
+        {{-- ================================================= --}}
+        {{-- LAMPIRAN II - RINCIAN PEMBAYARAN --}}
+        {{-- ================================================= --}}
+
+        <section class="section appendix">
+
+            <div class="appendix-heading">
+
+                <h2>Lampiran II</h2>
+
+                <p>
+                    Rincian Aktivitas Pembayaran
+                </p>
+
+                <p>
+                    Periode: {{ $periodLabel }}
+                </p>
+
+            </div>
+
+            <table class="data-table">
+
+                <thead>
+                    <tr>
+                        <th width="5%">No.</th>
+                        <th>Nomor Pesanan</th>
+                        <th>Tanggal Aktivitas</th>
+                        <th>Metode</th>
+                        <th class="text-right">Nominal</th>
+                        <th>Status</th>
+                        <th>Diproses Oleh</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @forelse($payments as $index => $payment)
+
+                        @php
+                            $paymentActivityDate =
+                                $payment->verified_at
+                                ?? $payment->paid_at
+                                ?? $payment->created_at;
+                        @endphp
+
+                        <tr>
+
+                            <td class="text-center">
+                                {{ $index + 1 }}
+                            </td>
+
+                            <td>
+                                {{ $payment->order?->order_code ?? '-' }}
+                            </td>
+
+                            <td>
+                                {{ $paymentActivityDate
+                                    ? $paymentActivityDate->format('d/m/Y H:i')
+                                    : '-'
+                                }}
+                            </td>
+
+                            <td>
+                                {{ $paymentMethodLabels[$payment->payment_method]
+                                    ?? ucwords(str_replace(
+                                        '_',
+                                        ' ',
+                                        $payment->payment_method
+                                    ))
+                                }}
+                            </td>
+
+                            <td class="text-right number">
+                                Rp {{ number_format(
+                                    (float) $payment->amount,
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}
+                            </td>
+
+                            <td>
+                                {{ $paymentStatusLabels[$payment->status]
+                                    ?? ucfirst($payment->status)
+                                }}
+                            </td>
+
+                            <td>
+                                {{ $payment->verifier?->name ?? '-' }}
+                            </td>
+
+                        </tr>
+
+                    @empty
+
+                        <tr>
+                            <td colspan="7" class="empty-message">
+                                Tidak terdapat catatan pembayaran
+                                pada periode laporan.
+                            </td>
+                        </tr>
+
+                    @endforelse
+
+                </tbody>
+
+            </table>
+
+            <p class="note">
+                Nama pada kolom Diproses Oleh merupakan pengguna yang
+                tercatat memproses status pembayaran di sistem.
+            </p>
+
+        </section>
+
+
+        {{-- ================================================= --}}
+        {{-- PENGESAHAN --}}
+        {{-- ================================================= --}}
+
+        <section class="report-signature">
+
+            <div class="signature-content">
+
+                <p>
+                    Dibuat pada:
+                    {{ $generatedAt->format('d/m/Y') }}
+                </p>
+
+                <p>
+                    Owner LIFESTYLE,
+                </p>
+
+                <div class="signature-space"></div>
+
+                <div class="signature-name">
+                    {{ $reportPreparedBy }}
+                </div>
+
+                <div class="signature-role">
+                    Owner
+                </div>
+
+            </div>
+
+        </section>
+
+
+        {{-- FOOTER --}}
+
+        <footer class="report-footer">
+
             LIFESTYLE E-Commerce
-        </span>
+            <br>
 
-        <span>
-            This report was generated from verified system data.
-        </span>
+            Dokumen ini dihasilkan berdasarkan catatan aktivitas
+            yang tersimpan di dalam sistem.
 
-    </footer>
+        </footer>
 
-</main>
-
+    </main>
 
 </body>
 </html>

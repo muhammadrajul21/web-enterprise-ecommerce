@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Customer;
 
-use App\Models\OrderComplaint;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\OrderComplaint;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -15,13 +16,9 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::where(
-            'user_id',
-            auth()->id()
-        )
+        $orders = Order::where('user_id', auth()->id())
             ->with([
                 'items',
-
                 'payments' => function ($query) {
                     $query->latest();
                 },
@@ -29,13 +26,25 @@ class OrderController extends Controller
             ->latest()
             ->paginate(10);
 
-
-        return view(
-            'customer.orders.index',
-            compact('orders')
-        );
+        return view('customer.orders.index', compact('orders'));
     }
 
+    /**
+     * Menormalisasi nama kota dan provinsi
+     * agar mudah dicocokkan dengan dataset wilayah.
+     */
+    private static function normalizeRegionName(?string $value): string
+    {
+        $value = strtolower(trim($value ?? ''));
+
+        $value = preg_replace(
+            '/^(kabupaten|kab\.?|kota|kotamadya)\s*/u',
+            '',
+            $value
+        ) ?? $value;
+
+        return preg_replace('/[^a-z0-9]/', '', $value) ?? '';
+    }
 
     /**
      * Menampilkan detail order customer.
@@ -53,43 +62,24 @@ class OrderController extends Controller
             403
         );
 
-
         /*
         |--------------------------------------------------------------------------
         | LOAD ORDER DATA
         |--------------------------------------------------------------------------
-        |
-        | Shipment update yang dibutuhkan customer sekarang
-        | hanya data final "delivered" dari Proof of Delivery.
-        |
         */
 
         $order->load([
-
             'items.review',
-
             'voucher',
 
             'payments' => function ($query) {
                 $query->latest();
             },
 
-            'shipmentUpdates' => function ($query) {
-
-                $query
-                    ->where(
-                        'status',
-                        'delivered'
-                    )
-                    ->orderBy('occurred_at')
-                    ->orderBy('id');
-            },
             'complaints' => function ($query) {
                 $query->latest();
             },
-
         ]);
-
 
         /*
         |--------------------------------------------------------------------------
@@ -97,35 +87,291 @@ class OrderController extends Controller
         |--------------------------------------------------------------------------
         */
 
-        $latestPayment =
-            $order->payments->first();
-
+        $latestPayment = $order->payments->first();
 
         /*
         |--------------------------------------------------------------------------
-        | DELIVERY DATA
+        | SIMULATED SHIPMENT TRACKING
+        |--------------------------------------------------------------------------
+        |
+        | Peta customer tidak lagi bergantung pada Proof of Delivery.
+        | Titik awal menggunakan pusat distribusi LIFESTYLE di Banda Aceh.
+        | Titik tujuan menggunakan koordinat pusat kabupaten/kota pelanggan.
+        |
+        */
+
+        $origin = [
+            'latitude' => 5.550,
+            'longitude' => 95.318,
+            'label' => 'Pusat Distribusi LIFESTYLE - Banda Aceh',
+        ];
+
+        /*
+        |--------------------------------------------------------------------------
+        | LOAD INDONESIA REGENCY COORDINATES
+        |--------------------------------------------------------------------------
+        |
+        | Dataset lokal:
+        | public/data/indonesia-regencies.json
+        |
+        | Data disimpan dalam cache agar JSON tidak dibaca
+        | dan diproses ulang pada setiap permintaan.
+        |
+        */
+
+        $regions = Cache::rememberForever(
+            'lifestyle.regency-coordinates.v1',
+            function () {
+
+                $path = public_path(
+                    'data/indonesia-regencies.json'
+                );
+
+                if (!is_file($path)) {
+                    return [];
+                }
+
+                $content = file_get_contents($path);
+
+                $rows = json_decode(
+                    $content ?: '',
+                    true
+                );
+
+                if (!is_array($rows)) {
+                    return [];
+                }
+
+                $result = [];
+
+                foreach ($rows as $row) {
+
+                    $latitude = $row['geo']['lat'] ?? null;
+                    $longitude = $row['geo']['lon'] ?? null;
+
+                    if (
+                        !is_numeric($latitude) ||
+                        !is_numeric($longitude)
+                    ) {
+                        continue;
+                    }
+
+                    $localCity = $row['name']['local'] ?? null;
+                    $englishCity = $row['name']['en'] ?? null;
+
+                    $localProvince =
+                        $row['parent']['name']['local'] ?? null;
+
+                    $englishProvince =
+                        $row['parent']['name']['en'] ?? null;
+
+                    $cityKeys = array_values(array_unique(array_filter([
+                        self::normalizeRegionName($localCity),
+                        self::normalizeRegionName($englishCity),
+                    ])));
+
+                    $provinceKeys = array_values(array_unique(array_filter([
+                        self::normalizeRegionName($localProvince),
+                        self::normalizeRegionName($englishProvince),
+                    ])));
+
+                    if (empty($cityKeys)) {
+                        continue;
+                    }
+
+                    $result[] = [
+                        'city_keys' => $cityKeys,
+                        'province_keys' => $provinceKeys,
+
+                        'city_label' => $localCity ?? $englishCity,
+                        'province_label' => $localProvince ?? $englishProvince,
+
+                        'latitude' => (float) $latitude,
+                        'longitude' => (float) $longitude,
+                    ];
+                }
+
+                return $result;
+            }
+        );
+
+        /*
+        |--------------------------------------------------------------------------
+        | MATCH CUSTOMER DESTINATION
         |--------------------------------------------------------------------------
         */
 
-        $delivery =
-            $order->shipmentUpdates
-            ->last();
+        $cityKey = self::normalizeRegionName(
+            $order->shipping_city
+        );
 
+        $provinceKey = self::normalizeRegionName(
+            $order->shipping_province
+        );
 
         /*
-         * Map hanya ditampilkan jika POD memiliki
-         * latitude dan longitude.
-         *
-         * Lokasi ini adalah lokasi penerimaan terakhir,
-         * bukan live GPS kurir.
+         * Toleransi variasi penulisan Bireuen.
+         */
+        if ($cityKey === 'bireun') {
+            $cityKey = 'bireuen';
+        }
+
+        $matchingRegions = array_values(array_filter(
+            $regions,
+            function ($region) use ($cityKey, $provinceKey) {
+
+                $cityMatches = in_array(
+                    $cityKey,
+                    $region['city_keys'],
+                    true
+                );
+
+                $provinceMatches = $provinceKey === ''
+                    || in_array(
+                        $provinceKey,
+                        $region['province_keys'],
+                        true
+                    );
+
+                return $cityMatches && $provinceMatches;
+            }
+        ));
+
+        $destination = count($matchingRegions) === 1
+            ? $matchingRegions[0]
+            : null;
+
+        /*
+         * Jika nama provinsi tidak cocok,
+         * lakukan pencocokan kota saja.
+         * Hanya digunakan apabila hasilnya unik.
          */
 
-        $lastKnownLocation =
-            $delivery
-            && $delivery->latitude !== null
-            && $delivery->longitude !== null
-            ? $delivery
-            : null;
+        if (!$destination && $cityKey !== '') {
+
+            $cityMatches = array_values(array_filter(
+                $regions,
+                fn ($region) => in_array(
+                    $cityKey,
+                    $region['city_keys'],
+                    true
+                )
+            ));
+
+            if (count($cityMatches) === 1) {
+                $destination = $cityMatches[0];
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | TRACKING PROGRESS
+        |--------------------------------------------------------------------------
+        |
+        | Posisi marker merupakan simulasi.
+        |
+        | 15% = awal perjalanan.
+        | 90% = mendekati tujuan.
+        | 100% = pesanan selesai.
+        |
+        */
+
+        $trackingProgress = 15;
+
+        $trackingStageLabel = 'Paket baru diberangkatkan';
+
+        if ($order->status === 'completed') {
+
+            $trackingProgress = 100;
+
+            $trackingStageLabel = 'Pesanan telah selesai';
+
+        } elseif ($order->shipped_at) {
+
+            if ($order->estimated_delivery_end) {
+
+                $startTimestamp = $order->shipped_at->timestamp;
+
+                $endTimestamp = $order->estimated_delivery_end
+                    ->copy()
+                    ->endOfDay()
+                    ->timestamp;
+
+                $duration = $endTimestamp - $startTimestamp;
+
+                if ($duration > 0) {
+
+                    $elapsed = now()->timestamp - $startTimestamp;
+
+                    $ratio = max(
+                        0,
+                        min(1, $elapsed / $duration)
+                    );
+
+                    $trackingProgress = (int) round(
+                        15 + (75 * $ratio)
+                    );
+
+                } else {
+
+                    $trackingProgress = 85;
+                }
+
+            } else {
+
+                $trackingProgress = 55;
+            }
+
+            if ($trackingProgress >= 75) {
+
+                $trackingStageLabel = 'Mendekati area tujuan';
+
+            } elseif ($trackingProgress >= 40) {
+
+                $trackingStageLabel = 'Dalam perjalanan';
+
+            } else {
+
+                $trackingStageLabel = 'Paket baru diberangkatkan';
+            }
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | TRACKING MAP DATA
+        |--------------------------------------------------------------------------
+        */
+
+        $trackingMap = [
+            'origin' => $origin,
+
+            'destination' => $destination ? [
+                'latitude' => $destination['latitude'],
+                'longitude' => $destination['longitude'],
+
+                'label' => trim(
+                    ($order->shipping_city ?: $destination['city_label'])
+                    . ', '
+                    . ($order->shipping_province ?: $destination['province_label'])
+                ),
+            ] : null,
+
+            'progress' => $trackingProgress,
+
+            'stage_label' => $trackingStageLabel,
+
+            'courier' => $order->courier ?: 'Kurir',
+
+            'tracking_number' => $order->tracking_number,
+
+            'estimated_start' => $order->estimated_delivery_start
+                ?->format('d M Y'),
+
+            'estimated_end' => $order->estimated_delivery_end
+                ?->format('d M Y'),
+
+            'order_status' => $order->status,
+        ];
 
 
         /*
@@ -139,11 +385,11 @@ class OrderController extends Controller
             compact(
                 'order',
                 'latestPayment',
-                'delivery',
-                'lastKnownLocation'
+                'trackingMap'
             )
         );
     }
+
     /**
      * Customer mengonfirmasi bahwa pesanan sudah diterima.
      */
@@ -162,6 +408,7 @@ class OrderController extends Controller
         }
 
         $confirmed = DB::transaction(function () use ($order) {
+
             $lockedOrder = Order::query()
                 ->lockForUpdate()
                 ->findOrFail($order->id);
@@ -187,7 +434,7 @@ class OrderController extends Controller
             return true;
         });
 
-        if (! $confirmed) {
+        if (!$confirmed) {
             return back()->with(
                 'error',
                 'Pesanan berubah status atau memiliki komplain yang belum selesai.'
@@ -205,12 +452,10 @@ class OrderController extends Controller
      */
     public function storeComplaint(Request $request, Order $order)
     {
-        // Pastikan pesanan ini milik pelanggan yang sedang login.
         if ((int) $order->user_id !== (int) auth()->id()) {
             abort(403);
         }
 
-        // Validasi data komplain.
         $validated = $request->validate([
             'category' => [
                 'required',
@@ -219,26 +464,22 @@ class OrderController extends Controller
             'message' => ['required', 'string', 'max:5000'],
         ]);
 
-        // Kunci pesanan selama proses agar tidak berbenturan
-        // dengan proses penyelesaian otomatis.
         $result = DB::transaction(function () use ($order, $validated) {
+
             $lockedOrder = Order::query()
                 ->lockForUpdate()
                 ->findOrFail($order->id);
 
-            // Komplain hanya diperbolehkan ketika pesanan masih dikirim,
-            // atau sudah selesai karena batas waktu otomatis.
             $eligible = $lockedOrder->status === 'shipped'
                 || (
                     $lockedOrder->status === 'completed'
                     && $lockedOrder->completion_reason === 'auto_timeout'
                 );
 
-            if (! $eligible) {
+            if (!$eligible) {
                 return 'ineligible';
             }
 
-            // Cegah komplain aktif ganda untuk pesanan yang sama.
             $hasActiveComplaint = $lockedOrder->complaints()
                 ->whereIn('status', ['open', 'investigating'])
                 ->exists();
@@ -258,7 +499,6 @@ class OrderController extends Controller
             return 'created';
         });
 
-        // Tampilkan pesan sesuai hasil proses.
         if ($result === 'ineligible') {
             return back()->with(
                 'error',

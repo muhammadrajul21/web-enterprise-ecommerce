@@ -49,11 +49,7 @@ $steps,
 true
 );
 
-$shipmentUpdates =
-$shipmentUpdates ?? collect();
 
-$lastKnownLocation =
-$lastKnownLocation ?? null;
 $unreviewedItems = $order->items
 ->filter(fn ($item) => !$item->review)
 ->values();
@@ -911,6 +907,7 @@ $order->status === 'completed'
             </div>
 
         </section>
+
         {{-- ================================================= --}}
         {{-- SHIPMENT TRACKING --}}
         {{-- ================================================= --}}
@@ -926,328 +923,375 @@ $order->status === 'completed'
                 </div>
 
                 <div>
-
-                    <h2>
-                        Shipment Tracking
-                    </h2>
-
+                    <h2>Shipment Tracking</h2>
                     <p>
-                        Shipping and delivery information for your order.
+                        Track your package journey from LIFESTYLE distribution
+                        center to your delivery destination.
                     </p>
-
                 </div>
 
             </div>
 
 
-            {{-- PACKAGE SHIPPED --}}
-
-            <div
-                style="
-                position: relative;
-                padding-left: 32px;
-            ">
-
-                <div
-                    style="
-                    position: relative;
-                    padding-bottom: 30px;
-                ">
-
-                    <span
-                        style="
-                        position: absolute;
-                        left: -32px;
-                        top: 2px;
-                        width: 16px;
-                        height: 16px;
-                        border-radius: 50%;
-                        background: #111;
-                    "></span>
-
-
-                    @if($delivery)
-
-                    <div
-                        style="
-                            position: absolute;
-                            left: -25px;
-                            top: 18px;
-                            bottom: 0;
-                            width: 2px;
-                            background: #e0e0e0;
-                        "></div>
-
-                    @endif
-
-
-                    <strong
-                        style="
-                        display: block;
-                        margin-bottom: 6px;
-                    ">
-                        Package Shipped
-                    </strong>
-
-
-                    <span
-                        style="
-                        display: block;
-                        font-size: 13px;
-                        color: #555;
-                    ">
-                        {{ $order->courier ?? 'Courier' }}
-
-                        ·
-
-                        {{ $order->tracking_number ?? '-' }}
-                    </span>
-
-
-                    <span
-                        style="
-                        display: block;
-                        margin-top: 5px;
-                        font-size: 12px;
-                        color: #999;
-                    ">
-                        {{ $order->shipped_at
-                        ?->format('d M Y, H:i')
-                        ?? '-' }}
-                    </span>
-
-                </div>
-
-
-                {{-- DELIVERED --}}
-
-                @if($delivery)
-
-                <div
-                    style="
-                        position: relative;
-                        padding-bottom: 10px;
-                    ">
-
-                    <span
-                        style="
-                            position: absolute;
-                            left: -32px;
-                            top: 2px;
-                            width: 16px;
-                            height: 16px;
-                            border-radius: 50%;
-                            background: #198754;
-                        "></span>
-
-
-                    <strong
-                        style="
-                            display: block;
-                            margin-bottom: 6px;
-                        ">
-                        Delivered
-                    </strong>
-
-
-                    @if($delivery->location_name)
-
-                    <span
-                        style="
-                                display: block;
-                                font-size: 13px;
-                                color: #555;
-                            ">
-
-                        <i class="bi bi-geo-alt"></i>
-
-                        {{ $delivery->location_name }}
-
-                    </span>
-
-                    @endif
-
-
-                    @if($delivery->receiver_name)
-
-                    <span
-                        style="
-                                display: block;
-                                margin-top: 6px;
-                                font-size: 13px;
-                                color: #555;
-                            ">
-                        Received by:
-
-                        <strong>
-                            {{ $delivery->receiver_name }}
-                        </strong>
-
-                    </span>
-
-                    @endif
-
-
-                    @if($delivery->note)
-
-                    <p
-                        style="
-                                margin: 8px 0 0;
-                                font-size: 13px;
-                                color: #777;
-                                line-height: 1.6;
-                            ">
-                        {{ $delivery->note }}
-                    </p>
-
-                    @endif
-
-
-                    <span
-                        style="
-                            display: block;
-                            margin-top: 7px;
-                            font-size: 12px;
-                            color: #999;
-                        ">
-                        {{ $delivery->occurred_at
-                            ?->format('d M Y, H:i')
-                            ?? '-' }}
-                    </span>
-
-
-                    @if($delivery->proof_image)
-
-                    <a
-                        href="{{ asset(
-                                'storage/'
-                                . $delivery->proof_image
-                            ) }}"
-                        target="_blank"
-                        rel="noopener"
-                        style="
-                                display: inline-flex;
-                                align-items: center;
-                                gap: 6px;
-                                margin-top: 12px;
-                                font-size: 12px;
-                                font-weight: 700;
-                                text-decoration: none;
-                            ">
-
-                        <i class="bi bi-image"></i>
-
-                        VIEW PROOF OF DELIVERY
-
-                    </a>
-
-                    @endif
-
-                </div>
-
-                @else
-
-                <div
-                    style="
-                        margin-bottom: 10px;
-                        padding: 14px 16px;
-                        background: #f7f7f7;
-                        border: 1px solid #e5e5e5;
-                        font-size: 13px;
-                        line-height: 1.6;
-                    ">
-
-                    <i class="bi bi-info-circle"></i>
-
-                    Your package has been handed over to
-                    {{ $order->courier ?? 'the courier' }}.
-
-                    Use tracking number
-
-                    <strong>
-                        {{ $order->tracking_number ?? '-' }}
-                    </strong>
-
-                    for detailed courier tracking.
-
-                </div>
-
-                @endif
-
-            </div>
-
-
-            {{-- LAST DELIVERY LOCATION --}}
-
-            @if($lastKnownLocation)
-
-            <div
-                style="
-                    margin-top: 28px;
-                    padding-top: 28px;
-                    border-top: 1px solid #e5e5e5;
-                ">
-
-                <span
-                    style="
-                        display: block;
-                        margin-bottom: 6px;
-                        font-size: 11px;
-                        font-weight: 700;
-                        letter-spacing: 1px;
-                        color: #777;
-                    ">
-                    LAST RECORDED DELIVERY LOCATION
+            {{-- TRACKING STATUS --}}
+
+            <div style="
+        margin-top: 20px;
+        padding: 20px;
+        background: #f8f8f8;
+        border: 1px solid #eaeaea;
+        border-radius: 10px;
+    ">
+
+                <span style="
+            display: block;
+            margin-bottom: 8px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: #888;
+        ">
+                    CURRENT SHIPMENT STATUS
                 </span>
 
-
-                <strong>
-                    {{ $lastKnownLocation->location_name }}
+                <strong style="
+            display: block;
+            font-size: 17px;
+            color: #171717;
+        ">
+                    {{ $trackingMap['stage_label'] }}
                 </strong>
+
+                <p style="
+            margin: 8px 0 0;
+            font-size: 12px;
+            color: #777;
+        ">
+                    Your package journey is displayed using estimated
+                    shipment progress.
+                </p>
+
+            </div>
+
+
+            {{-- TRACKING PROGRESS --}}
+
+            <div style="margin-top: 22px;">
+
+                <div style="
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 9px;
+            font-size: 11px;
+        ">
+
+                    <strong>Shipment Progress</strong>
+
+                    <strong>
+                        {{ $trackingMap['progress'] }}%
+                    </strong>
+
+                </div>
+
+                <div style="
+            width: 100%;
+            height: 7px;
+            overflow: hidden;
+            border-radius: 20px;
+            background: #e9e9e9;
+        ">
+
+                    <div style="
+                width: {{ $trackingMap['progress'] }}%;
+                height: 100%;
+                border-radius: 20px;
+                background: #171717;
+                transition: width .3s ease;
+            "></div>
+
+                </div>
+
+            </div>
+
+
+            {{-- SHIPMENT ROUTE INFORMATION --}}
+
+            <div style="
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 24px;
+    ">
+
+                <div style="
+            padding: 15px;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+        ">
+
+                    <span style="
+                display: block;
+                margin-bottom: 7px;
+                color: #999;
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: .8px;
+            ">
+                        SHIPPING ORIGIN
+                    </span>
+
+                    <strong style="font-size: 13px;">
+                        Banda Aceh
+                    </strong>
+
+                    <span style="
+                display: block;
+                margin-top: 5px;
+                color: #888;
+                font-size: 11px;
+            ">
+                        LIFESTYLE Distribution Center
+                    </span>
+
+                </div>
+
+
+                <div style="
+            padding: 15px;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+        ">
+
+                    <span style="
+                display: block;
+                margin-bottom: 7px;
+                color: #999;
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: .8px;
+            ">
+                        DELIVERY DESTINATION
+                    </span>
+
+                    <strong style="font-size: 13px;">
+                        {{ $trackingMap['destination']['label'] ?? 'Destination unavailable' }}
+                    </strong>
+
+                    <span style="
+                display: block;
+                margin-top: 5px;
+                color: #888;
+                font-size: 11px;
+            ">
+                        Customer delivery address
+                    </span>
+
+                </div>
+
+            </div>
+
+
+            {{-- LEAFLET MAP --}}
+
+            <div style="margin-top: 28px;">
+
+                <div style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 13px;
+        ">
+
+                    <strong style="font-size: 14px;">
+                        <i class="bi bi-map"></i>
+                        Shipment Journey Map
+                    </strong>
+
+                    <span style="
+                color: #999;
+                font-size: 10px;
+            ">
+                        Estimated route
+                    </span>
+
+                </div>
 
 
                 <div
                     id="shipment-map"
 
-                    data-latitude="{{
-                        $lastKnownLocation->latitude
-                    }}"
+                    data-origin-latitude="{{ $trackingMap['origin']['latitude'] }}"
+                    data-origin-longitude="{{ $trackingMap['origin']['longitude'] }}"
 
-                    data-longitude="{{
-                        $lastKnownLocation->longitude
-                    }}"
+                    data-destination-latitude="{{ $trackingMap['destination']['latitude'] ?? '' }}"
+                    data-destination-longitude="{{ $trackingMap['destination']['longitude'] ?? '' }}"
 
-                    data-location="{{
-                        $lastKnownLocation->location_name
-                    }}"
+                    data-origin-label="{{ $trackingMap['origin']['label'] }}"
+                    data-destination-label="{{ $trackingMap['destination']['label'] ?? '' }}"
+
+                    data-progress="{{ $trackingMap['progress'] }}"
+
+                    data-stage="{{ $trackingMap['stage_label'] }}"
+
+                    data-has-destination="{{ $trackingMap['destination'] ? '1' : '0' }}"
 
                     style="
-                        width: 100%;
-                        height: 360px;
-                        margin-top: 16px;
-                        border: 1px solid #ddd;
-                        z-index: 1;
-                    "></div>
+                width: 100%;
+                height: 360px;
+                border: 1px solid #e5e5e5;
+                border-radius: 10px;
+                z-index: 1;
+                background: #f3f3f3;
+            ">
+                </div>
 
 
-                <p
-                    style="
-                        margin-top: 10px;
-                        font-size: 12px;
-                        color: #777;
-                    ">
+                {{-- MAP LEGEND --}}
 
-                    <i class="bi bi-info-circle"></i>
+                <div style="
+            display: flex;
+            flex-wrap: wrap;
+            gap: 18px;
+            margin-top: 14px;
+            font-size: 11px;
+            color: #666;
+        ">
 
-                    This map shows the recorded delivery
-                    location from Proof of Delivery.
-                    It is not live courier GPS.
+                    <span>
+                        <i class="bi bi-circle-fill" style="color: #198754;"></i>
+                        Distribution Center
+                    </span>
 
-                </p>
+                    <span>
+                        <i class="bi bi-circle-fill" style="color: #dc3545;"></i>
+                        Package Position (Estimated)
+                    </span>
+
+                    <span>
+                        <i class="bi bi-circle-fill" style="color: #0d6efd;"></i>
+                        Destination
+                    </span>
+
+                </div>
 
             </div>
 
-            @endif
+
+            {{-- COURIER DETAILS --}}
+
+            <div style="
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid #eee;
+    ">
+
+                <div style="margin-bottom: 13px;">
+
+                    <span style="
+                display: block;
+                margin-bottom: 5px;
+                color: #999;
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: .8px;
+            ">
+                        COURIER
+                    </span>
+
+                    <strong style="font-size: 13px;">
+                        {{ $trackingMap['courier'] }}
+                    </strong>
+
+                </div>
+
+
+                <div style="margin-bottom: 13px;">
+
+                    <span style="
+                display: block;
+                margin-bottom: 5px;
+                color: #999;
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: .8px;
+            ">
+                        TRACKING NUMBER
+                    </span>
+
+                    <strong style="font-size: 13px;">
+                        {{ $trackingMap['tracking_number'] ?? '-' }}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span style="
+                display: block;
+                margin-bottom: 5px;
+                color: #999;
+                font-size: 10px;
+                font-weight: 700;
+                letter-spacing: .8px;
+            ">
+                        ESTIMATED DELIVERY
+                    </span>
+
+                    <strong style="font-size: 13px;">
+
+                        @if($trackingMap['estimated_start'] && $trackingMap['estimated_end'])
+
+                        {{ $trackingMap['estimated_start'] }}
+                        -
+                        {{ $trackingMap['estimated_end'] }}
+
+                        @else
+
+                        Not available
+
+                        @endif
+
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            {{-- ESTIMATION DISCLAIMER --}}
+
+            <div style="
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        margin-top: 22px;
+        padding: 14px 16px;
+        border: 1px solid #e8e8e8;
+        border-radius: 8px;
+        background: #fafafa;
+    ">
+
+                <i class="bi bi-info-circle" style="
+            color: #666;
+            font-size: 16px;
+        "></i>
+
+                <p style="
+            margin: 0;
+            color: #777;
+            font-size: 11px;
+            line-height: 1.7;
+        ">
+                    This map displays an estimated package journey based on
+                    shipment status and delivery destination. The package
+                    position is simulated and does not represent live courier GPS
+                    or the actual road route.
+                </p>
+
+            </div>
 
         </section>
 
@@ -1598,141 +1642,313 @@ $order->status === 'completed'
 
 
 {{-- ================================================= --}}
-{{-- LEAFLET --}}
+{{-- LEAFLET SIMULATED SHIPMENT TRACKING --}}
 {{-- ================================================= --}}
 
-@if($lastKnownLocation)
+@if($order->shipped_at)
 
 <link
     rel="stylesheet"
     href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
-
 <script
     src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-
 <script>
-    document.addEventListener(
-        'DOMContentLoaded',
-        function() {
+    document.addEventListener('DOMContentLoaded', function () {
 
-            const mapElement =
-                document.getElementById(
-                    'shipment-map'
-                );
+        const mapElement = document.getElementById('shipment-map');
 
-
-            if (
-                !mapElement ||
-                typeof L === 'undefined'
-            ) {
-                return;
-            }
-
-
-            const latitude =
-                Number(
-                    mapElement.dataset.latitude
-                );
-
-
-            const longitude =
-                Number(
-                    mapElement.dataset.longitude
-                );
-
-
-            const locationName =
-                mapElement.dataset.location ||
-                'Shipment Location';
-
-
-            if (
-                !Number.isFinite(latitude) ||
-                !Number.isFinite(longitude)
-            ) {
-                return;
-            }
-
-
-            const map = L.map(
-                mapElement
-            ).setView(
-                [
-                    latitude,
-                    longitude
-                ],
-                13
-            );
-
-
-            L.tileLayer(
-                'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-
-                    attribution: '&copy; OpenStreetMap contributors'
-                }
-            ).addTo(map);
-
-
-            const popupContent =
-                document.createElement(
-                    'div'
-                );
-
-
-            const popupTitle =
-                document.createElement(
-                    'strong'
-                );
-
-
-            popupTitle.textContent =
-                'Last Known Location';
-
-
-            const popupLocation =
-                document.createElement(
-                    'span'
-                );
-
-
-            popupLocation.textContent =
-                locationName;
-
-
-            popupContent.appendChild(
-                popupTitle
-            );
-
-
-            popupContent.appendChild(
-                document.createElement(
-                    'br'
-                )
-            );
-
-
-            popupContent.appendChild(
-                popupLocation
-            );
-
-
-            L.marker([
-                    latitude,
-                    longitude
-                ])
-                .addTo(map)
-                .bindPopup(
-                    popupContent
-                )
-                .openPopup();
-
+        if (!mapElement || typeof L === 'undefined') {
+            return;
         }
-    );
+
+        // =============================================
+        // MAP DATA FROM BLADE
+        // =============================================
+
+        const origin = {
+            lat: Number(mapElement.dataset.originLatitude),
+            lng: Number(mapElement.dataset.originLongitude),
+            label: mapElement.dataset.originLabel || 'LIFESTYLE - Banda Aceh'
+        };
+
+        const destination = {
+            lat: Number(mapElement.dataset.destinationLatitude),
+            lng: Number(mapElement.dataset.destinationLongitude),
+            label: mapElement.dataset.destinationLabel || 'Customer Destination'
+        };
+
+        const progress = Math.max(
+            0,
+            Math.min(100, Number(mapElement.dataset.progress) || 15)
+        );
+
+        const hasDestination =
+            mapElement.dataset.hasDestination === '1' &&
+            Number.isFinite(destination.lat) &&
+            Number.isFinite(destination.lng) &&
+            destination.lat >= -90 &&
+            destination.lat <= 90 &&
+            destination.lng >= -180 &&
+            destination.lng <= 180;
+
+        if (
+            !Number.isFinite(origin.lat) ||
+            !Number.isFinite(origin.lng)
+        ) {
+            mapElement.textContent = 'Map coordinates are unavailable.';
+            return;
+        }
+
+        // =============================================
+        // CREATE MAP
+        // =============================================
+
+        const map = L.map(mapElement, {
+            scrollWheelZoom: false
+        });
+
+        L.tileLayer(
+            'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+            {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            }
+        ).addTo(map);
+
+        L.control.scale({
+            metric: true,
+            imperial: false
+        }).addTo(map);
+
+        // =============================================
+        // CUSTOM MARKER ICONS
+        // =============================================
+
+        const originIcon = L.divIcon({
+            className: 'lifestyle-map-marker',
+            html: `
+                <div style="
+                    width: 22px;
+                    height: 22px;
+                    border: 3px solid white;
+                    border-radius: 50%;
+                    background: #198754;
+                    box-shadow: 0 2px 8px rgba(0,0,0,.3);
+                "></div>
+            `,
+            iconSize: [22, 22],
+            iconAnchor: [11, 11]
+        });
+
+        const destinationIcon = L.divIcon({
+            className: 'lifestyle-map-marker',
+            html: `
+                <div style="
+                    width: 22px;
+                    height: 22px;
+                    border: 3px solid white;
+                    border-radius: 50%;
+                    background: #0d6efd;
+                    box-shadow: 0 2px 8px rgba(0,0,0,.3);
+                "></div>
+            `,
+            iconSize: [22, 22],
+            iconAnchor: [11, 11]
+        });
+
+        const packageIcon = L.divIcon({
+            className: 'lifestyle-map-marker',
+            html: `
+                <div style="
+                    display: flex;
+                    width: 34px;
+                    height: 34px;
+                    align-items: center;
+                    justify-content: center;
+                    border: 3px solid white;
+                    border-radius: 50%;
+                    background: #dc3545;
+                    color: white;
+                    font-size: 15px;
+                    box-shadow: 0 2px 10px rgba(0,0,0,.35);
+                ">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+            `,
+            iconSize: [34, 34],
+            iconAnchor: [17, 17]
+        });
+
+        // =============================================
+        // SAFE POPUP CONTENT
+        // =============================================
+
+        function createPopup(title, description) {
+
+            const container = document.createElement('div');
+
+            const heading = document.createElement('strong');
+            heading.textContent = title;
+
+            const text = document.createElement('div');
+            text.textContent = description;
+
+            text.style.marginTop = '5px';
+
+            container.appendChild(heading);
+            container.appendChild(text);
+
+            return container;
+        }
+
+        // =============================================
+        // ORIGIN MARKER
+        // =============================================
+
+        const originPoint = [origin.lat, origin.lng];
+
+        L.marker(originPoint, {
+            icon: originIcon
+        })
+        .addTo(map)
+        .bindPopup(
+            createPopup(
+                'LIFESTYLE Distribution Center',
+                'Pusat pengiriman Banda Aceh'
+            )
+        );
+
+        // =============================================
+        // DESTINATION VALIDATION
+        // =============================================
+
+        if (!hasDestination) {
+
+            map.setView(originPoint, 11);
+
+            const notice = L.control({
+                position: 'topright'
+            });
+
+            notice.onAdd = function () {
+
+                const element = L.DomUtil.create('div');
+
+                element.textContent =
+                    'Koordinat tujuan belum tersedia dalam dataset wilayah.';
+
+                element.style.background = 'white';
+                element.style.padding = '10px 12px';
+                element.style.border = '1px solid #ddd';
+                element.style.borderRadius = '6px';
+                element.style.fontSize = '11px';
+                element.style.maxWidth = '190px';
+
+                return element;
+            };
+
+            notice.addTo(map);
+
+            setTimeout(function () {
+                map.invalidateSize();
+            }, 200);
+
+            return;
+        }
+
+        const destinationPoint = [
+            destination.lat,
+            destination.lng
+        ];
+
+        // =============================================
+        // DESTINATION MARKER
+        // =============================================
+
+        L.marker(destinationPoint, {
+            icon: destinationIcon
+        })
+        .addTo(map)
+        .bindPopup(
+            createPopup(
+                'Delivery Destination',
+                destination.label
+            )
+        );
+
+        // =============================================
+        // ILLUSTRATIVE ROUTE LINE
+        // =============================================
+
+        const routeCoordinates = [
+            originPoint,
+            destinationPoint
+        ];
+
+        const routeLine = L.polyline(
+            routeCoordinates,
+            {
+                color: '#64748b',
+                weight: 4,
+                opacity: 0.85,
+                dashArray: '9 9'
+            }
+        ).addTo(map);
+
+        // =============================================
+        // SIMULATED PACKAGE POSITION
+        // =============================================
+
+        const ratio = progress / 100;
+
+        const packageLatitude =
+            origin.lat +
+            (destination.lat - origin.lat) * ratio;
+
+        const packageLongitude =
+            origin.lng +
+            (destination.lng - origin.lng) * ratio;
+
+        const packagePosition = [
+            packageLatitude,
+            packageLongitude
+        ];
+
+        L.marker(packagePosition, {
+            icon: packageIcon,
+            zIndexOffset: 1000
+        })
+        .addTo(map)
+        .bindPopup(
+            createPopup(
+                'Estimated Package Position',
+                `Shipment progress: ${progress}%`
+            )
+        )
+        .openPopup();
+
+        // =============================================
+        // FIT MAP TO ROUTE
+        // =============================================
+
+        map.fitBounds(
+            routeLine.getBounds(),
+            {
+                padding: [40, 40],
+                maxZoom: 10
+            }
+        );
+
+        setTimeout(function () {
+            map.invalidateSize();
+        }, 200);
+
+    });
 </script>
 
 @endif
+
 
 @endsection

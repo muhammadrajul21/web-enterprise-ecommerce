@@ -20,21 +20,129 @@ class CheckoutController extends Controller
 {
     /**
      * Menampilkan halaman checkout.
+     *
+     * Mode cart    : seluruh isi keranjang.
+     * Mode buy_now : hanya produk yang dipilih.
      */
-    public function index(ShippingEstimateService $shippingEstimateService)
-    {
-        $cart = Cart::with([
-            'items.variant.product',
-            'items.variant.images',
-        ])
-            ->where('user_id', auth()->id())
-            ->first();
+    public function index(
+        Request $request,
+        ShippingEstimateService $shippingEstimateService
+    ) {
 
-        if (!$cart || $cart->items->isEmpty()) {
-            return redirect()
-                ->route('cart.index')
-                ->with('error', 'Keranjang masih kosong.');
+        /*
+        |--------------------------------------------------------------------------
+        | DETERMINE CHECKOUT MODE
+        |--------------------------------------------------------------------------
+        */
+
+        if ($request->query('mode') === 'cart') {
+
+            $request->session()->forget([
+                'buy_now',
+                'checkout_mode',
+            ]);
+
+        } elseif (
+            $request->query('mode') === 'buy_now'
+            && $request->session()->has('buy_now')
+        ) {
+
+            $request->session()->put(
+                'checkout_mode',
+                'buy_now'
+            );
         }
+
+        $isBuyNow =
+            $request->session()->get('checkout_mode') === 'buy_now'
+            && $request->session()->has('buy_now');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | BUY NOW
+        |--------------------------------------------------------------------------
+        */
+
+        if ($isBuyNow) {
+
+            $buyNow = $request->session()->get('buy_now', []);
+
+            $variantId = (int) ($buyNow['variant_id'] ?? 0);
+
+            $quantity = (int) ($buyNow['quantity'] ?? 0);
+
+            $variant = ProductVariant::with([
+                'product.category',
+                'product.images',
+                'images',
+            ])->find($variantId);
+
+            if (
+                !$variant
+                || $variant->status !== 'active'
+                || $quantity < 1
+                || $quantity > $variant->stock
+            ) {
+
+                $request->session()->forget([
+                    'buy_now',
+                    'checkout_mode',
+                ]);
+
+                return redirect()
+                    ->route('catalog.preview')
+                    ->with(
+                        'error',
+                        'Produk tidak tersedia atau stok sudah berubah. Silakan pilih kembali.'
+                    );
+            }
+
+            /*
+             * Struktur sementara agar halaman Checkout
+             * tetap menggunakan format cart->items.
+             *
+             * Cart database tidak disentuh.
+             */
+
+            $cart = (object) [
+                'items' => collect([
+                    (object) [
+                        'variant_id' => $variant->id,
+                        'variant' => $variant,
+                        'quantity' => $quantity,
+                        'price' => $variant->price,
+                    ],
+                ]),
+            ];
+
+        } else {
+
+            /*
+            |--------------------------------------------------------------------------
+            | NORMAL CART CHECKOUT
+            |--------------------------------------------------------------------------
+            */
+
+            $cart = Cart::with([
+                'items.variant.product.category',
+                'items.variant.product.images',
+                'items.variant.images',
+            ])
+                ->where('user_id', auth()->id())
+                ->first();
+
+            if (!$cart || $cart->items->isEmpty()) {
+
+                return redirect()
+                    ->route('cart.index')
+                    ->with(
+                        'error',
+                        'Keranjang masih kosong.'
+                    );
+            }
+        }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -43,48 +151,53 @@ class CheckoutController extends Controller
         */
 
         foreach ($cart->items as $item) {
+
             $variant = $item->variant;
 
             if (!$variant) {
+
                 return redirect()
-                    ->route('cart.index')
+                    ->route($isBuyNow ? 'catalog.preview' : 'cart.index')
                     ->with(
                         'error',
-                        'Salah satu variant produk sudah tidak tersedia.'
+                        'Salah satu varian produk sudah tidak tersedia.'
                     );
             }
 
             if ($variant->status !== 'active') {
+
                 return redirect()
-                    ->route('cart.index')
+                    ->route($isBuyNow ? 'catalog.preview' : 'cart.index')
                     ->with(
                         'error',
-                        'Salah satu produk di keranjang sedang tidak aktif.'
+                        'Salah satu produk sedang tidak aktif.'
                     );
             }
 
             if ($item->quantity > $variant->stock) {
+
                 return redirect()
-                    ->route('cart.index')
+                    ->route($isBuyNow ? 'catalog.preview' : 'cart.index')
                     ->with(
                         'error',
-                        'Jumlah salah satu produk melebihi stok yang tersedia.'
+                        'Jumlah produk melebihi stok yang tersedia.'
                     );
             }
         }
+
 
         /*
         |--------------------------------------------------------------------------
         | CURRENT SUBTOTAL
         |--------------------------------------------------------------------------
-        |
-        | Harga dihitung ulang dari variant terbaru.
-        |
         */
 
         $subtotal = $cart->items->sum(function ($item) {
+
             return $item->variant->price * $item->quantity;
+
         });
+
 
         /*
         |--------------------------------------------------------------------------
@@ -95,19 +208,26 @@ class CheckoutController extends Controller
         $availableVouchers = Voucher::query()
             ->where('is_active', true)
             ->where(function ($query) {
+
                 $query->whereNull('starts_at')
                     ->orWhere('starts_at', '<=', now());
+
             })
             ->where(function ($query) {
+
                 $query->whereNull('expires_at')
                     ->orWhere('expires_at', '>=', now());
+
             })
             ->where(function ($query) {
+
                 $query->whereNull('usage_limit')
                     ->orWhereColumn('used_count', '<', 'usage_limit');
+
             })
             ->orderBy('expires_at')
             ->get();
+
 
         /*
         |--------------------------------------------------------------------------
@@ -123,31 +243,26 @@ class CheckoutController extends Controller
             ->latest()
             ->get();
 
+
         /*
         |--------------------------------------------------------------------------
         | PROVINCES AND REGENCIES
         |--------------------------------------------------------------------------
-        |
-        | Data digunakan untuk dropdown wilayah Checkout.
-        |
         */
 
         $provinces = Province::with([
             'regencies' => function ($query) {
                 $query->orderBy('name');
-            }
+            },
         ])
             ->orderBy('name')
             ->get(['id', 'name']);
+
 
         /*
         |--------------------------------------------------------------------------
         | SHIPPING OPTIONS
         |--------------------------------------------------------------------------
-        |
-        | Ongkir menggunakan estimasi statis berdasarkan provinsi.
-        | Resi dan kurir aktual tetap diinput staff ketika pengiriman.
-        |
         */
 
         $provinceOptions = $shippingEstimateService->supportedProvinces();
@@ -170,38 +285,57 @@ class CheckoutController extends Controller
             $selectedShipping = 'regular';
         }
 
-        // Menyiapkan ongkir untuk provinsi yang sedang dipilih.
+
+        /*
+        |--------------------------------------------------------------------------
+        | SHIPPING QUOTES
+        |--------------------------------------------------------------------------
+        */
+
         $shippingOptions = [];
 
         foreach (['regular', 'express'] as $method) {
-            $shippingOptions[$method] = $shippingEstimateService->quote(
-                $selectedProvince,
-                $method
-            );
+
+            $shippingOptions[$method] =
+                $shippingEstimateService->quote(
+                    $selectedProvince,
+                    $method
+                );
         }
+
 
         /*
         |--------------------------------------------------------------------------
         | SHIPPING QUOTES FOR ALL PROVINCES
         |--------------------------------------------------------------------------
-        |
-        | Data digunakan JavaScript ketika provinsi diubah.
-        |
         */
 
         $shippingQuotes = [];
 
         foreach ($provinceOptions as $province) {
+
             foreach (['regular', 'express'] as $method) {
+
                 $shippingQuotes[$province][$method] =
-                    $shippingEstimateService->quote($province, $method);
+                    $shippingEstimateService->quote(
+                        $province,
+                        $method
+                    );
             }
         }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | CHECKOUT VIEW
+        |--------------------------------------------------------------------------
+        */
 
         return view(
             'customer.checkout.index',
             compact(
                 'cart',
+                'isBuyNow',
                 'subtotal',
                 'addresses',
                 'shippingOptions',
@@ -217,12 +351,13 @@ class CheckoutController extends Controller
 
 
     /**
-     * Membuat order dari cart.
+     * Membuat order dari Cart atau Buy Now.
      */
     public function store(
         Request $request,
         ShippingEstimateService $shippingEstimateService
     ) {
+
         /*
         |--------------------------------------------------------------------------
         | VALIDATION
@@ -230,6 +365,7 @@ class CheckoutController extends Controller
         */
 
         $validated = $request->validate([
+
             'recipient_name' => [
                 'required',
                 'string',
@@ -276,29 +412,38 @@ class CheckoutController extends Controller
                 'string',
                 'max:50',
             ],
+
         ]);
+
 
         /*
         |--------------------------------------------------------------------------
         | VALIDATE REGENCY AND PROVINCE
         |--------------------------------------------------------------------------
-        |
-        | Memastikan kabupaten/kota sesuai dengan provinsi.
-        |
         */
 
         $isValidCity = Regency::query()
             ->where('name', $validated['shipping_city'])
             ->whereHas('province', function ($query) use ($validated) {
-                $query->where('name', $validated['shipping_province']);
+
+                $query->where(
+                    'name',
+                    $validated['shipping_province']
+                );
+
             })
             ->exists();
 
         if (!$isValidCity) {
+
             throw ValidationException::withMessages([
-                'shipping_city' => 'Kabupaten/kota tidak sesuai dengan provinsi yang dipilih.'
+
+                'shipping_city' =>
+                    'Kabupaten/kota tidak sesuai dengan provinsi yang dipilih.',
+
             ]);
         }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -311,66 +456,153 @@ class CheckoutController extends Controller
             $validated['shipping_method']
         );
 
+
         /*
         |--------------------------------------------------------------------------
-        | GET CART
+        | DETERMINE CHECKOUT ITEMS
         |--------------------------------------------------------------------------
         */
 
-        $cart = Cart::with([
-            'items.variant.product',
-        ])
-            ->where('user_id', auth()->id())
-            ->first();
+        $isBuyNow =
+            $request->session()->get('checkout_mode') === 'buy_now'
+            && $request->session()->has('buy_now');
 
-        if (!$cart || $cart->items->isEmpty()) {
-            return redirect()
-                ->route('cart.index')
-                ->with('error', 'Keranjang masih kosong.');
+        $cart = null;
+
+        $checkoutItems = collect();
+
+
+        if ($isBuyNow) {
+
+            /*
+             * BUY NOW:
+             * Ambil hanya produk dari session.
+             */
+
+            $buyNow = $request->session()->get('buy_now', []);
+
+            $variantId = (int) ($buyNow['variant_id'] ?? 0);
+
+            $quantity = (int) ($buyNow['quantity'] ?? 0);
+
+            $variant = ProductVariant::find($variantId);
+
+            if (
+                !$variant
+                || $variant->status !== 'active'
+                || $quantity < 1
+                || $quantity > $variant->stock
+            ) {
+
+                $request->session()->forget([
+                    'buy_now',
+                    'checkout_mode',
+                ]);
+
+                return redirect()
+                    ->route('catalog.preview')
+                    ->with(
+                        'error',
+                        'Produk tidak tersedia atau stok sudah berubah.'
+                    );
+            }
+
+            $checkoutItems = collect([
+                (object) [
+                    'variant_id' => $variant->id,
+                    'quantity' => $quantity,
+                ],
+            ]);
+
+        } else {
+
+            /*
+             * CART:
+             * Ambil seluruh isi keranjang customer.
+             */
+
+            $cart = Cart::with([
+                'items.variant.product',
+            ])
+                ->where('user_id', auth()->id())
+                ->first();
+
+            if (!$cart || $cart->items->isEmpty()) {
+
+                return redirect()
+                    ->route('cart.index')
+                    ->with(
+                        'error',
+                        'Keranjang masih kosong.'
+                    );
+            }
+
+            $checkoutItems = $cart->items;
         }
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | CREATE ORDER
+        |--------------------------------------------------------------------------
+        */
+
         try {
+
             $order = DB::transaction(
+
                 function () use (
                     $validated,
                     $shipping,
-                    $cart
+                    $cart,
+                    $checkoutItems,
+                    $isBuyNow
                 ) {
 
                     /*
                     |--------------------------------------------------------------------------
-                    | CALCULATE SUBTOTAL
+                    | LOCK AND VALIDATE VARIANTS
                     |--------------------------------------------------------------------------
                     */
 
                     $subtotal = 0;
 
-                    foreach ($cart->items as $item) {
+                    $lockedVariants = [];
 
-                        /*
-                         * Lock variant supaya stock tidak berubah
-                         * ketika checkout sedang diproses.
-                         */
+                    foreach ($checkoutItems as $item) {
 
                         $variant = ProductVariant::with('product')
                             ->where('id', $item->variant_id)
                             ->lockForUpdate()
-                            ->firstOrFail();
+                            ->first();
 
-                        if ($variant->status !== 'active') {
+                        if (!$variant || !$variant->product) {
+
                             throw new \RuntimeException(
                                 'Salah satu produk sudah tidak tersedia.'
                             );
                         }
 
+                        if ($variant->status !== 'active') {
+
+                            throw new \RuntimeException(
+                                'Salah satu produk sedang tidak aktif.'
+                            );
+                        }
+
                         if ($item->quantity > $variant->stock) {
+
                             throw new \RuntimeException(
                                 'Stok salah satu produk tidak mencukupi.'
                             );
                         }
 
-                        $subtotal += $variant->price * $item->quantity;
+                        $lockedVariants[$variant->id] = $variant;
+
+                        $subtotal +=
+                            $variant->price * $item->quantity;
                     }
+
 
                     /*
                     |--------------------------------------------------------------------------
@@ -379,6 +611,7 @@ class CheckoutController extends Controller
                     */
 
                     $voucher = null;
+
                     $discountAmount = 0;
 
                     if (!empty($validated['voucher_code'])) {
@@ -391,12 +624,14 @@ class CheckoutController extends Controller
                             ->first();
 
                         if (!$voucher) {
+
                             throw new \RuntimeException(
                                 'Voucher tidak ditemukan.'
                             );
                         }
 
                         if (!$voucher->is_active) {
+
                             throw new \RuntimeException(
                                 'Voucher sedang tidak aktif.'
                             );
@@ -406,6 +641,7 @@ class CheckoutController extends Controller
                             $voucher->starts_at
                             && now()->lt($voucher->starts_at)
                         ) {
+
                             throw new \RuntimeException(
                                 'Voucher belum dapat digunakan.'
                             );
@@ -415,6 +651,7 @@ class CheckoutController extends Controller
                             $voucher->expires_at
                             && now()->gt($voucher->expires_at)
                         ) {
+
                             throw new \RuntimeException(
                                 'Voucher sudah kedaluwarsa.'
                             );
@@ -424,12 +661,14 @@ class CheckoutController extends Controller
                             $voucher->usage_limit !== null
                             && $voucher->used_count >= $voucher->usage_limit
                         ) {
+
                             throw new \RuntimeException(
                                 'Batas penggunaan voucher telah habis.'
                             );
                         }
 
                         if ($subtotal < $voucher->min_order_amount) {
+
                             throw new \RuntimeException(
                                 'Subtotal belum memenuhi minimum penggunaan voucher.'
                             );
@@ -441,6 +680,7 @@ class CheckoutController extends Controller
                                 * ($voucher->discount_value / 100);
 
                             if ($voucher->max_discount_amount !== null) {
+
                                 $discountAmount = min(
                                     $discountAmount,
                                     $voucher->max_discount_amount
@@ -452,20 +692,16 @@ class CheckoutController extends Controller
                             $discountAmount = $voucher->discount_value;
                         }
 
-                        /*
-                         * Discount tidak boleh lebih besar
-                         * daripada subtotal.
-                         */
-
                         $discountAmount = min(
                             $discountAmount,
                             $subtotal
                         );
                     }
 
+
                     /*
                     |--------------------------------------------------------------------------
-                    | TOTAL
+                    | CALCULATE TOTAL
                     |--------------------------------------------------------------------------
                     */
 
@@ -475,13 +711,15 @@ class CheckoutController extends Controller
                         - $discountAmount
                         + $shippingCost;
 
+
                     /*
                     |--------------------------------------------------------------------------
-                    | ORDER CODE
+                    | GENERATE ORDER CODE
                     |--------------------------------------------------------------------------
                     */
 
                     do {
+
                         $orderCode = 'ORD-'
                             . now()->format('Ymd')
                             . '-'
@@ -491,6 +729,7 @@ class CheckoutController extends Controller
                         Order::where('order_code', $orderCode)->exists()
                     );
 
+
                     /*
                     |--------------------------------------------------------------------------
                     | CREATE ORDER
@@ -498,6 +737,7 @@ class CheckoutController extends Controller
                     */
 
                     $order = Order::create([
+
                         'user_id' => auth()->id(),
 
                         'voucher_id' => $voucher?->id,
@@ -526,11 +766,6 @@ class CheckoutController extends Controller
 
                         'total_amount' => $totalAmount,
 
-                        /*
-                         * Belum menyimpan nama kurir.
-                         * Staff akan mengisinya saat shipping.
-                         */
-
                         'courier' => null,
 
                         'shipping_service' => $shipping['label'],
@@ -542,22 +777,24 @@ class CheckoutController extends Controller
 
                         'estimated_delivery_end' =>
                             $shipping['estimated_delivery_end'],
+
                     ]);
+
 
                     /*
                     |--------------------------------------------------------------------------
-                    | ORDER ITEMS
+                    | CREATE ORDER ITEMS
                     |--------------------------------------------------------------------------
                     */
 
-                    foreach ($cart->items as $item) {
+                    foreach ($checkoutItems as $item) {
 
-                        $variant = ProductVariant::with('product')
-                            ->findOrFail($item->variant_id);
+                        $variant = $lockedVariants[$item->variant_id];
 
                         $price = $variant->price;
 
                         OrderItem::create([
+
                             'order_id' => $order->id,
 
                             'variant_id' => $variant->id,
@@ -575,25 +812,31 @@ class CheckoutController extends Controller
                             'quantity' => $item->quantity,
 
                             'subtotal' => $price * $item->quantity,
+
                         ]);
                     }
 
+
                     /*
                     |--------------------------------------------------------------------------
-                    | CLEAR CART
+                    | CLEAR CART ONLY FOR NORMAL CART CHECKOUT
                     |--------------------------------------------------------------------------
                     */
 
-                    $cart->items()->delete();
+                    if (!$isBuyNow && $cart) {
+
+                        $cart->items()->delete();
+                    }
+
 
                     /*
                     |--------------------------------------------------------------------------
-                    | NOTE
+                    | STOCK NOTE
                     |--------------------------------------------------------------------------
                     |
-                    | Stok TIDAK dikurangi pada tahap ini.
-                    | Pengurangan stok akan dilakukan setelah
-                    | pembayaran diverifikasi admin.
+                    | Stok tidak dikurangi saat checkout.
+                    | Pengurangan stok tetap dilakukan setelah
+                    | pembayaran diverifikasi.
                     |
                     */
 
@@ -601,14 +844,23 @@ class CheckoutController extends Controller
                 }
             );
 
+
             /*
             |--------------------------------------------------------------------------
-            | TEMPORARY REDIRECT
+            | CLEAR TEMPORARY CHECKOUT SESSION
             |--------------------------------------------------------------------------
-            |
-            | Screen 9 Payment belum dibuat.
-            | Untuk sementara arahkan ke payment dengan order code.
-            |
+            */
+
+            $request->session()->forget([
+                'buy_now',
+                'checkout_mode',
+            ]);
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | REDIRECT TO PAYMENT
+            |--------------------------------------------------------------------------
             */
 
             return redirect()
@@ -622,7 +874,10 @@ class CheckoutController extends Controller
 
             return back()
                 ->withInput()
-                ->with('error', $exception->getMessage());
+                ->with(
+                    'error',
+                    $exception->getMessage()
+                );
         }
     }
 }

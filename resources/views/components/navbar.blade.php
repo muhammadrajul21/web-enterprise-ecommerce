@@ -1,132 +1,132 @@
 @php
 
-    $onCatalog = request()->route()?->getName() === 'catalog.preview';
+$onCatalog = request()->route()?->getName() === 'catalog.preview';
 
-    $filtered = request()->hasAny([
-        'segment',
-        'group',
-        'category'
-    ]);
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | NAVIGATION LINKS
-    |--------------------------------------------------------------------------
-    |
-    | Satu sumber data digunakan untuk navbar desktop
-    | dan drawer mobile.
-    |
-    */
-
-    $navLinks = [];
+$filtered = request()->hasAny([
+'segment',
+'group',
+'category'
+]);
 
 
-    // NEW ARRIVALS
+/*
+|--------------------------------------------------------------------------
+| NAVIGATION LINKS
+|--------------------------------------------------------------------------
+|
+| Satu sumber data digunakan untuk navbar desktop
+| dan drawer mobile.
+|
+*/
 
-    $navLinks[] = [
-        'label' => 'New arrivals',
-
-        'url' => route(
-            'catalog.preview',
-            ['sort' => 'latest']
-        ),
-
-        'active' =>
-            $onCatalog
-            && ! $filtered
-            && request('sort') === 'latest',
-    ];
+$navLinks = [];
 
 
-    // SEGMENTS
+// NEW ARRIVALS
 
-    foreach ($navSegments as $segment) {
+$navLinks[] = [
+'label' => 'New arrivals',
 
-        $navLinks[] = [
+'url' => route(
+'catalog.preview',
+['sort' => 'latest']
+),
 
-            'label' => $segment->name,
-
-            'url' => route(
-                'catalog.preview',
-                ['segment' => $segment->slug]
-            ),
-
-            'active' =>
-                $onCatalog
-                && request('segment') === $segment->slug,
-        ];
-    }
+'active' =>
+$onCatalog
+&& ! $filtered
+&& request('sort') === 'latest',
+];
 
 
-    // CLOTHING GROUP
+// SEGMENTS
 
-    $navLinks[] = [
+foreach ($navSegments as $segment) {
 
-        'label' => 'Clothing',
+$navLinks[] = [
 
-        'url' => route(
-            'catalog.preview',
-            ['group' => 'clothing']
-        ),
+'label' => $segment->name,
 
-        'active' =>
-            $onCatalog
-            && request('group') === 'clothing',
-    ];
+'url' => route(
+'catalog.preview',
+['segment' => $segment->slug]
+),
 
-
-    // FOOTWEAR & ACCESSORIES
-
-    foreach (
-        [
-            'footwear' => 'Footwear',
-            'accessories' => 'Accessories'
-        ]
-        as $slug => $label
-    ) {
-
-        $navLinks[] = [
-
-            'label' => $label,
-
-            'url' => route(
-                'catalog.preview',
-                ['category' => $slug]
-            ),
-
-            'active' =>
-                $onCatalog
-                && request('category') === $slug,
-        ];
-    }
+'active' =>
+$onCatalog
+&& request('segment') === $segment->slug,
+];
+}
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | ACCOUNT URL
-    |--------------------------------------------------------------------------
-    */
+// CLOTHING GROUP
 
-    $role = auth()->user()?->role?->name;
+$navLinks[] = [
 
-    $accountUrl = match ($role) {
+'label' => 'Clothing',
 
-        'customer' =>
-            route('customer.account'),
+'url' => route(
+'catalog.preview',
+['group' => 'clothing']
+),
 
-        'admin' =>
-            route('admin.dashboard'),
+'active' =>
+$onCatalog
+&& request('group') === 'clothing',
+];
 
-        'staff_gudang' =>
-            route('staff.dashboard'),
 
-        'owner' =>
-            route('owner.dashboard'),
+// FOOTWEAR & ACCESSORIES
 
-        default =>
-            route('login'),
-    };
+foreach (
+[
+'footwear' => 'Footwear',
+'accessories' => 'Accessories'
+]
+as $slug => $label
+) {
+
+$navLinks[] = [
+
+'label' => $label,
+
+'url' => route(
+'catalog.preview',
+['category' => $slug]
+),
+
+'active' =>
+$onCatalog
+&& request('category') === $slug,
+];
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| ACCOUNT URL
+|--------------------------------------------------------------------------
+*/
+
+$role = auth()->user()?->role?->name;
+
+$accountUrl = match ($role) {
+
+'customer' =>
+route('customer.account'),
+
+'admin' =>
+route('admin.dashboard'),
+
+'staff_gudang' =>
+route('staff.dashboard'),
+
+'owner' =>
+route('owner.dashboard'),
+
+default =>
+route('login'),
+};
 
 @endphp
 
@@ -153,8 +153,7 @@
 
     <nav
         class="navbar"
-        aria-label="Main"
-    >
+        aria-label="Main">
 
 
         {{-- MOBILE MENU BUTTON --}}
@@ -165,8 +164,7 @@
             data-drawer-open
             aria-label="Open menu"
             aria-controls="nav-drawer"
-            aria-expanded="false"
-        >
+            aria-expanded="false">
 
             <i class="bi bi-list"></i>
 
@@ -194,24 +192,23 @@
 
             @foreach ($navLinks as $link)
 
-                <li>
+            <li>
 
-                    <a
-                        href="{{ $link['url'] }}"
-                        class="
+                <a
+                    href="{{ $link['url'] }}"
+                    class="
                             navbar-link
                             {{ $link['active'] ? 'is-active' : '' }}
                         "
-                        @if ($link['active'])
-                            aria-current="page"
-                        @endif
-                    >
+                    @if ($link['active'])
+                    aria-current="page"
+                    @endif>
 
-                        {{ $link['label'] }}
+                    {{ $link['label'] }}
 
-                    </a>
+                </a>
 
-                </li>
+            </li>
 
             @endforeach
 
@@ -232,8 +229,7 @@
                 data-search-toggle
                 aria-label="Search"
                 aria-controls="search-panel"
-                aria-expanded="false"
-            >
+                aria-expanded="false">
 
                 <i class="bi bi-search"></i>
 
@@ -250,43 +246,34 @@
                         ? 'My account'
                         : 'Sign in'
                     }}
-                "
-            >
+                ">
 
                 <i class="bi bi-person"></i>
 
             </a>
 
 
+
             {{-- CART --}}
 
             <a
-                href="#"
+                href="{{ route('cart.index') }}"
                 class="nav-icon"
-                aria-label="
-                    Cart,
-                    {{ $cartCount }}
-                    items
-                "
-            >
+                aria-label="Cart, {{ $cartCount }} items"
+                title="Shopping Cart">
 
                 <i class="bi bi-bag"></i>
 
-
                 @if ($cartCount > 0)
 
-                    <span class="cart-count">
-
-                        {{ $cartCount > 99
-                            ? '99+'
-                            : $cartCount
-                        }}
-
-                    </span>
+                <span class="cart-count">
+                    {{ $cartCount > 99 ? '99+' : $cartCount }}
+                </span>
 
                 @endif
 
             </a>
+
 
 
         </div>
@@ -302,14 +289,12 @@
     <div
         class="search-panel"
         id="search-panel"
-        hidden
-    >
+        hidden>
 
         <form
             action="{{ route('search.preview') }}"
             method="GET"
-            role="search"
-        >
+            role="search">
 
             <input
                 type="search"
@@ -317,13 +302,11 @@
                 value="{{ request('q') }}"
                 placeholder="Search products"
                 aria-label="Search products"
-                autocomplete="off"
-            >
+                autocomplete="off">
 
             <button
                 type="submit"
-                aria-label="Submit search"
-            >
+                aria-label="Submit search">
 
                 <i class="bi bi-arrow-right"></i>
 
@@ -345,22 +328,19 @@
 <div
     class="drawer"
     id="nav-drawer"
-    aria-hidden="true"
->
+    aria-hidden="true">
 
 
     <div
         class="drawer-backdrop"
-        data-drawer-close
-    ></div>
+        data-drawer-close></div>
 
 
     <aside
         class="drawer-panel"
         role="dialog"
         aria-modal="true"
-        aria-label="Menu"
-    >
+        aria-label="Menu">
 
 
         {{-- DRAWER HEADER --}}
@@ -370,8 +350,7 @@
 
             <a
                 href="{{ route('home.preview') }}"
-                class="drawer-brand"
-            >
+                class="drawer-brand">
 
                 Lifestyle
 
@@ -382,8 +361,7 @@
                 type="button"
                 class="nav-icon"
                 data-drawer-close
-                aria-label="Close menu"
-            >
+                aria-label="Close menu">
 
                 <i class="bi bi-x-lg"></i>
 
@@ -400,28 +378,27 @@
 
             @foreach ($navLinks as $link)
 
-                <li>
+            <li>
 
-                    <a
-                        href="{{ $link['url'] }}"
-                        class="
+                <a
+                    href="{{ $link['url'] }}"
+                    class="
                             {{ $link['active']
                                 ? 'is-active'
                                 : ''
                             }}
                         "
-                        @if ($link['active'])
-                            aria-current="page"
-                        @endif
-                    >
+                    @if ($link['active'])
+                    aria-current="page"
+                    @endif>
 
-                        {{ $link['label'] }}
+                    {{ $link['label'] }}
 
-                        <i class="bi bi-chevron-right"></i>
+                    <i class="bi bi-chevron-right"></i>
 
-                    </a>
+                </a>
 
-                </li>
+            </li>
 
             @endforeach
 
@@ -436,57 +413,52 @@
 
             @auth
 
-                <a
-                    href="{{ $accountUrl }}"
-                    class="btn-primary-store"
-                >
+            <a
+                href="{{ $accountUrl }}"
+                class="btn-primary-store">
 
-                    My account
+                My account
 
-                </a>
-
-
-                <form
-                    action="{{ route('logout') }}"
-                    method="POST"
-                >
-
-                    @csrf
+            </a>
 
 
-                    <button
-                        type="submit"
-                        class="btn-outline-store"
-                    >
+            <form
+                action="{{ route('logout') }}"
+                method="POST">
 
-                        Sign out
+                @csrf
 
-                    </button>
 
-                </form>
+                <button
+                    type="submit"
+                    class="btn-outline-store">
+
+                    Sign out
+
+                </button>
+
+            </form>
 
 
             @else
 
 
-                <a
-                    href="{{ route('login') }}"
-                    class="btn-primary-store"
-                >
+            <a
+                href="{{ route('login') }}"
+                class="btn-primary-store">
 
-                    Sign in
+                Sign in
 
-                </a>
+            </a>
 
 
-                <a
-                    href="{{ route('register') }}"
-                    class="btn-outline-store"
-                >
+            <a
+                href="{{ route('register') }}"
+                class="btn-outline-store">
 
-                    Create account
+                Create account
 
-                </a>
+            </a>
 
 
             @endauth

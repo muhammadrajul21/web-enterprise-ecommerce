@@ -936,6 +936,10 @@ Route::post(
     '/cart',
     [CartController::class, 'store']
 )->name('cart.store');
+Route::post(
+    '/buy-now',
+    [CartController::class, 'buyNow']
+)->name('cart.buy-now');
 
 Route::put(
     '/cart/{variantId}',

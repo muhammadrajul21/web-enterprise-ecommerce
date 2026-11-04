@@ -37,8 +37,7 @@ class CartController extends Controller
 
         /*
          * GUEST
-         */
-        else {
+         */ else {
 
             $guestCart = session(
                 'guest_cart',
@@ -80,16 +79,16 @@ class CartController extends Controller
                 $items->push(
                     (object) [
                         'variant_id' =>
-                            $variant->id,
+                        $variant->id,
 
                         'quantity' =>
-                            (int) $quantity,
+                        (int) $quantity,
 
                         'price' =>
-                            $variant->price,
+                        $variant->price,
 
                         'variant' =>
-                            $variant,
+                        $variant,
                     ]
                 );
             }
@@ -216,10 +215,10 @@ class CartController extends Controller
                 $cartItem->update([
 
                     'quantity' =>
-                        $newQuantity,
+                    $newQuantity,
 
                     'price' =>
-                        $variant->price,
+                    $variant->price,
 
                 ]);
             } else {
@@ -227,16 +226,16 @@ class CartController extends Controller
                 CartItem::create([
 
                     'cart_id' =>
-                        $cart->id,
+                    $cart->id,
 
                     'variant_id' =>
-                        $variant->id,
+                    $variant->id,
 
                     'quantity' =>
-                        $validated['quantity'],
+                    $validated['quantity'],
 
                     'price' =>
-                        $variant->price,
+                    $variant->price,
 
                 ]);
             }
@@ -244,8 +243,7 @@ class CartController extends Controller
 
         /*
          * GUEST
-         */
-        else {
+         */ else {
 
             $guestCart = session(
                 'guest_cart',
@@ -255,9 +253,7 @@ class CartController extends Controller
 
             $currentQuantity =
                 (int) (
-                    $guestCart[
-                        $variant->id
-                    ] ?? 0
+                    $guestCart[$variant->id] ?? 0
                 );
 
 
@@ -278,9 +274,7 @@ class CartController extends Controller
             }
 
 
-            $guestCart[
-                $variant->id
-            ] = $newQuantity;
+            $guestCart[$variant->id] = $newQuantity;
 
 
             session()->put(
@@ -297,6 +291,55 @@ class CartController extends Controller
                 'Produk berhasil ditambahkan ke keranjang.'
             );
     }
+
+    /**
+     * Buy Now:
+     * Simpan produk terpilih ke session terpisah
+     * tanpa mengubah cart utama.
+     */
+    public function buyNow(Request $request)
+    {
+        $this->ensureCustomerOrGuest();
+
+        $validated = $request->validate([
+            'variant_id' => [
+                'required',
+                'exists:product_variants,id',
+            ],
+            'quantity' => [
+                'required',
+                'integer',
+                'min:1',
+            ],
+        ]);
+
+        $variant = ProductVariant::with('product')
+            ->findOrFail($validated['variant_id']);
+
+        if ($variant->status !== 'active') {
+            return back()->with(
+                'error',
+                'Variant produk sedang tidak tersedia.'
+            );
+        }
+
+        if ($validated['quantity'] > $variant->stock) {
+            return back()->with(
+                'error',
+                'Jumlah produk melebihi stok yang tersedia.'
+            );
+        }
+
+        session()->put('buy_now', [
+            'variant_id' => $variant->id,
+            'quantity' => (int) $validated['quantity'],
+        ]);
+
+        session()->put('checkout_mode', 'buy_now');
+
+        return redirect()->route('checkout.index');
+    }
+
 
 
     /**
@@ -372,18 +415,17 @@ class CartController extends Controller
             $cartItem->update([
 
                 'quantity' =>
-                    $validated['quantity'],
+                $validated['quantity'],
 
                 'price' =>
-                    $variant->price,
+                $variant->price,
 
             ]);
         }
 
         /*
          * GUEST
-         */
-        else {
+         */ else {
 
             $guestCart = session(
                 'guest_cart',
@@ -402,9 +444,7 @@ class CartController extends Controller
             }
 
 
-            $guestCart[
-                $variant->id
-            ] = $validated['quantity'];
+            $guestCart[$variant->id] = $validated['quantity'];
 
 
             session()->put(
@@ -460,8 +500,7 @@ class CartController extends Controller
 
         /*
          * GUEST
-         */
-        else {
+         */ else {
 
             $guestCart = session(
                 'guest_cart',
@@ -470,9 +509,7 @@ class CartController extends Controller
 
 
             unset(
-                $guestCart[
-                    $variantId
-                ]
+                $guestCart[$variantId]
             );
 
 

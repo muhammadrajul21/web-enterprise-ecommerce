@@ -41,45 +41,45 @@
 
         @if(session('success'))
 
-            <div class="cart-alert cart-alert-success">
+        <div class="cart-alert cart-alert-success">
 
-                <i class="bi bi-check-circle"></i>
+            <i class="bi bi-check-circle"></i>
 
-                <span>
-                    {{ session('success') }}
-                </span>
+            <span>
+                {{ session('success') }}
+            </span>
 
-            </div>
+        </div>
 
         @endif
 
 
         @if(session('error'))
 
-            <div class="cart-alert cart-alert-error">
+        <div class="cart-alert cart-alert-error">
 
-                <i class="bi bi-exclamation-circle"></i>
+            <i class="bi bi-exclamation-circle"></i>
 
-                <span>
-                    {{ session('error') }}
-                </span>
+            <span>
+                {{ session('error') }}
+            </span>
 
-            </div>
+        </div>
 
         @endif
 
 
         @if($errors->any())
 
-            <div class="cart-alert cart-alert-error">
+        <div class="cart-alert cart-alert-error">
 
-                <i class="bi bi-exclamation-circle"></i>
+            <i class="bi bi-exclamation-circle"></i>
 
-                <span>
-                    {{ $errors->first() }}
-                </span>
+            <span>
+                {{ $errors->first() }}
+            </span>
 
-            </div>
+        </div>
 
         @endif
 
@@ -90,428 +90,419 @@
 
         @if($cart->items->isEmpty())
 
-            <div class="empty-cart">
+        <div class="empty-cart">
 
-                <div class="empty-cart-icon">
+            <div class="empty-cart-icon">
 
-                    <i class="bi bi-bag"></i>
-
-                </div>
-
-                <h2>
-                    Your cart is empty
-                </h2>
-
-                <p>
-                    Discover our latest products and add
-                    your favorites to the cart.
-                </p>
-
-                <a
-                    href="{{ route('catalog.preview') }}"
-                    class="continue-shopping"
-                >
-
-                    SHOP PRODUCTS
-
-                    <i class="bi bi-arrow-right"></i>
-
-                </a>
+                <i class="bi bi-bag"></i>
 
             </div>
+
+            <h2>
+                Your cart is empty
+            </h2>
+
+            <p>
+                Discover our latest products and add
+                your favorites to the cart.
+            </p>
+
+            <a
+                href="{{ route('catalog.preview') }}"
+                class="continue-shopping">
+
+                SHOP PRODUCTS
+
+                <i class="bi bi-arrow-right"></i>
+
+            </a>
+
+        </div>
 
         @else
 
 
-            {{-- =========================
+        {{-- =========================
                 CART LAYOUT
             ========================= --}}
 
-            <div class="cart-layout">
+        <div class="cart-layout">
 
 
-                {{-- =========================
+            {{-- =========================
                     CART ITEMS
                 ========================= --}}
 
-                <div class="cart-items">
+            <div class="cart-items">
 
-                    @foreach($cart->items as $item)
+                @foreach($cart->items as $item)
 
-                        @php
-                            $variant = $item->variant;
+                @php
+                $variant = $item->variant;
 
-                            $product = $variant?->product;
+                $product = $variant?->product;
 
-                            $image = $variant?->images?->first()
-                                ?? $product?->images?->first();
+                $image = $variant?->images?->first()
+                ?? $product?->images?->first();
 
-                            $itemSubtotal =
-                                $item->price * $item->quantity;
-                        @endphp
-
-
-                        <article class="cart-item">
+                $itemSubtotal =
+                $item->price * $item->quantity;
+                @endphp
 
 
-                            {{-- PRODUCT IMAGE --}}
+                <article class="cart-item">
 
-                            <div class="cart-item-image">
 
-                                @if(
-                                    $image
-                                    && file_exists(
-                                        public_path(
-                                            $image->image_path
-                                        )
-                                    )
-                                )
+                    {{-- PRODUCT IMAGE --}}
 
-                                    <img
-                                        src="{{ asset(
+                    <div class="cart-item-image">
+
+                        @if(
+                        $image
+                        && file_exists(
+                        public_path(
+                        $image->image_path
+                        )
+                        )
+                        )
+
+                        <img
+                            src="{{ asset(
                                             $image->image_path
                                         ) }}"
-                                        alt="{{ $product?->name }}"
-                                    >
+                            alt="{{ $product?->name }}">
 
-                                @else
+                        @else
 
-                                    <div class="cart-image-placeholder">
+                        <div class="cart-image-placeholder">
 
-                                        <i class="bi bi-image"></i>
+                            <i class="bi bi-image"></i>
 
-                                    </div>
+                        </div>
 
-                                @endif
+                        @endif
 
-                            </div>
-
-
-                            {{-- PRODUCT INFORMATION --}}
-
-                            <div class="cart-item-info">
+                    </div>
 
 
-                                {{-- TOP --}}
+                    {{-- PRODUCT INFORMATION --}}
 
-                                <div class="cart-item-top">
+                    <div class="cart-item-info">
 
-                                    <div>
 
-                                        <span class="cart-category">
+                        {{-- TOP --}}
 
-                                            {{ strtoupper(
+                        <div class="cart-item-top">
+
+                            <div>
+
+                                <span class="cart-category">
+
+                                    {{ strtoupper(
                                                 $product?->category?->name
                                                 ?? 'PRODUCT'
                                             ) }}
 
-                                        </span>
+                                </span>
 
-                                        <h2>
-                                            {{ $product?->name ?? 'Product' }}
-                                        </h2>
+                                <h2>
+                                    {{ $product?->name ?? 'Product' }}
+                                </h2>
 
-                                    </div>
+                            </div>
 
 
-                                    {{-- REMOVE PRODUCT --}}
+                            {{-- REMOVE PRODUCT --}}
 
-                                    <form
-                                        action="{{ route(
+                            <form
+                                action="{{ route(
                                             'cart.destroy',
                                             $item->variant_id
                                         ) }}"
-                                        method="POST"
-                                        onsubmit="return confirm(
+                                method="POST"
+                                onsubmit="return confirm(
                                             'Remove this product from cart?'
-                                        );"
-                                    >
+                                        );">
 
-                                        @csrf
-                                        @method('DELETE')
+                                @csrf
+                                @method('DELETE')
 
-                                        <button
-                                            type="submit"
-                                            class="cart-remove"
-                                            title="Remove item"
-                                        >
+                                <button
+                                    type="submit"
+                                    class="cart-remove"
+                                    title="Remove item">
 
-                                            <i class="bi bi-trash"></i>
+                                    <i class="bi bi-trash"></i>
 
-                                        </button>
+                                </button>
 
-                                    </form>
+                            </form>
 
-                                </div>
+                        </div>
 
 
-                                {{-- VARIANT INFORMATION --}}
+                        {{-- VARIANT INFORMATION --}}
 
-                                <div class="cart-variant">
+                        <div class="cart-variant">
 
-                                    @if($variant?->color)
+                            @if($variant?->color)
 
-                                        <span>
+                            <span>
 
-                                            COLOR:
+                                COLOR:
 
-                                            <strong>
-                                                {{ strtoupper(
+                                <strong>
+                                    {{ strtoupper(
                                                     $variant->color
                                                 ) }}
-                                            </strong>
+                                </strong>
 
-                                        </span>
+                            </span>
 
-                                    @endif
+                            @endif
 
 
-                                    @if($variant?->size)
+                            @if($variant?->size)
 
-                                        <span>
+                            <span>
 
-                                            SIZE:
+                                SIZE:
 
-                                            <strong>
-                                                {{ strtoupper(
+                                <strong>
+                                    {{ strtoupper(
                                                     $variant->size
                                                 ) }}
-                                            </strong>
+                                </strong>
 
-                                        </span>
+                            </span>
 
-                                    @endif
-
-
-                                    <span>
-
-                                        SKU:
-
-                                        <strong>
-                                            {{ $variant?->sku ?? '-' }}
-                                        </strong>
-
-                                    </span>
-
-                                </div>
+                            @endif
 
 
-                                {{-- UNIT PRICE --}}
+                            <span>
 
-                                <div class="cart-unit-price">
+                                SKU:
 
-                                    Rp {{ number_format(
+                                <strong>
+                                    {{ $variant?->sku ?? '-' }}
+                                </strong>
+
+                            </span>
+
+                        </div>
+
+
+                        {{-- UNIT PRICE --}}
+
+                        <div class="cart-unit-price">
+
+                            Rp {{ number_format(
                                         $item->price,
                                         0,
                                         ',',
                                         '.'
                                     ) }}
 
-                                </div>
+                        </div>
 
 
-                                {{-- =========================
+                        {{-- =========================
                                     ITEM BOTTOM
                                 ========================= --}}
 
-                                <div class="cart-item-bottom">
+                        <div class="cart-item-bottom">
 
 
-                                    {{-- QUANTITY --}}
+                            {{-- QUANTITY --}}
 
-                                    <form
-                                        action="{{ route(
+                            <form
+                                action="{{ route(
                                             'cart.update',
                                             $item->variant_id
                                         ) }}"
-                                        method="POST"
-                                        class="quantity-form"
-                                    >
+                                method="POST"
+                                class="quantity-form">
 
-                                        @csrf
-                                        @method('PUT')
-
-
-                                        <label
-                                            for="quantity-{{ $item->variant_id }}"
-                                        >
-                                            QTY
-                                        </label>
+                                @csrf
+                                @method('PUT')
 
 
-                                        <input
-                                            id="quantity-{{ $item->variant_id }}"
-                                            type="number"
-                                            name="quantity"
-                                            min="1"
-                                            max="{{ $variant?->stock ?? 1 }}"
-                                            value="{{ $item->quantity }}"
-                                            required
-                                        >
+                                <label
+                                    for="quantity-{{ $item->variant_id }}">
+                                    QTY
+                                </label>
 
 
-                                        <button type="submit">
-                                            UPDATE
-                                        </button>
+                                <input
+                                    id="quantity-{{ $item->variant_id }}"
+                                    type="number"
+                                    name="quantity"
+                                    min="1"
+                                    max="{{ $variant?->stock ?? 1 }}"
+                                    value="{{ $item->quantity }}"
+                                    required>
 
-                                    </form>
+
+                                <button type="submit">
+                                    UPDATE
+                                </button>
+
+                            </form>
 
 
-                                    {{-- ITEM SUBTOTAL --}}
+                            {{-- ITEM SUBTOTAL --}}
 
-                                    <div class="cart-item-subtotal">
+                            <div class="cart-item-subtotal">
 
-                                        <span>
-                                            SUBTOTAL
-                                        </span>
+                                <span>
+                                    SUBTOTAL
+                                </span>
 
-                                        <strong>
+                                <strong>
 
-                                            Rp {{ number_format(
+                                    Rp {{ number_format(
                                                 $itemSubtotal,
                                                 0,
                                                 ',',
                                                 '.'
                                             ) }}
 
-                                        </strong>
-
-                                    </div>
-
-                                </div>
-
-
-                                {{-- STOCK INFORMATION --}}
-
-                                @if($variant)
-
-                                    <small class="stock-information">
-
-                                        {{ $variant->stock }}
-                                        items available
-
-                                    </small>
-
-                                @endif
+                                </strong>
 
                             </div>
 
-                        </article>
-
-                    @endforeach
-
-                </div>
-
-
-                {{-- =========================
-                    ORDER SUMMARY
-                ========================= --}}
-
-                <aside class="cart-summary">
-
-                    <div class="cart-summary-card">
-
-                        <h2>
-                            Order Summary
-                        </h2>
-
-
-                        {{-- SUBTOTAL --}}
-
-                        <div class="summary-row">
-
-                            <span>
-                                Subtotal
-                            </span>
-
-                            <strong>
-
-                                Rp {{ number_format(
-                                    $subtotal,
-                                    0,
-                                    ',',
-                                    '.'
-                                ) }}
-
-                            </strong>
-
                         </div>
 
 
-                        {{-- SHIPPING --}}
+                        {{-- STOCK INFORMATION --}}
 
-                        <div class="summary-row">
+                        @if($variant)
 
-                            <span>
-                                Shipping
-                            </span>
+                        <small class="stock-information">
 
-                            <span>
-                                Calculated at checkout
-                            </span>
+                            {{ $variant->stock }}
+                            items available
 
-                        </div>
+                        </small>
 
-
-                        <div class="summary-divider"></div>
-
-
-                        {{-- TOTAL --}}
-
-                        <div class="summary-total">
-
-                            <span>
-                                TOTAL
-                            </span>
-
-                            <strong>
-
-                                Rp {{ number_format(
-                                    $subtotal,
-                                    0,
-                                    ',',
-                                    '.'
-                                ) }}
-
-                            </strong>
-
-                        </div>
-
-
-                        {{-- =========================
-                            CHECKOUT
-                        ========================= --}}
-
-                        <a
-                            href="{{ route('checkout.index') }}"
-                            class="checkout-button"
-                        >
-
-                            PROCEED TO CHECKOUT
-
-                            <i class="bi bi-arrow-right"></i>
-
-                        </a>
-
-
-                        {{-- CONTINUE SHOPPING --}}
-
-                        <a
-                            href="{{ route('catalog.preview') }}"
-                            class="continue-link"
-                        >
-
-                            <i class="bi bi-arrow-left"></i>
-
-                            Continue Shopping
-
-                        </a>
+                        @endif
 
                     </div>
 
-                </aside>
+                </article>
+
+                @endforeach
 
             </div>
+
+
+            {{-- =========================
+                    ORDER SUMMARY
+                ========================= --}}
+
+            <aside class="cart-summary">
+
+                <div class="cart-summary-card">
+
+                    <h2>
+                        Order Summary
+                    </h2>
+
+
+                    {{-- SUBTOTAL --}}
+
+                    <div class="summary-row">
+
+                        <span>
+                            Subtotal
+                        </span>
+
+                        <strong>
+
+                            Rp {{ number_format(
+                                    $subtotal,
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}
+
+                        </strong>
+
+                    </div>
+
+
+                    {{-- SHIPPING --}}
+
+                    <div class="summary-row">
+
+                        <span>
+                            Shipping
+                        </span>
+
+                        <span>
+                            Calculated at checkout
+                        </span>
+
+                    </div>
+
+
+                    <div class="summary-divider"></div>
+
+
+                    {{-- TOTAL --}}
+
+                    <div class="summary-total">
+
+                        <span>
+                            TOTAL
+                        </span>
+
+                        <strong>
+
+                            Rp {{ number_format(
+                                    $subtotal,
+                                    0,
+                                    ',',
+                                    '.'
+                                ) }}
+
+                        </strong>
+
+                    </div>
+
+
+                    {{-- =========================
+                            CHECKOUT
+                        ========================= --}}
+
+                    <a
+                        href="{{ route('checkout.index', ['mode' => 'cart']) }}"
+                        class="checkout-button">
+
+                        PROCEED TO CHECKOUT
+
+                        <i class="bi bi-arrow-right"></i>
+
+                    </a>
+
+
+                    {{-- CONTINUE SHOPPING --}}
+
+                    <a
+                        href="{{ route('catalog.preview') }}"
+                        class="continue-link">
+
+                        <i class="bi bi-arrow-left"></i>
+
+                        Continue Shopping
+
+                    </a>
+
+                </div>
+
+            </aside>
+
+        </div>
 
         @endif
 

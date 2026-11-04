@@ -858,3 +858,141 @@
     }
 
 }
+
+/* =========================================
+   PRODUCT QUANTITY & PURCHASE BUTTONS
+========================================= */
+
+.product-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 56px;
+    gap: 8px;
+    align-items: stretch;
+}
+
+.product-add-cart-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+    width: 100%;
+}
+
+.product-quantity-control {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.product-quantity-control label {
+    color: #555;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+
+.product-quantity-control input {
+    width: 90px;
+    height: 40px;
+    padding: 0 10px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background: #fff;
+    color: #111;
+    font-family: inherit;
+    font-size: 13px;
+    text-align: center;
+    outline: none;
+}
+
+.product-quantity-control input:focus {
+    border-color: #111;
+}
+
+.product-quantity-control input:disabled {
+    background: #f3f3f3;
+    cursor: not-allowed;
+}
+
+/* PURCHASE BUTTON LAYOUT */
+
+.product-purchase-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.product-purchase-buttons button {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    min-height: 58px;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 0 12px;
+    border: 1px solid #111;
+    border-radius: 2px;
+    font-family: inherit;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.4px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, opacity 0.2s;
+}
+
+/* ADD TO CART */
+
+.product-purchase-buttons .add-cart-button {
+    background: #111;
+    color: #fff;
+}
+
+.product-purchase-buttons .add-cart-button:hover:not(:disabled) {
+    background: #333;
+}
+
+/* BUY NOW */
+
+.product-purchase-buttons .buy-now-button {
+    background: #fff;
+    color: #111;
+}
+
+.product-purchase-buttons .buy-now-button:hover:not(:disabled) {
+    background: #111;
+    color: #fff;
+}
+
+/* DISABLED STATE */
+
+.product-purchase-buttons button:disabled {
+    background: #aaa;
+    border-color: #aaa;
+    color: #fff;
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+/* WISHLIST */
+
+.product-actions .detail-wishlist-button {
+    width: 56px;
+    min-height: 58px;
+    align-self: start;
+}
+
+/* MOBILE */
+
+@media (max-width: 480px) {
+
+    .product-purchase-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .product-purchase-buttons button {
+        min-height: 52px;
+    }
+
+}

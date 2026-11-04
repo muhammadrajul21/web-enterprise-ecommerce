@@ -5,61 +5,61 @@
 @section('content')
 
 @php
-    /*
-    |--------------------------------------------------------------------------
-    | PRODUCT DATA
-    |--------------------------------------------------------------------------
-    */
+/*
+|--------------------------------------------------------------------------
+| PRODUCT DATA
+|--------------------------------------------------------------------------
+*/
 
-    $primaryImage = $product->images->first();
+$primaryImage = $product->images->first();
 
-    /*
-    |--------------------------------------------------------------------------
-    | ACTIVE VARIANTS
-    |--------------------------------------------------------------------------
-    |
-    | Hanya variant active yang boleh dipilih customer.
-    |
-    */
+/*
+|--------------------------------------------------------------------------
+| ACTIVE VARIANTS
+|--------------------------------------------------------------------------
+|
+| Hanya variant active yang boleh dipilih customer.
+|
+*/
 
-    $activeVariants = $product->variants
-        ->where('status', 'active')
-        ->values();
+$activeVariants = $product->variants
+->where('status', 'active')
+->values();
 
-    $minPrice = $activeVariants->min('price');
+$minPrice = $activeVariants->min('price');
 
-    $colors = $activeVariants
-        ->pluck('color')
-        ->filter()
-        ->unique()
-        ->values();
+$colors = $activeVariants
+->pluck('color')
+->filter()
+->unique()
+->values();
 
-    $sizes = $activeVariants
-        ->pluck('size')
-        ->filter()
-        ->unique()
-        ->values();
+$sizes = $activeVariants
+->pluck('size')
+->filter()
+->unique()
+->values();
 
-    $totalStock = $activeVariants->sum('stock');
+$totalStock = $activeVariants->sum('stock');
 
-    /*
-    |--------------------------------------------------------------------------
-    | VARIANT DATA FOR JAVASCRIPT
-    |--------------------------------------------------------------------------
-    */
+/*
+|--------------------------------------------------------------------------
+| VARIANT DATA FOR JAVASCRIPT
+|--------------------------------------------------------------------------
+*/
 
-    $variantData = $activeVariants
-        ->map(function ($variant) {
-            return [
-                'id' => $variant->id,
-                'color' => $variant->color,
-                'size' => $variant->size,
-                'price' => (float) $variant->price,
-                'stock' => (int) $variant->stock,
-                'status' => $variant->status,
-            ];
-        })
-        ->values();
+$variantData = $activeVariants
+->map(function ($variant) {
+return [
+'id' => $variant->id,
+'color' => $variant->color,
+'size' => $variant->size,
+'price' => (float) $variant->price,
+'stock' => (int) $variant->stock,
+'status' => $variant->status,
+];
+})
+->values();
 @endphp
 
 
@@ -81,15 +81,14 @@
 
     @if($product->category)
 
-        <span>/</span>
+    <span>/</span>
 
-        <a
-            href="{{ route('catalog.preview', [
+    <a
+        href="{{ route('catalog.preview', [
                 'category' => $product->category->slug
-            ]) }}"
-        >
-            {{ strtoupper($product->category->name) }}
-        </a>
+            ]) }}">
+        {{ strtoupper($product->category->name) }}
+    </a>
 
     @endif
 
@@ -111,46 +110,45 @@
 
         @forelse($product->images as $image)
 
-            <div class="product-detail-image">
+        <div class="product-detail-image">
 
-                @if(file_exists(public_path($image->image_path)))
+            @if(file_exists(public_path($image->image_path)))
 
-                    <img
-                        src="{{ asset($image->image_path) }}"
-                        alt="{{ $product->name }}"
-                    >
+            <img
+                src="{{ asset($image->image_path) }}"
+                alt="{{ $product->name }}">
 
-                @else
+            @else
 
-                    <div class="detail-image-placeholder">
+            <div class="detail-image-placeholder">
 
-                        <i class="bi bi-image"></i>
+                <i class="bi bi-image"></i>
 
-                        <span>
-                            {{ $product->name }}
-                        </span>
-
-                    </div>
-
-                @endif
+                <span>
+                    {{ $product->name }}
+                </span>
 
             </div>
+
+            @endif
+
+        </div>
 
         @empty
 
-            <div class="product-detail-image">
+        <div class="product-detail-image">
 
-                <div class="detail-image-placeholder">
+            <div class="detail-image-placeholder">
 
-                    <i class="bi bi-image"></i>
+                <i class="bi bi-image"></i>
 
-                    <span>
-                        {{ $product->name }}
-                    </span>
-
-                </div>
+                <span>
+                    {{ $product->name }}
+                </span>
 
             </div>
+
+        </div>
 
         @endforelse
 
@@ -174,7 +172,7 @@
 
                 @if($product->category)
 
-                    · {{ strtoupper($product->category->name) }}
+                · {{ strtoupper($product->category->name) }}
 
                 @endif
 
@@ -192,19 +190,18 @@
 
             @if($minPrice !== null)
 
-                <p
-                    class="product-detail-price"
-                    id="product-current-price"
-                >
+            <p
+                class="product-detail-price"
+                id="product-current-price">
 
-                    Rp {{ number_format(
+                Rp {{ number_format(
                         $minPrice,
                         0,
                         ',',
                         '.'
                     ) }}
 
-                </p>
+            </p>
 
             @endif
 
@@ -213,17 +210,17 @@
 
             @if($product->collections->count())
 
-                <div class="product-collections">
+            <div class="product-collections">
 
-                    @foreach($product->collections as $collection)
+                @foreach($product->collections as $collection)
 
-                        <span>
-                            {{ $collection->name }}
-                        </span>
+                <span>
+                    {{ $collection->name }}
+                </span>
 
-                    @endforeach
+                @endforeach
 
-                </div>
+            </div>
 
             @endif
 
@@ -234,45 +231,45 @@
 
             @if(session('error'))
 
-                <div class="product-cart-message error">
+            <div class="product-cart-message error">
 
-                    <i class="bi bi-exclamation-circle"></i>
+                <i class="bi bi-exclamation-circle"></i>
 
-                    <span>
-                        {{ session('error') }}
-                    </span>
+                <span>
+                    {{ session('error') }}
+                </span>
 
-                </div>
+            </div>
 
             @endif
 
 
             @if(session('success'))
 
-                <div class="product-cart-message success">
+            <div class="product-cart-message success">
 
-                    <i class="bi bi-check-circle"></i>
+                <i class="bi bi-check-circle"></i>
 
-                    <span>
-                        {{ session('success') }}
-                    </span>
+                <span>
+                    {{ session('success') }}
+                </span>
 
-                </div>
+            </div>
 
             @endif
 
 
             @if($errors->any())
 
-                <div class="product-cart-message error">
+            <div class="product-cart-message error">
 
-                    <i class="bi bi-exclamation-circle"></i>
+                <i class="bi bi-exclamation-circle"></i>
 
-                    <span>
-                        {{ $errors->first() }}
-                    </span>
+                <span>
+                    {{ $errors->first() }}
+                </span>
 
-                </div>
+            </div>
 
             @endif
 
@@ -283,40 +280,39 @@
 
             @if($colors->count())
 
-                <div class="product-option">
+            <div class="product-option">
 
-                    <div class="product-option-title">
+                <div class="product-option-title">
 
-                        <span>
-                            COLOR
-                        </span>
+                    <span>
+                        COLOR
+                    </span>
 
-                        <span>
-                            {{ $colors->count() }} options
-                        </span>
-
-                    </div>
-
-
-                    <div class="option-buttons">
-
-                        @foreach($colors as $color)
-
-                            <button
-                                type="button"
-                                class="option-button color-option"
-                                data-color="{{ $color }}"
-                            >
-
-                                {{ $color }}
-
-                            </button>
-
-                        @endforeach
-
-                    </div>
+                    <span>
+                        {{ $colors->count() }} options
+                    </span>
 
                 </div>
+
+
+                <div class="option-buttons">
+
+                    @foreach($colors as $color)
+
+                    <button
+                        type="button"
+                        class="option-button color-option"
+                        data-color="{{ $color }}">
+
+                        {{ $color }}
+
+                    </button>
+
+                    @endforeach
+
+                </div>
+
+            </div>
 
             @endif
 
@@ -327,40 +323,39 @@
 
             @if($sizes->count())
 
-                <div class="product-option">
+            <div class="product-option">
 
-                    <div class="product-option-title">
+                <div class="product-option-title">
 
-                        <span>
-                            SELECT SIZE
-                        </span>
+                    <span>
+                        SELECT SIZE
+                    </span>
 
-                        <span>
-                            Size Guide
-                        </span>
-
-                    </div>
-
-
-                    <div class="size-grid">
-
-                        @foreach($sizes as $size)
-
-                            <button
-                                type="button"
-                                class="size-button size-option"
-                                data-size="{{ $size }}"
-                            >
-
-                                {{ $size }}
-
-                            </button>
-
-                        @endforeach
-
-                    </div>
+                    <span>
+                        Size Guide
+                    </span>
 
                 </div>
+
+
+                <div class="size-grid">
+
+                    @foreach($sizes as $size)
+
+                    <button
+                        type="button"
+                        class="size-button size-option"
+                        data-size="{{ $size }}">
+
+                        {{ $size }}
+
+                    </button>
+
+                    @endforeach
+
+                </div>
+
+            </div>
 
             @endif
 
@@ -373,51 +368,49 @@
 
                 @if($totalStock > 0)
 
-                    <i class="bi bi-check-circle"></i>
+                <i class="bi bi-check-circle"></i>
 
-                    <span>
-                        In stock
-                    </span>
+                <span>
+                    In stock
+                </span>
 
-                    <small>
-                        {{ $totalStock }} items available
-                    </small>
+                <small>
+                    {{ $totalStock }} items available
+                </small>
 
                 @else
 
-                    <i class="bi bi-x-circle"></i>
+                <i class="bi bi-x-circle"></i>
 
-                    <span>
-                        Out of stock
-                    </span>
+                <span>
+                    Out of stock
+                </span>
 
-                    <small>
-                        Product currently unavailable
-                    </small>
+                <small>
+                    Product currently unavailable
+                </small>
 
                 @endif
 
             </div>
 
 
+
             {{-- =========================
-                ACTION
-            ========================= --}}
+    PRODUCT ACTIONS
+========================= --}}
 
             <div class="product-actions">
 
-
-                {{-- ADD TO CART --}}
+                {{-- PURCHASE FORM --}}
 
                 <form
                     action="{{ route('cart.store') }}"
                     method="POST"
                     id="add-to-cart-form"
-                    class="product-add-cart-form"
-                >
+                    class="product-add-cart-form">
 
                     @csrf
-
 
                     {{-- SELECTED VARIANT --}}
 
@@ -425,31 +418,62 @@
                         type="hidden"
                         name="variant_id"
                         id="selected-variant-id"
-                        value=""
-                    >
+                        value="">
 
+                    {{-- QUANTITY --}}
 
-                    {{-- DEFAULT QUANTITY --}}
+                    <div class="product-quantity-control">
 
-                    <input
-                        type="hidden"
-                        name="quantity"
-                        value="1"
-                    >
+                        <label for="product-quantity">
+                            QUANTITY
+                        </label>
 
+                        <input
+                            type="number"
+                            id="product-quantity"
+                            name="quantity"
+                            value="1"
+                            min="1"
+                            max="{{ max(1, $totalStock) }}"
+                            step="1"
+                            required>
 
-                    <button
-                        type="submit"
-                        class="add-cart-button"
-                        id="add-cart-button"
-                        disabled
-                    >
+                    </div>
 
-                        ADD TO CART
+                    {{-- PURCHASE BUTTONS --}}
 
-                        <i class="bi bi-bag"></i>
+                    <div class="product-purchase-buttons">
 
-                    </button>
+                        {{-- ADD TO CART --}}
+
+                        <button
+                            type="submit"
+                            class="add-cart-button"
+                            id="add-cart-button"
+                            disabled>
+
+                            ADD TO CART
+
+                            <i class="bi bi-bag"></i>
+
+                        </button>
+
+                        {{-- BUY NOW --}}
+
+                        <button
+                            type="submit"
+                            formaction="{{ route('cart.buy-now') }}"
+                            class="buy-now-button"
+                            id="buy-now-button"
+                            disabled>
+
+                            BUY NOW
+
+                            <i class="bi bi-lightning-fill"></i>
+
+                        </button>
+
+                    </div>
 
                 </form>
 
@@ -459,8 +483,7 @@
                 <button
                     type="button"
                     class="detail-wishlist-button"
-                    aria-label="Add to wishlist"
-                >
+                    aria-label="Add to wishlist">
 
                     <i class="bi bi-heart"></i>
 
@@ -469,20 +492,20 @@
             </div>
 
 
+
             {{-- VARIANT STATUS MESSAGE --}}
 
             <p
                 id="variant-message"
-                class="variant-message"
-            >
+                class="variant-message">
 
                 @if($totalStock > 0)
 
-                    Select available options
+                Select available options
 
                 @else
 
-                    Product is out of stock
+                Product is out of stock
 
                 @endif
 
@@ -522,47 +545,47 @@
 
                 @forelse($activeVariants as $variant)
 
-                    <div class="variant-row">
+                <div class="variant-row">
 
-                        <div>
+                    <div>
 
-                            <strong>
-                                {{ $variant->color ?: '-' }}
-                            </strong>
+                        <strong>
+                            {{ $variant->color ?: '-' }}
+                        </strong>
 
-                            <span>
-                                Size {{ $variant->size ?: '-' }}
-                            </span>
+                        <span>
+                            Size {{ $variant->size ?: '-' }}
+                        </span>
 
-                        </div>
+                    </div>
 
 
-                        <div>
+                    <div>
 
-                            <strong>
+                        <strong>
 
-                                Rp {{ number_format(
+                            Rp {{ number_format(
                                     $variant->price,
                                     0,
                                     ',',
                                     '.'
                                 ) }}
 
-                            </strong>
+                        </strong>
 
-                            <span>
-                                Stock: {{ $variant->stock }}
-                            </span>
-
-                        </div>
+                        <span>
+                            Stock: {{ $variant->stock }}
+                        </span>
 
                     </div>
 
+                </div>
+
                 @empty
 
-                    <p class="no-variant-message">
-                        No available variants.
-                    </p>
+                <p class="no-variant-message">
+                    No available variants.
+                </p>
 
                 @endforelse
 
@@ -625,7 +648,7 @@
                             }}
                         "></i>
 
-                    @endfor
+                        @endfor
 
                 </div>
 
@@ -646,19 +669,19 @@
 
     @if($reviews->count())
 
-        <div class="customer-review-list">
+    <div class="customer-review-list">
 
-            @foreach($reviews as $review)
+        @foreach($reviews as $review)
 
-                <article class="customer-review-card">
+        <article class="customer-review-card">
 
-                    <div class="customer-review-top">
+            <div class="customer-review-top">
 
-                        <div class="customer-review-user">
+                <div class="customer-review-user">
 
-                            <div class="customer-review-avatar">
+                    <div class="customer-review-avatar">
 
-                                {{ strtoupper(
+                        {{ strtoupper(
                                     substr(
                                         $review->user?->name ?? 'C',
                                         0,
@@ -666,38 +689,38 @@
                                     )
                                 ) }}
 
-                            </div>
+                    </div>
 
 
-                            <div>
+                    <div>
 
-                                <strong>
-                                    {{ $review->user?->name ?? 'Customer' }}
-                                </strong>
+                        <strong>
+                            {{ $review->user?->name ?? 'Customer' }}
+                        </strong>
 
-                                <span>
-                                    Verified Purchase
-                                </span>
-
-                            </div>
-
-                        </div>
-
-
-                        <span class="customer-review-date">
-
-                            {{ $review->created_at->format('d M Y') }}
-
+                        <span>
+                            Verified Purchase
                         </span>
 
                     </div>
 
+                </div>
 
-                    <div class="customer-review-stars">
 
-                        @for($star = 1; $star <= 5; $star++)
+                <span class="customer-review-date">
 
-                            <i class="
+                    {{ $review->created_at->format('d M Y') }}
+
+                </span>
+
+            </div>
+
+
+            <div class="customer-review-stars">
+
+                @for($star = 1; $star <= 5; $star++)
+
+                    <i class="
                                 bi
                                 {{ $star <= $review->rating
                                     ? 'bi-star-fill'
@@ -705,44 +728,44 @@
                                 }}
                             "></i>
 
-                        @endfor
+                    @endfor
 
-                        <strong>
-                            {{ $review->rating }}/5
-                        </strong>
+                    <strong>
+                        {{ $review->rating }}/5
+                    </strong>
 
-                    </div>
+            </div>
 
 
-                    @if($review->review)
+            @if($review->review)
 
-                        <p class="customer-review-text">
-                            {{ $review->review }}
-                        </p>
+            <p class="customer-review-text">
+                {{ $review->review }}
+            </p>
 
-                    @endif
+            @endif
 
-                </article>
+        </article>
 
-            @endforeach
+        @endforeach
 
-        </div>
+    </div>
 
     @else
 
-        <div class="customer-review-empty">
+    <div class="customer-review-empty">
 
-            <i class="bi bi-chat-square-text"></i>
+        <i class="bi bi-chat-square-text"></i>
 
-            <h3>
-                No reviews yet
-            </h3>
+        <h3>
+            No reviews yet
+        </h3>
 
-            <p>
-                Be the first customer to review this product.
-            </p>
+        <p>
+            Be the first customer to review this product.
+        </p>
 
-        </div>
+    </div>
 
     @endif
 
@@ -776,8 +799,7 @@
             href="{{ route('catalog.preview', [
                 'category' => $product->category?->slug
             ]) }}"
-            class="section-link"
-        >
+            class="section-link">
 
             VIEW ALL
 
@@ -792,9 +814,9 @@
 
         @foreach($relatedProducts as $relatedProduct)
 
-            @include('components.product-card', [
-                'product' => $relatedProduct
-            ])
+        @include('components.product-card', [
+        'product' => $relatedProduct
+        ])
 
         @endforeach
 
@@ -818,8 +840,7 @@
 <div
     id="product-variant-data"
     data-variants="{{ $variantData->toJson() }}"
-    hidden
-></div>
+    hidden></div>
 
 @endsection
 
@@ -831,419 +852,468 @@
 @push('scripts')
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-
-    /*
-    |--------------------------------------------------------------------------
-    | GET VARIANT DATA FROM HTML
-    |--------------------------------------------------------------------------
-    */
-
-    const variantDataElement =
-        document.getElementById('product-variant-data');
-
-
-    let variants = [];
-
-
-    if (variantDataElement) {
-
-        try {
-
-            variants = JSON.parse(
-                variantDataElement.dataset.variants || '[]'
-            );
-
-        } catch (error) {
-
-            console.error(
-                'Failed to read product variant data.',
-                error
-            );
-
-            variants = [];
-
-        }
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | ELEMENTS
-    |--------------------------------------------------------------------------
-    */
-
-    const colorButtons =
-        document.querySelectorAll('.color-option');
-
-    const sizeButtons =
-        document.querySelectorAll('.size-option');
-
-    const variantInput =
-        document.getElementById('selected-variant-id');
-
-    const addButton =
-        document.getElementById('add-cart-button');
-
-    const message =
-        document.getElementById('variant-message');
-
-    const priceElement =
-        document.getElementById('product-current-price');
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | SAFETY CHECK
-    |--------------------------------------------------------------------------
-    */
-
-    if (
-        !variantInput
-        || !addButton
-        || !message
-    ) {
-
-        return;
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | AVAILABLE OPTIONS
-    |--------------------------------------------------------------------------
-    */
-
-    const hasColor =
-        colorButtons.length > 0;
-
-    const hasSize =
-        sizeButtons.length > 0;
-
-
-    let selectedColor = null;
-
-    let selectedSize = null;
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | FORMAT PRICE
-    |--------------------------------------------------------------------------
-    */
-
-    function formatRupiah(value) {
-
-        const numberValue =
-            Number(value);
-
-
-        if (
-            Number.isNaN(numberValue)
-        ) {
-
-            return 'Rp 0';
-
-        }
-
-
-        return 'Rp ' + new Intl.NumberFormat(
-            'id-ID',
-            {
-                maximumFractionDigits: 0
-            }
-        ).format(numberValue);
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | RESET SELECTED VARIANT
-    |--------------------------------------------------------------------------
-    */
-
-    function resetVariant(messageText) {
-
-        variantInput.value = '';
-
-        addButton.disabled = true;
-
-        message.textContent =
-            messageText;
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | RESOLVE VARIANT
-    |--------------------------------------------------------------------------
-    */
-
-    function resolveVariant() {
+    document.addEventListener('DOMContentLoaded', function() {
 
         /*
-         * Customer belum memilih color.
-         */
-        if (
-            hasColor
-            && selectedColor === null
-        ) {
+        |--------------------------------------------------------------------------
+        | GET VARIANT DATA FROM HTML
+        |--------------------------------------------------------------------------
+        */
 
-            resetVariant(
-                'Select a color'
-            );
-
-            return;
-
-        }
+        const variantDataElement =
+            document.getElementById('product-variant-data');
 
 
-        /*
-         * Customer belum memilih size.
-         */
-        if (
-            hasSize
-            && selectedSize === null
-        ) {
-
-            resetVariant(
-                'Select a size'
-            );
-
-            return;
-
-        }
+        let variants = [];
 
 
-        /*
-         * Cari kombinasi variant.
-         */
-        const variant =
-            variants.find(function (item) {
+        if (variantDataElement) {
 
-                const colorMatches =
-                    !hasColor
-                    || item.color === selectedColor;
+            try {
 
-                const sizeMatches =
-                    !hasSize
-                    || item.size === selectedSize;
-
-
-                return (
-                    colorMatches
-                    && sizeMatches
-                    && item.status === 'active'
+                variants = JSON.parse(
+                    variantDataElement.dataset.variants || '[]'
                 );
 
-            });
+            } catch (error) {
 
-
-        /*
-         * Kombinasi variant tidak ada.
-         */
-        if (!variant) {
-
-            resetVariant(
-                'Selected combination is not available'
-            );
-
-            return;
-
-        }
-
-
-        /*
-         * Variant ada tapi stock kosong.
-         */
-        if (
-            Number(variant.stock) <= 0
-        ) {
-
-            resetVariant(
-                'Selected variant is out of stock'
-            );
-
-            return;
-
-        }
-
-
-        /*
-         * Variant valid.
-         */
-        variantInput.value =
-            variant.id;
-
-
-        addButton.disabled =
-            false;
-
-
-        message.textContent =
-            variant.stock
-            + ' items available';
-
-
-        /*
-         * Update harga sesuai variant.
-         */
-        if (priceElement) {
-
-            priceElement.textContent =
-                formatRupiah(
-                    variant.price
+                console.error(
+                    'Failed to read product variant data.',
+                    error
                 );
 
-        }
-
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | COLOR SELECTION
-    |--------------------------------------------------------------------------
-    */
-
-    colorButtons.forEach(function (button) {
-
-        button.addEventListener(
-            'click',
-            function () {
-
-                colorButtons.forEach(
-                    function (item) {
-
-                        item.classList.remove(
-                            'active'
-                        );
-
-                    }
-                );
-
-
-                button.classList.add(
-                    'active'
-                );
-
-
-                selectedColor =
-                    button.dataset.color;
-
-
-                resolveVariant();
+                variants = [];
 
             }
-        );
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | ELEMENTS
+        |--------------------------------------------------------------------------
+        */
+
+        const colorButtons =
+            document.querySelectorAll('.color-option');
+
+        const sizeButtons =
+            document.querySelectorAll('.size-option');
+
+        const variantInput =
+            document.getElementById('selected-variant-id');
+
+        const addButton =
+            document.getElementById('add-cart-button');
+
+        const buyNowButton =
+            document.getElementById('buy-now-button');
+
+        const quantityInput =
+            document.getElementById('product-quantity');
+
+        const message =
+            document.getElementById('variant-message');
+
+        const priceElement =
+            document.getElementById('product-current-price');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SAFETY CHECK
+        |--------------------------------------------------------------------------
+        */
+        if (
+            !variantInput ||
+            !addButton ||
+            !buyNowButton ||
+            !quantityInput ||
+            !message
+        ) {
+            return;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | AVAILABLE OPTIONS
+        |--------------------------------------------------------------------------
+        */
+
+        const hasColor =
+            colorButtons.length > 0;
+
+        const hasSize =
+            sizeButtons.length > 0;
+
+
+        let selectedColor = null;
+
+        let selectedSize = null;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | FORMAT PRICE
+        |--------------------------------------------------------------------------
+        */
+
+        function formatRupiah(value) {
+
+            const numberValue =
+                Number(value);
+
+
+            if (
+                Number.isNaN(numberValue)
+            ) {
+
+                return 'Rp 0';
+
+            }
+
+
+            return 'Rp ' + new Intl.NumberFormat(
+                'id-ID', {
+                    maximumFractionDigits: 0
+                }
+            ).format(numberValue);
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | RESET SELECTED VARIANT
+        |--------------------------------------------------------------------------
+        */
+
+        function resetVariant(messageText) {
+
+            variantInput.value = '';
+
+            addButton.disabled = true;
+
+            buyNowButton.disabled = true;
+
+            quantityInput.disabled = true;
+
+            message.textContent = messageText;
+
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | RESOLVE VARIANT
+        |--------------------------------------------------------------------------
+        */
+
+        function resolveVariant() {
+
+            /*
+             * Customer belum memilih color.
+             */
+            if (
+                hasColor &&
+                selectedColor === null
+            ) {
+
+                resetVariant(
+                    'Select a color'
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Customer belum memilih size.
+             */
+            if (
+                hasSize &&
+                selectedSize === null
+            ) {
+
+                resetVariant(
+                    'Select a size'
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Cari kombinasi variant.
+             */
+            const variant =
+                variants.find(function(item) {
+
+                    const colorMatches = !hasColor ||
+                        item.color === selectedColor;
+
+                    const sizeMatches = !hasSize ||
+                        item.size === selectedSize;
+
+
+                    return (
+                        colorMatches &&
+                        sizeMatches &&
+                        item.status === 'active'
+                    );
+
+                });
+
+
+            /*
+             * Kombinasi variant tidak ada.
+             */
+            if (!variant) {
+
+                resetVariant(
+                    'Selected combination is not available'
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Variant ada tapi stock kosong.
+             */
+            if (
+                Number(variant.stock) <= 0
+            ) {
+
+                resetVariant(
+                    'Selected variant is out of stock'
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * Variant valid.
+             */
+            variantInput.value =
+                variant.id;
+
+            // Aktifkan kedua tombol pembelian.
+            addButton.disabled = false;
+
+            buyNowButton.disabled = false;
+
+            // Aktifkan quantity dan sesuaikan dengan stok varian.
+            quantityInput.disabled = false;
+
+            quantityInput.max = variant.stock;
+
+            let currentQuantity = Number(quantityInput.value) || 1;
+
+            if (currentQuantity < 1) {
+                currentQuantity = 1;
+            }
+
+            if (currentQuantity > variant.stock) {
+                currentQuantity = Number(variant.stock);
+            }
+
+            quantityInput.value = currentQuantity;
+
+            message.textContent =
+                variant.stock +
+                ' items available';
+
+
+            /*
+             * Update harga sesuai variant.
+             */
+            if (priceElement) {
+
+                priceElement.textContent =
+                    formatRupiah(
+                        variant.price
+                    );
+
+            }
+
+        }
+        /*
+|--------------------------------------------------------------------------
+| QUANTITY VALIDATION
+|--------------------------------------------------------------------------
+*/
+
+        quantityInput.addEventListener('change', function() {
+
+            if (quantityInput.disabled) {
+                return;
+            }
+
+            let quantity = Number(quantityInput.value);
+
+            const maximum = Number(quantityInput.max);
+
+            if (!Number.isInteger(quantity) || quantity < 1) {
+                quantity = 1;
+            }
+
+            if (quantity > maximum) {
+                quantity = maximum;
+            }
+
+            quantityInput.value = quantity;
+
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | COLOR SELECTION
+        |--------------------------------------------------------------------------
+        */
+
+        colorButtons.forEach(function(button) {
+
+            button.addEventListener(
+                'click',
+                function() {
+
+                    colorButtons.forEach(
+                        function(item) {
+
+                            item.classList.remove(
+                                'active'
+                            );
+
+                        }
+                    );
+
+
+                    button.classList.add(
+                        'active'
+                    );
+
+
+                    selectedColor =
+                        button.dataset.color;
+
+
+                    resolveVariant();
+
+                }
+            );
+
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | SIZE SELECTION
+        |--------------------------------------------------------------------------
+        */
+
+        sizeButtons.forEach(function(button) {
+
+            button.addEventListener(
+                'click',
+                function() {
+
+                    sizeButtons.forEach(
+                        function(item) {
+
+                            item.classList.remove(
+                                'active'
+                            );
+
+                        }
+                    );
+
+
+                    button.classList.add(
+                        'active'
+                    );
+
+
+                    selectedSize =
+                        button.dataset.size;
+
+
+                    resolveVariant();
+
+                }
+            );
+
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | AUTOMATIC VARIANT SELECTION
+        |--------------------------------------------------------------------------
+        |
+        | Beberapa product mungkin tidak mempunyai color,
+        | size, atau hanya mempunyai satu pilihan.
+        |
+        */
+
+
+        /*
+         * Tidak mempunyai color dan size.
+         */
+        if (
+            !hasColor &&
+            !hasSize
+        ) {
+
+            resolveVariant();
+
+            return;
+
+        }
+
+
+        /*
+         * Hanya mempunyai satu color,
+         * tetapi tidak mempunyai size.
+         */
+        if (
+            hasColor &&
+            !hasSize &&
+            colorButtons.length === 1
+        ) {
+
+            colorButtons[0].click();
+
+            return;
+
+        }
+
+
+        /*
+         * Hanya mempunyai satu size,
+         * tetapi tidak mempunyai color.
+         */
+        if (
+            !hasColor &&
+            hasSize &&
+            sizeButtons.length === 1
+        ) {
+
+            sizeButtons[0].click();
+
+            return;
+
+        }
 
     });
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | SIZE SELECTION
-    |--------------------------------------------------------------------------
-    */
-
-    sizeButtons.forEach(function (button) {
-
-        button.addEventListener(
-            'click',
-            function () {
-
-                sizeButtons.forEach(
-                    function (item) {
-
-                        item.classList.remove(
-                            'active'
-                        );
-
-                    }
-                );
-
-
-                button.classList.add(
-                    'active'
-                );
-
-
-                selectedSize =
-                    button.dataset.size;
-
-
-                resolveVariant();
-
-            }
-        );
-
-    });
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | AUTOMATIC VARIANT SELECTION
-    |--------------------------------------------------------------------------
-    |
-    | Beberapa product mungkin tidak mempunyai color,
-    | size, atau hanya mempunyai satu pilihan.
-    |
-    */
-
-
-    /*
-     * Tidak mempunyai color dan size.
-     */
-    if (
-        !hasColor
-        && !hasSize
-    ) {
-
-        resolveVariant();
-
-        return;
-
-    }
-
-
-    /*
-     * Hanya mempunyai satu color,
-     * tetapi tidak mempunyai size.
-     */
-    if (
-        hasColor
-        && !hasSize
-        && colorButtons.length === 1
-    ) {
-
-        colorButtons[0].click();
-
-        return;
-
-    }
-
-
-    /*
-     * Hanya mempunyai satu size,
-     * tetapi tidak mempunyai color.
-     */
-    if (
-        !hasColor
-        && hasSize
-        && sizeButtons.length === 1
-    ) {
-
-        sizeButtons[0].click();
-
-        return;
-
-    }
-
-});
 </script>
 
 @endpush

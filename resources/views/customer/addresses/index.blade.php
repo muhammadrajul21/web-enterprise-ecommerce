@@ -1,3 +1,4 @@
+
 @extends('layouts.store')
 
 @section('title', 'My Addresses')
@@ -282,38 +283,60 @@
                         </div>
 
 
-                        <div class="address-field">
-
-                            <label for="city">
-                                CITY
-                            </label>
-
-                            <input
-                                type="text"
-                                name="city"
-                                id="city"
-                                value="{{ old('city') }}"
-                                maxlength="100"
-                                required
-                            >
-
-                        </div>
-
-
+                        {{-- PROVINCE --}}
                         <div class="address-field">
 
                             <label for="province">
                                 PROVINCE
                             </label>
 
-                            <input
-                                type="text"
+                            <select
                                 name="province"
                                 id="province"
-                                value="{{ old('province') }}"
-                                maxlength="100"
+                                class="province-select"
                                 required
                             >
+
+                                <option value="">
+                                    Select Province
+                                </option>
+
+                                @foreach($provinces as $province)
+
+                                    <option
+                                        value="{{ $province->name }}"
+                                        @selected(old('province') === $province->name)
+                                    >
+                                        {{ $province->name }}
+                                    </option>
+
+                                @endforeach
+
+                            </select>
+
+                        </div>
+
+
+                        {{-- REGENCY / CITY --}}
+                        <div class="address-field">
+
+                            <label for="city">
+                                REGENCY / CITY
+                            </label>
+
+                            <select
+                                name="city"
+                                id="city"
+                                class="regency-select"
+                                data-selected-city="{{ old('city') }}"
+                                required
+                            >
+
+                                <option value="">
+                                    Select Province First
+                                </option>
+
+                            </select>
 
                         </div>
 
@@ -613,36 +636,58 @@
                                                     </div>
 
 
-                                                    <div class="address-field">
-
-                                                        <label>
-                                                            CITY
-                                                        </label>
-
-                                                        <input
-                                                            type="text"
-                                                            name="city"
-                                                            value="{{ $address->city }}"
-                                                            maxlength="100"
-                                                            required
-                                                        >
-
-                                                    </div>
-
-
+                                                    {{-- PROVINCE --}}
                                                     <div class="address-field">
 
                                                         <label>
                                                             PROVINCE
                                                         </label>
 
-                                                        <input
-                                                            type="text"
+                                                        <select
                                                             name="province"
-                                                            value="{{ $address->province }}"
-                                                            maxlength="100"
+                                                            class="province-select"
                                                             required
                                                         >
+
+                                                            <option value="">
+                                                                Select Province
+                                                            </option>
+
+                                                            @foreach($provinces as $province)
+
+                                                                <option
+                                                                    value="{{ $province->name }}"
+                                                                    @selected($address->province === $province->name)
+                                                                >
+                                                                    {{ $province->name }}
+                                                                </option>
+
+                                                            @endforeach
+
+                                                        </select>
+
+                                                    </div>
+
+
+                                                    {{-- REGENCY / CITY --}}
+                                                    <div class="address-field">
+
+                                                        <label>
+                                                            REGENCY / CITY
+                                                        </label>
+
+                                                        <select
+                                                            name="city"
+                                                            class="regency-select"
+                                                            data-selected-city="{{ $address->city }}"
+                                                            required
+                                                        >
+
+                                                            <option value="">
+                                                                Select Province First
+                                                            </option>
+
+                                                        </select>
 
                                                     </div>
 
@@ -756,5 +801,97 @@
     </div>
 
 </section>
+
+
+{{-- =========================
+    PROVINCE & REGENCY DATA
+========================= --}}
+
+@php
+    $regionData = $provinces->map(function ($province) {
+        return [
+            'name' => $province->name,
+            'regencies' => $province->regencies->pluck('name')->values(),
+        ];
+    })->values();
+@endphp
+
+
+{{-- =========================
+    CASCADING DROPDOWN SCRIPT
+========================= --}}
+
+<script>
+    const regionData = @json($regionData);
+
+    document.querySelectorAll('.province-select').forEach((provinceSelect) => {
+
+        const form = provinceSelect.closest('form');
+
+        const citySelect = form?.querySelector('.regency-select');
+
+        if (!citySelect) {
+            return;
+        }
+
+        const selectedCity = citySelect.dataset.selectedCity || '';
+
+
+        function populateRegencies(provinceName, cityToSelect = '') {
+
+            citySelect.innerHTML =
+                '<option value="">Select Regency / City</option>';
+
+            const province = regionData.find(
+                (item) => item.name === provinceName
+            );
+
+            if (!province) {
+                citySelect.disabled = true;
+                return;
+            }
+
+            province.regencies.forEach((regency) => {
+
+                const option = document.createElement('option');
+
+                option.value = regency;
+                option.textContent = regency;
+                option.selected = regency === cityToSelect;
+
+                citySelect.appendChild(option);
+
+            });
+
+            citySelect.disabled = false;
+        }
+
+
+        // Load kabupaten/kota saat halaman dibuka.
+        if (provinceSelect.value) {
+
+            populateRegencies(
+                provinceSelect.value,
+                selectedCity
+            );
+
+        } else {
+
+            citySelect.disabled = true;
+
+        }
+
+
+        // Perbarui daftar kabupaten/kota saat provinsi diganti.
+        provinceSelect.addEventListener('change', () => {
+
+            populateRegencies(
+                provinceSelect.value
+            );
+
+        });
+
+    });
+</script>
 
 @endsection

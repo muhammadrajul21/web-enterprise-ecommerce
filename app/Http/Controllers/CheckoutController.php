@@ -7,11 +7,14 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\ProductVariant;
+use App\Models\Province;
+use App\Models\Regency;
 use App\Models\Voucher;
+use App\Services\ShippingEstimateService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use App\Services\ShippingEstimateService;
+use Illuminate\Validation\ValidationException;
 
 class CheckoutController extends Controller
 {
@@ -27,16 +30,10 @@ class CheckoutController extends Controller
             ->where('user_id', auth()->id())
             ->first();
 
-        if (
-            !$cart
-            || $cart->items->isEmpty()
-        ) {
+        if (!$cart || $cart->items->isEmpty()) {
             return redirect()
                 ->route('cart.index')
-                ->with(
-                    'error',
-                    'Keranjang masih kosong.'
-                );
+                ->with('error', 'Keranjang masih kosong.');
         }
 
         /*
@@ -46,7 +43,6 @@ class CheckoutController extends Controller
         */
 
         foreach ($cart->items as $item) {
-
             $variant = $item->variant;
 
             if (!$variant) {
@@ -89,11 +85,12 @@ class CheckoutController extends Controller
         $subtotal = $cart->items->sum(function ($item) {
             return $item->variant->price * $item->quantity;
         });
+
         /*
-|--------------------------------------------------------------------------
-| AVAILABLE VOUCHERS
-|--------------------------------------------------------------------------
-*/
+        |--------------------------------------------------------------------------
+        | AVAILABLE VOUCHERS
+        |--------------------------------------------------------------------------
+        */
 
         $availableVouchers = Voucher::query()
             ->where('is_active', true)
@@ -128,10 +125,27 @@ class CheckoutController extends Controller
 
         /*
         |--------------------------------------------------------------------------
+        | PROVINCES AND REGENCIES
+        |--------------------------------------------------------------------------
+        |
+        | Data digunakan untuk dropdown wilayah Checkout.
+        |
+        */
+
+        $provinces = Province::with([
+            'regencies' => function ($query) {
+                $query->orderBy('name');
+            }
+        ])
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
+        /*
+        |--------------------------------------------------------------------------
         | SHIPPING OPTIONS
         |--------------------------------------------------------------------------
         |
-        | Sementara menggunakan ongkir statis untuk project.
+        | Ongkir menggunakan estimasi statis berdasarkan provinsi.
         | Resi dan kurir aktual tetap diinput staff ketika pengiriman.
         |
         */
@@ -166,8 +180,15 @@ class CheckoutController extends Controller
             );
         }
 
-        // Menyiapkan ongkir dan estimasi untuk semua provinsi.
-        // Data ini digunakan JavaScript saat provinsi diubah.
+        /*
+        |--------------------------------------------------------------------------
+        | SHIPPING QUOTES FOR ALL PROVINCES
+        |--------------------------------------------------------------------------
+        |
+        | Data digunakan JavaScript ketika provinsi diubah.
+        |
+        */
+
         $shippingQuotes = [];
 
         foreach ($provinceOptions as $province) {
@@ -185,6 +206,7 @@ class CheckoutController extends Controller
                 'addresses',
                 'shippingOptions',
                 'provinceOptions',
+                'provinces',
                 'selectedProvince',
                 'shippingQuotes',
                 'selectedShipping',
@@ -254,13 +276,40 @@ class CheckoutController extends Controller
                 'string',
                 'max:50',
             ],
-
         ]);
+
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDATE REGENCY AND PROVINCE
+        |--------------------------------------------------------------------------
+        |
+        | Memastikan kabupaten/kota sesuai dengan provinsi.
+        |
+        */
+
+        $isValidCity = Regency::query()
+            ->where('name', $validated['shipping_city'])
+            ->whereHas('province', function ($query) use ($validated) {
+                $query->where('name', $validated['shipping_province']);
+            })
+            ->exists();
+
+        if (!$isValidCity) {
+            throw ValidationException::withMessages([
+                'shipping_city' => 'Kabupaten/kota tidak sesuai dengan provinsi yang dipilih.'
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | SHIPPING QUOTE
+        |--------------------------------------------------------------------------
+        */
+
         $shipping = $shippingEstimateService->quote(
             $validated['shipping_province'],
             $validated['shipping_method']
         );
-
 
         /*
         |--------------------------------------------------------------------------
@@ -274,22 +323,13 @@ class CheckoutController extends Controller
             ->where('user_id', auth()->id())
             ->first();
 
-
-        if (
-            !$cart
-            || $cart->items->isEmpty()
-        ) {
+        if (!$cart || $cart->items->isEmpty()) {
             return redirect()
                 ->route('cart.index')
-                ->with(
-                    'error',
-                    'Keranjang masih kosong.'
-                );
+                ->with('error', 'Keranjang masih kosong.');
         }
 
-
         try {
-
             $order = DB::transaction(
                 function () use (
                     $validated,
@@ -305,21 +345,17 @@ class CheckoutController extends Controller
 
                     $subtotal = 0;
 
-
                     foreach ($cart->items as $item) {
 
                         /*
                          * Lock variant supaya stock tidak berubah
                          * ketika checkout sedang diproses.
                          */
+
                         $variant = ProductVariant::with('product')
-                            ->where(
-                                'id',
-                                $item->variant_id
-                            )
+                            ->where('id', $item->variant_id)
                             ->lockForUpdate()
                             ->firstOrFail();
-
 
                         if ($variant->status !== 'active') {
                             throw new \RuntimeException(
@@ -327,22 +363,14 @@ class CheckoutController extends Controller
                             );
                         }
 
-
-                        if (
-                            $item->quantity
-                            > $variant->stock
-                        ) {
+                        if ($item->quantity > $variant->stock) {
                             throw new \RuntimeException(
                                 'Stok salah satu produk tidak mencukupi.'
                             );
                         }
 
-
-                        $subtotal +=
-                            $variant->price
-                            * $item->quantity;
+                        $subtotal += $variant->price * $item->quantity;
                     }
-
 
                     /*
                     |--------------------------------------------------------------------------
@@ -351,13 +379,9 @@ class CheckoutController extends Controller
                     */
 
                     $voucher = null;
-
                     $discountAmount = 0;
 
-
-                    if (
-                        !empty($validated['voucher_code'])
-                    ) {
+                    if (!empty($validated['voucher_code'])) {
 
                         $voucher = Voucher::where(
                             'code',
@@ -366,13 +390,11 @@ class CheckoutController extends Controller
                             ->lockForUpdate()
                             ->first();
 
-
                         if (!$voucher) {
                             throw new \RuntimeException(
                                 'Voucher tidak ditemukan.'
                             );
                         }
-
 
                         if (!$voucher->is_active) {
                             throw new \RuntimeException(
@@ -380,92 +402,66 @@ class CheckoutController extends Controller
                             );
                         }
 
-
                         if (
                             $voucher->starts_at
-                            && now()->lt(
-                                $voucher->starts_at
-                            )
+                            && now()->lt($voucher->starts_at)
                         ) {
                             throw new \RuntimeException(
                                 'Voucher belum dapat digunakan.'
                             );
                         }
 
-
                         if (
                             $voucher->expires_at
-                            && now()->gt(
-                                $voucher->expires_at
-                            )
+                            && now()->gt($voucher->expires_at)
                         ) {
                             throw new \RuntimeException(
                                 'Voucher sudah kedaluwarsa.'
                             );
                         }
 
-
                         if (
                             $voucher->usage_limit !== null
-                            && $voucher->used_count
-                            >= $voucher->usage_limit
+                            && $voucher->used_count >= $voucher->usage_limit
                         ) {
                             throw new \RuntimeException(
                                 'Batas penggunaan voucher telah habis.'
                             );
                         }
 
-
-                        if (
-                            $subtotal
-                            < $voucher->min_order_amount
-                        ) {
+                        if ($subtotal < $voucher->min_order_amount) {
                             throw new \RuntimeException(
                                 'Subtotal belum memenuhi minimum penggunaan voucher.'
                             );
                         }
 
+                        if ($voucher->discount_type === 'percentage') {
 
-                        if (
-                            $voucher->discount_type
-                            === 'percentage'
-                        ) {
+                            $discountAmount = $subtotal
+                                * ($voucher->discount_value / 100);
 
-                            $discountAmount =
-                                $subtotal
-                                * (
-                                    $voucher->discount_value
-                                    / 100
-                                );
-
-
-                            if (
-                                $voucher->max_discount_amount
-                                !== null
-                            ) {
-
+                            if ($voucher->max_discount_amount !== null) {
                                 $discountAmount = min(
                                     $discountAmount,
                                     $voucher->max_discount_amount
                                 );
                             }
+
                         } else {
 
-                            $discountAmount =
-                                $voucher->discount_value;
+                            $discountAmount = $voucher->discount_value;
                         }
-
 
                         /*
                          * Discount tidak boleh lebih besar
                          * daripada subtotal.
                          */
+
                         $discountAmount = min(
                             $discountAmount,
                             $subtotal
                         );
                     }
-
 
                     /*
                     |--------------------------------------------------------------------------
@@ -473,15 +469,11 @@ class CheckoutController extends Controller
                     |--------------------------------------------------------------------------
                     */
 
-                    $shippingCost =
-                        $shipping['cost'];
+                    $shippingCost = $shipping['cost'];
 
-
-                    $totalAmount =
-                        $subtotal
+                    $totalAmount = $subtotal
                         - $discountAmount
                         + $shippingCost;
-
 
                     /*
                     |--------------------------------------------------------------------------
@@ -490,21 +482,14 @@ class CheckoutController extends Controller
                     */
 
                     do {
-
-                        $orderCode =
-                            'ORD-'
+                        $orderCode = 'ORD-'
                             . now()->format('Ymd')
                             . '-'
-                            . strtoupper(
-                                Str::random(6)
-                            );
-                    } while (
-                        Order::where(
-                            'order_code',
-                            $orderCode
-                        )->exists()
-                    );
+                            . strtoupper(Str::random(6));
 
+                    } while (
+                        Order::where('order_code', $orderCode)->exists()
+                    );
 
                     /*
                     |--------------------------------------------------------------------------
@@ -513,52 +498,39 @@ class CheckoutController extends Controller
                     */
 
                     $order = Order::create([
-                        'user_id' =>
-                        auth()->id(),
+                        'user_id' => auth()->id(),
 
-                        'voucher_id' =>
-                        $voucher?->id,
+                        'voucher_id' => $voucher?->id,
 
-                        'order_code' =>
-                        $orderCode,
+                        'order_code' => $orderCode,
 
-                        'status' =>
-                        'pending_payment',
+                        'status' => 'pending_payment',
 
-                        'recipient_name' =>
-                        $validated['recipient_name'],
+                        'recipient_name' => $validated['recipient_name'],
 
-                        'recipient_phone' =>
-                        $validated['recipient_phone'],
+                        'recipient_phone' => $validated['recipient_phone'],
 
-                        'shipping_address' =>
-                        $validated['shipping_address'],
+                        'shipping_address' => $validated['shipping_address'],
 
-                        'shipping_city' =>
-                        $validated['shipping_city'],
+                        'shipping_city' => $validated['shipping_city'],
 
-                        'shipping_province' =>
-                        $validated['shipping_province'],
+                        'shipping_province' => $validated['shipping_province'],
 
-                        'shipping_postal_code' =>
-                        $validated['shipping_postal_code'],
+                        'shipping_postal_code' => $validated['shipping_postal_code'],
 
-                        'subtotal' =>
-                        $subtotal,
+                        'subtotal' => $subtotal,
 
-                        'discount_amount' =>
-                        $discountAmount,
+                        'discount_amount' => $discountAmount,
 
-                        'shipping_cost' =>
-                        $shippingCost,
+                        'shipping_cost' => $shippingCost,
 
-                        'total_amount' =>
-                        $totalAmount,
+                        'total_amount' => $totalAmount,
 
                         /*
                          * Belum menyimpan nama kurir.
                          * Staff akan mengisinya saat shipping.
                          */
+
                         'courier' => null,
 
                         'shipping_service' => $shipping['label'],
@@ -566,12 +538,11 @@ class CheckoutController extends Controller
                         'shipping_method' => $validated['shipping_method'],
 
                         'estimated_delivery_start' =>
-                        $shipping['estimated_delivery_start'],
+                            $shipping['estimated_delivery_start'],
 
                         'estimated_delivery_end' =>
-                        $shipping['estimated_delivery_end'],
+                            $shipping['estimated_delivery_end'],
                     ]);
-
 
                     /*
                     |--------------------------------------------------------------------------
@@ -582,46 +553,30 @@ class CheckoutController extends Controller
                     foreach ($cart->items as $item) {
 
                         $variant = ProductVariant::with('product')
-                            ->findOrFail(
-                                $item->variant_id
-                            );
+                            ->findOrFail($item->variant_id);
 
-
-                        $price =
-                            $variant->price;
-
+                        $price = $variant->price;
 
                         OrderItem::create([
-                            'order_id' =>
-                            $order->id,
+                            'order_id' => $order->id,
 
-                            'variant_id' =>
-                            $variant->id,
+                            'variant_id' => $variant->id,
 
-                            'product_name' =>
-                            $variant->product->name,
+                            'product_name' => $variant->product->name,
 
-                            'sku' =>
-                            $variant->sku,
+                            'sku' => $variant->sku,
 
-                            'color' =>
-                            $variant->color,
+                            'color' => $variant->color,
 
-                            'size' =>
-                            $variant->size,
+                            'size' => $variant->size,
 
-                            'price' =>
-                            $price,
+                            'price' => $price,
 
-                            'quantity' =>
-                            $item->quantity,
+                            'quantity' => $item->quantity,
 
-                            'subtotal' =>
-                            $price
-                                * $item->quantity,
+                            'subtotal' => $price * $item->quantity,
                         ]);
                     }
-
 
                     /*
                     |--------------------------------------------------------------------------
@@ -630,7 +585,6 @@ class CheckoutController extends Controller
                     */
 
                     $cart->items()->delete();
-
 
                     /*
                     |--------------------------------------------------------------------------
@@ -643,11 +597,9 @@ class CheckoutController extends Controller
                     |
                     */
 
-
                     return $order;
                 }
             );
-
 
             /*
             |--------------------------------------------------------------------------
@@ -655,27 +607,22 @@ class CheckoutController extends Controller
             |--------------------------------------------------------------------------
             |
             | Screen 9 Payment belum dibuat.
-            | Untuk sementara arahkan ke cart dengan order code.
+            | Untuk sementara arahkan ke payment dengan order code.
             |
             */
 
             return redirect()
-                ->route(
-                    'payment.show',
-                    $order
-                )
+                ->route('payment.show', $order)
                 ->with(
                     'success',
                     'Order berhasil dibuat. Silakan lakukan pembayaran.'
                 );
+
         } catch (\RuntimeException $exception) {
 
             return back()
                 ->withInput()
-                ->with(
-                    'error',
-                    $exception->getMessage()
-                );
+                ->with('error', $exception->getMessage());
         }
     }
 }

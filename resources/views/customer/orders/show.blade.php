@@ -54,6 +54,9 @@ $shipmentUpdates ?? collect();
 
 $lastKnownLocation =
 $lastKnownLocation ?? null;
+$unreviewedItems = $order->items
+->filter(fn ($item) => !$item->review)
+->values();
 @endphp
 
 
@@ -161,6 +164,39 @@ $lastKnownLocation ?? null;
         </div>
 
         @endif
+
+        {{-- REVIEW REMINDER --}}
+        @if(
+        $order->status === 'completed'
+        && $unreviewedItems->isNotEmpty()
+        )
+
+        <div class="detail-alert detail-alert-success">
+
+            <i class="bi bi-star"></i>
+
+            <div>
+                <strong>Pesanan selesai! Bagikan pengalamanmu.</strong>
+
+                <p>
+                    Kamu masih memiliki
+                    {{ $unreviewedItems->count() }}
+                    produk yang belum direview.
+                </p>
+
+                <a
+                    href="#review-item-{{ $unreviewedItems->first()->id }}"
+                    style="font-weight: 700;">
+                    WRITE A REVIEW
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+        @endif
+
 
 
         {{-- ================================================= --}}
@@ -337,67 +373,93 @@ $order->status === 'completed'
     @endphp
 
     {{-- STATUS KOMPLAIN TERAKHIR --}}
-        @if($latestComplaint)
+    @if($latestComplaint)
 
-        <div class="complaint-status-card">
+    <div class="complaint-status-card">
 
-            <div class="complaint-status-heading">
-                <i class="bi bi-chat-left-text"></i>
-                <h3>Status Komplain</h3>
+        <div class="complaint-status-heading">
+            <i class="bi bi-chat-left-text"></i>
+            <h3>Status Komplain</h3>
+        </div>
+
+        <div class="complaint-status-grid">
+
+            <div class="complaint-status-item">
+                <span>Status Laporan</span>
+
+                <strong class="complaint-status-badge status-{{ $latestComplaint->status }}">
+                    {{ ucfirst(str_replace('_', ' ', $latestComplaint->status)) }}
+                </strong>
             </div>
 
-            <div class="complaint-status-grid">
+            <div class="complaint-status-item">
+                <span>Kategori</span>
 
-                <div class="complaint-status-item">
-                    <span>Status Laporan</span>
+                <strong>
+                    {{ ucfirst(str_replace('_', ' ', $latestComplaint->category)) }}
+                </strong>
+            </div>
 
-                    <strong class="complaint-status-badge status-{{ $latestComplaint->status }}">
-                        {{ ucfirst(str_replace('_', ' ', $latestComplaint->status)) }}
-                    </strong>
-                </div>
+            <div class="complaint-status-item complaint-status-full">
+                <span>Pesan Pelanggan</span>
 
-                <div class="complaint-status-item">
-                    <span>Kategori</span>
+                <p>{{ $latestComplaint->message }}</p>
+            </div>
 
-                    <strong>
-                        {{ ucfirst(str_replace('_', ' ', $latestComplaint->category)) }}
-                    </strong>
-                </div>
+            <div class="complaint-status-item complaint-status-full">
+                <span>Tanggapan Admin</span>
 
-                <div class="complaint-status-item complaint-status-full">
-                    <span>Pesan Pelanggan</span>
-
-                    <p>{{ $latestComplaint->message }}</p>
-                </div>
-
-                <div class="complaint-status-item complaint-status-full">
-                    <span>Tanggapan Admin</span>
-
-                    @if($latestComplaint->admin_response)
-                    <p>{{ $latestComplaint->admin_response }}</p>
-                    @else
-                    <p class="complaint-no-response">
-                        Admin belum memberikan tanggapan.
-                    </p>
-                    @endif
-                </div>
-
-                @if($activeComplaint)
-                <div class="complaint-status-note complaint-status-full">
-                    <i class="bi bi-info-circle"></i>
-
-                    Komplain kamu masih diproses. Konfirmasi penerimaan
-                    dan pengajuan komplain baru dinonaktifkan sampai
-                    Admin menyelesaikan laporan ini.
-                </div>
+                @if($latestComplaint->admin_response)
+                <p>{{ $latestComplaint->admin_response }}</p>
+                @else
+                <p class="complaint-no-response">
+                    Admin belum memberikan tanggapan.
+                </p>
                 @endif
-
             </div>
+
+            @if($activeComplaint)
+            <div class="complaint-status-note complaint-status-full">
+                <i class="bi bi-info-circle"></i>
+
+                Komplain kamu masih diproses. Konfirmasi penerimaan
+                dan pengajuan komplain baru dinonaktifkan sampai
+                Admin menyelesaikan laporan ini.
+            </div>
+            @endif
 
         </div>
 
-        @endif
+    </div>
 
+    @endif
+
+
+    {{-- CONFIRM RECEIPT --}}
+    @if($order->status === 'shipped' && !$activeComplaint)
+
+    <form
+        action="{{ route('orders.confirm-received', $order) }}"
+        method="POST"
+        class="confirm-received-form"
+        onsubmit="return confirm('Apakah kamu yakin pesanan sudah diterima? Setelah dikonfirmasi, pesanan akan selesai.');"
+        style="margin-top: 24px;">
+
+        @csrf
+
+        <button
+            type="submit"
+            class="detail-primary-button">
+
+            <i class="bi bi-check-circle"></i>
+
+            CONFIRM RECEIPT
+
+        </button>
+
+    </form>
+
+    @endif
 
 
 </section>
@@ -512,7 +574,9 @@ $order->status === 'completed'
 
                     @if($order->status === 'completed')
 
-                    <div class="product-review-section">
+                    <div
+                        id="review-item-{{ $item->id }}"
+                        class="product-review-section">
 
                         @if($item->review)
 

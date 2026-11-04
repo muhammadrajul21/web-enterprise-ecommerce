@@ -1,3 +1,4 @@
+
 @extends('layouts.store')
 
 @section('title', 'Checkout')
@@ -5,28 +6,35 @@
 @section('content')
 
 @php
-    $defaultAddress = $addresses->firstWhere('is_default', true)
-        ?? $addresses->first();
+$defaultAddress = $addresses->firstWhere('is_default', true)
+    ?? $addresses->first();
 
-    $selectedShipping = old(
-        'shipping_method',
-        $selectedShipping ?? 'regular'
-    );
+$selectedShipping = old(
+    'shipping_method',
+    $selectedShipping ?? 'regular'
+);
 
-    if (!array_key_exists($selectedShipping, $shippingOptions)) {
-        $selectedShipping = 'regular';
-    }
+if (!array_key_exists($selectedShipping, $shippingOptions)) {
+    $selectedShipping = 'regular';
+}
 
-    $selectedProvince = old(
-        'shipping_province',
-        $selectedProvince ?? $defaultAddress?->province ?? 'Aceh'
-    );
+$selectedProvince = old(
+    'shipping_province',
+    $selectedProvince ?? $defaultAddress?->province ?? 'Aceh'
+);
 
-    if (!in_array($selectedProvince, $provinceOptions, true)) {
-        $selectedProvince = 'Aceh';
-    }
+if (!in_array($selectedProvince, $provinceOptions, true)) {
+    $selectedProvince = 'Aceh';
+}
 
-    $selectedVoucherCode = old('voucher_code', '');
+$selectedVoucherCode = old('voucher_code', '');
+
+$regionData = $provinces->map(function ($province) {
+    return [
+        'name' => $province->name,
+        'regencies' => $province->regencies->pluck('name')->values(),
+    ];
+})->values();
 @endphp
 
 <style>
@@ -149,8 +157,7 @@
 
             <a
                 href="{{ route('cart.index') }}"
-                class="checkout-back"
-            >
+                class="checkout-back">
                 <i class="bi bi-arrow-left"></i>
                 BACK TO CART
             </a>
@@ -201,8 +208,8 @@
             action="{{ route('checkout.store') }}"
             method="POST"
             class="checkout-layout"
-            id="checkout-form"
-        >
+            id="checkout-form">
+
             @csrf
 
             {{-- ================================================= --}}
@@ -229,6 +236,7 @@
 
                     </div>
 
+                    {{-- SAVED ADDRESSES --}}
                     @if($addresses->count())
                         <div class="saved-addresses">
 
@@ -247,8 +255,8 @@
                                         data-address="{{ $address->address }}"
                                         data-city="{{ $address->city }}"
                                         data-province="{{ $address->province }}"
-                                        data-postal-code="{{ $address->postal_code }}"
-                                    >
+                                        data-postal-code="{{ $address->postal_code }}">
+
                                         <strong>
                                             {{ $address->label ?: 'Address' }}
                                         </strong>
@@ -265,6 +273,7 @@
                                             {{ $address->city }},
                                             {{ $address->province }}
                                         </span>
+
                                     </button>
                                 @endforeach
 
@@ -275,6 +284,7 @@
                     <div class="checkout-form-grid">
 
                         <div class="checkout-field">
+
                             <label for="recipient_name">
                                 RECIPIENT NAME
                             </label>
@@ -288,11 +298,12 @@
                                     $defaultAddress?->recipient_name
                                         ?? auth()->user()->name
                                 ) }}"
-                                required
-                            >
+                                required>
+
                         </div>
 
                         <div class="checkout-field">
+
                             <label for="recipient_phone">
                                 PHONE NUMBER
                             </label>
@@ -306,11 +317,12 @@
                                     $defaultAddress?->phone
                                         ?? auth()->user()->phone
                                 ) }}"
-                                required
-                            >
+                                required>
+
                         </div>
 
                         <div class="checkout-field checkout-field-full">
+
                             <label for="shipping_address">
                                 FULL ADDRESS
                             </label>
@@ -319,31 +331,37 @@
                                 id="shipping_address"
                                 name="shipping_address"
                                 rows="4"
-                                required
-                            >{{ old(
-                                'shipping_address',
-                                $defaultAddress?->address
-                            ) }}</textarea>
+                                required>{{ old(
+                                    'shipping_address',
+                                    $defaultAddress?->address
+                                ) }}</textarea>
+
                         </div>
 
+                        {{-- REGENCY / CITY --}}
                         <div class="checkout-field">
+
                             <label for="shipping_city">
-                                CITY
+                                REGENCY / CITY
                             </label>
 
-                            <input
-                                type="text"
+                            <select
                                 id="shipping_city"
                                 name="shipping_city"
-                                value="{{ old(
-                                    'shipping_city',
-                                    $defaultAddress?->city
-                                ) }}"
-                                required
-                            >
+                                data-selected-city="{{ old('shipping_city', $defaultAddress?->city) }}"
+                                required>
+
+                                <option value="">
+                                    Select Province First
+                                </option>
+
+                            </select>
+
                         </div>
 
+                        {{-- PROVINCE --}}
                         <div class="checkout-field">
+
                             <label for="shipping_province">
                                 PROVINCE
                             </label>
@@ -351,20 +369,22 @@
                             <select
                                 id="shipping_province"
                                 name="shipping_province"
-                                required
-                            >
+                                required>
+
                                 @foreach($provinceOptions as $province)
                                     <option
                                         value="{{ $province }}"
-                                        @selected($selectedProvince === $province)
-                                    >
+                                        @selected($selectedProvince === $province)>
                                         {{ $province }}
                                     </option>
                                 @endforeach
+
                             </select>
+
                         </div>
 
                         <div class="checkout-field">
+
                             <label for="shipping_postal_code">
                                 POSTAL CODE
                             </label>
@@ -377,8 +397,8 @@
                                     'shipping_postal_code',
                                     $defaultAddress?->postal_code
                                 ) }}"
-                                required
-                            >
+                                required>
+
                         </div>
 
                     </div>
@@ -406,15 +426,14 @@
                         @foreach($shippingOptions as $key => $option)
                             <label
                                 class="shipping-option"
-                                data-shipping-cost="{{ $option['cost'] }}"
-                            >
+                                data-shipping-cost="{{ $option['cost'] }}">
+
                                 <input
                                     type="radio"
                                     name="shipping_method"
                                     value="{{ $key }}"
                                     @checked($selectedShipping === $key)
-                                    required
-                                >
+                                    required>
 
                                 <span class="shipping-radio"></span>
 
@@ -482,7 +501,7 @@
 
                 </section>
 
-                {{-- VOUCHER & PROMO: HANYA SATU KALI --}}
+                {{-- VOUCHER & PROMO --}}
                 <section class="checkout-card">
 
                     <div class="checkout-card-header">
@@ -508,8 +527,7 @@
                             name="voucher_code"
                             value="{{ $selectedVoucherCode }}"
                             placeholder="Masukkan kode voucher"
-                            autocomplete="off"
-                        >
+                            autocomplete="off">
 
                         <span>OPSIONAL</span>
 
@@ -600,8 +618,7 @@
                                 <button
                                     type="button"
                                     class="voucher-apply-button"
-                                    data-voucher-code="{{ $voucher->code }}"
-                                >
+                                    data-voucher-code="{{ $voucher->code }}">
                                     Gunakan Voucher
                                 </button>
 
@@ -660,8 +677,7 @@
                                     )
                                         <img
                                             src="{{ asset($image->image_path) }}"
-                                            alt="{{ $product?->name }}"
-                                        >
+                                            alt="{{ $product?->name }}">
                                     @else
                                         <div class="checkout-image-placeholder">
                                             <i class="bi bi-image"></i>
@@ -746,11 +762,13 @@
                     </div>
 
                     <div class="checkout-summary-row">
+
                         <span>Voucher</span>
 
                         <span id="checkout-voucher-summary">
                             Divalidasi saat checkout
                         </span>
+
                     </div>
 
                     <div class="detail-summary-divider"></div>
@@ -762,8 +780,8 @@
 
                         <strong
                             id="checkout-total-price"
-                            data-subtotal="{{ $subtotal }}"
-                        >
+                            data-subtotal="{{ $subtotal }}">
+
                             Rp {{ number_format(
                                 $subtotal
                                 + $shippingOptions[$selectedShipping]['cost'],
@@ -771,6 +789,7 @@
                                 ',',
                                 '.'
                             ) }}
+
                         </strong>
 
                     </div>
@@ -783,8 +802,7 @@
                     {{-- PLACE ORDER --}}
                     <button
                         type="submit"
-                        class="place-order-button"
-                    >
+                        class="place-order-button">
                         PLACE ORDER
                         <i class="bi bi-arrow-right"></i>
                     </button>
@@ -796,8 +814,7 @@
 
                     <a
                         href="{{ route('cart.index') }}"
-                        class="return-cart-link"
-                    >
+                        class="return-cart-link">
                         <i class="bi bi-arrow-left"></i>
                         Return to Cart
                     </a>
@@ -816,266 +833,326 @@
 @push('scripts')
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
 
-    /*
-    |--------------------------------------------------------------------------
-    | SHIPPING PRICE AND DELIVERY ESTIMATE
-    |--------------------------------------------------------------------------
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | SHIPPING PRICE AND DELIVERY ESTIMATE
+        |--------------------------------------------------------------------------
+        */
 
-    const shippingInputs = document.querySelectorAll(
-        'input[name="shipping_method"]'
-    );
-
-    const totalElement = document.getElementById(
-        'checkout-total-price'
-    );
-
-    const shippingPriceElement = document.getElementById(
-        'checkout-shipping-price'
-    );
-
-    const provinceInput = document.getElementById(
-        'shipping_province'
-    );
-
-    const deliveryDateElement = document.getElementById(
-        'checkout-delivery-date'
-    );
-
-    const shippingQuotes = @json($shippingQuotes);
-
-    const subtotal = Number(
-        totalElement.dataset.subtotal
-    );
-
-    function formatRupiah(value) {
-        return 'Rp ' + new Intl.NumberFormat('id-ID', {
-            maximumFractionDigits: 0
-        }).format(value);
-    }
-
-    function formatDeliveryDate(value) {
-        const datePart = String(value).slice(0, 10);
-        const parts = datePart.split('-').map(Number);
-
-        const date = new Date(
-            parts[0],
-            parts[1] - 1,
-            parts[2]
+        const shippingInputs = document.querySelectorAll(
+            'input[name="shipping_method"]'
         );
 
-        return date.toLocaleDateString('id-ID', {
-            day: 'numeric',
-            month: 'short',
-            year: 'numeric'
-        });
-    }
+        const totalElement = document.getElementById(
+            'checkout-total-price'
+        );
 
-    function updateShipping() {
-        const province = provinceInput.value;
-        const provinceQuotes = shippingQuotes[province];
+        const shippingPriceElement = document.getElementById(
+            'checkout-shipping-price'
+        );
 
-        if (!provinceQuotes) {
-            return;
-        }
+        const provinceInput = document.getElementById(
+            'shipping_province'
+        );
 
-        shippingInputs.forEach(function (input) {
-            const option = input.closest('.shipping-option');
-            const quote = provinceQuotes[input.value];
+        const cityInput = document.getElementById(
+            'shipping_city'
+        );
 
-            if (!option || !quote) {
+        const regionData = @json($regionData);
+
+        // Mengisi daftar kabupaten/kota berdasarkan provinsi.
+        function populateRegencies(provinceName, selectedCity = '') {
+
+            cityInput.innerHTML =
+                '<option value="">Select Regency / City</option>';
+
+            const province = regionData.find(function(item) {
+                return item.name === provinceName;
+            });
+
+            if (!province) {
+                cityInput.disabled = true;
                 return;
             }
 
-            option.dataset.shippingCost = quote.cost;
+            province.regencies.forEach(function(regency) {
 
-            const priceElement = option.querySelector(
-                '.shipping-price'
+                const option = document.createElement('option');
+
+                option.value = regency;
+                option.textContent = regency;
+                option.selected = regency === selectedCity;
+
+                cityInput.appendChild(option);
+
+            });
+
+            cityInput.disabled = false;
+        }
+
+        const deliveryDateElement = document.getElementById(
+            'checkout-delivery-date'
+        );
+
+        const shippingQuotes = @json($shippingQuotes);
+
+        const subtotal = Number(
+            totalElement.dataset.subtotal
+        );
+
+        function formatRupiah(value) {
+            return 'Rp ' + new Intl.NumberFormat('id-ID', {
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        function formatDeliveryDate(value) {
+
+            const datePart = String(value).slice(0, 10);
+            const parts = datePart.split('-').map(Number);
+
+            const date = new Date(
+                parts[0],
+                parts[1] - 1,
+                parts[2]
             );
 
-            if (priceElement) {
-                priceElement.textContent = formatRupiah(
-                    quote.cost
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric'
+            });
+        }
+
+        function updateShipping() {
+
+            const province = provinceInput.value;
+            const provinceQuotes = shippingQuotes[province];
+
+            if (!provinceQuotes) {
+                return;
+            }
+
+            shippingInputs.forEach(function(input) {
+
+                const option = input.closest('.shipping-option');
+                const quote = provinceQuotes[input.value];
+
+                if (!option || !quote) {
+                    return;
+                }
+
+                option.dataset.shippingCost = quote.cost;
+
+                const priceElement = option.querySelector(
+                    '.shipping-price'
                 );
-            }
 
-            const description = option.querySelector(
-                '.shipping-info small'
-            );
+                if (priceElement) {
+                    priceElement.textContent = formatRupiah(
+                        quote.cost
+                    );
+                }
 
-            if (description) {
-                description.textContent =
-                    'Estimasi ' +
-                    quote.min_days +
-                    '–' +
-                    quote.max_days +
-                    ' hari';
-            }
-        });
+                const description = option.querySelector(
+                    '.shipping-info small'
+                );
 
-        const selectedInput = document.querySelector(
-            'input[name="shipping_method"]:checked'
-        );
+                if (description) {
+                    description.textContent =
+                        'Estimasi ' +
+                        quote.min_days +
+                        '–' +
+                        quote.max_days +
+                        ' hari';
+                }
 
-        if (!selectedInput) {
-            return;
-        }
-
-        const selectedQuote = provinceQuotes[selectedInput.value];
-
-        if (!selectedQuote) {
-            return;
-        }
-
-        shippingPriceElement.textContent = formatRupiah(
-            selectedQuote.cost
-        );
-
-        totalElement.textContent = formatRupiah(
-            subtotal + selectedQuote.cost
-        );
-
-        deliveryDateElement.textContent =
-            formatDeliveryDate(
-                selectedQuote.estimated_delivery_start
-            ) +
-            ' – ' +
-            formatDeliveryDate(
-                selectedQuote.estimated_delivery_end
-            );
-    }
-
-    shippingInputs.forEach(function (input) {
-        input.addEventListener('change', updateShipping);
-    });
-
-    provinceInput.addEventListener('change', updateShipping);
-
-    updateShipping();
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | SAVED ADDRESS
-    |--------------------------------------------------------------------------
-    */
-
-    const savedAddresses = document.querySelectorAll(
-        '.saved-address-button'
-    );
-
-    savedAddresses.forEach(function (button) {
-
-        button.addEventListener('click', function () {
-
-            savedAddresses.forEach(function (item) {
-                item.classList.remove('active');
             });
 
-            button.classList.add('active');
+            const selectedInput = document.querySelector(
+                'input[name="shipping_method"]:checked'
+            );
 
-            document.getElementById('recipient_name').value =
-                button.dataset.recipientName || '';
+            if (!selectedInput) {
+                return;
+            }
 
-            document.getElementById('recipient_phone').value =
-                button.dataset.phone || '';
+            const selectedQuote = provinceQuotes[selectedInput.value];
 
-            document.getElementById('shipping_address').value =
-                button.dataset.address || '';
+            if (!selectedQuote) {
+                return;
+            }
 
-            document.getElementById('shipping_city').value =
-                button.dataset.city || '';
+            shippingPriceElement.textContent = formatRupiah(
+                selectedQuote.cost
+            );
 
-            document.getElementById('shipping_province').value =
-                button.dataset.province || 'Aceh';
+            totalElement.textContent = formatRupiah(
+                subtotal + selectedQuote.cost
+            );
 
-            document.getElementById('shipping_province')
-                .dispatchEvent(new Event('change'));
+            deliveryDateElement.textContent =
+                formatDeliveryDate(
+                    selectedQuote.estimated_delivery_start
+                ) +
+                ' – ' +
+                formatDeliveryDate(
+                    selectedQuote.estimated_delivery_end
+                );
 
-            document.getElementById('shipping_postal_code').value =
-                button.dataset.postalCode || '';
+        }
+
+        shippingInputs.forEach(function(input) {
+            input.addEventListener('change', updateShipping);
+        });
+
+        // Saat provinsi berubah, perbarui kota dan ongkir.
+        provinceInput.addEventListener('change', function() {
+
+            populateRegencies(provinceInput.value);
+
+            updateShipping();
 
         });
 
-    });
+        // Muat kota sesuai pilihan awal ketika checkout dibuka.
+        populateRegencies(
+            provinceInput.value,
+            cityInput.dataset.selectedCity || ''
+        );
+
+        updateShipping();
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | APPLY VOUCHER CODE TO INPUT
-    |--------------------------------------------------------------------------
-    */
+        /*
+        |--------------------------------------------------------------------------
+        | SAVED ADDRESS
+        |--------------------------------------------------------------------------
+        */
 
-    const voucherInput = document.getElementById('voucher_code');
+        const savedAddresses = document.querySelectorAll(
+            '.saved-address-button'
+        );
 
-    const voucherSummary = document.getElementById(
-        'checkout-voucher-summary'
-    );
+        savedAddresses.forEach(function(button) {
 
-    const voucherButtons = document.querySelectorAll(
-        '.voucher-apply-button'
-    );
+            button.addEventListener('click', function() {
 
-    voucherButtons.forEach(function (button) {
+                savedAddresses.forEach(function(item) {
+                    item.classList.remove('active');
+                });
 
-        button.addEventListener('click', function () {
+                button.classList.add('active');
 
-            const code = button.dataset.voucherCode;
+                document.getElementById('recipient_name').value =
+                    button.dataset.recipientName || '';
 
-            voucherInput.value = code;
-            voucherInput.focus();
+                document.getElementById('recipient_phone').value =
+                    button.dataset.phone || '';
 
-            voucherButtons.forEach(function (otherButton) {
-                otherButton.classList.remove('is-applied');
-                otherButton.textContent = 'Gunakan Voucher';
+                document.getElementById('shipping_address').value =
+                    button.dataset.address || '';
+
+                const selectedProvince =
+                    button.dataset.province || 'Aceh';
+
+                provinceInput.value = selectedProvince;
+
+                // Perbarui daftar kota dan ongkir sesuai alamat tersimpan.
+                provinceInput.dispatchEvent(new Event('change'));
+
+                // Pilih kota milik alamat tersimpan.
+                populateRegencies(
+                    selectedProvince,
+                    button.dataset.city || ''
+                );
+
+                document.getElementById('shipping_postal_code').value =
+                    button.dataset.postalCode || '';
+
             });
 
-            button.classList.add('is-applied');
-            button.textContent = 'Kode Dipilih';
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | APPLY VOUCHER CODE TO INPUT
+        |--------------------------------------------------------------------------
+        */
+
+        const voucherInput = document.getElementById('voucher_code');
+
+        const voucherSummary = document.getElementById(
+            'checkout-voucher-summary'
+        );
+
+        const voucherButtons = document.querySelectorAll(
+            '.voucher-apply-button'
+        );
+
+        voucherButtons.forEach(function(button) {
+
+            button.addEventListener('click', function() {
+
+                const code = button.dataset.voucherCode;
+
+                voucherInput.value = code;
+                voucherInput.focus();
+
+                voucherButtons.forEach(function(otherButton) {
+                    otherButton.classList.remove('is-applied');
+                    otherButton.textContent = 'Gunakan Voucher';
+                });
+
+                button.classList.add('is-applied');
+                button.textContent = 'Kode Dipilih';
+
+                if (voucherSummary) {
+                    voucherSummary.textContent = code;
+                }
+
+            });
+
+        });
+
+        voucherInput.addEventListener('input', function() {
+
+            const currentCode = voucherInput.value.trim().toUpperCase();
+
+            let matchedButton = null;
+
+            voucherButtons.forEach(function(button) {
+
+                const buttonCode =
+                    button.dataset.voucherCode.toUpperCase();
+
+                button.classList.remove('is-applied');
+                button.textContent = 'Gunakan Voucher';
+
+                if (buttonCode === currentCode && currentCode !== '') {
+                    matchedButton = button;
+                }
+
+            });
+
+            if (matchedButton) {
+                matchedButton.classList.add('is-applied');
+                matchedButton.textContent = 'Kode Dipilih';
+            }
 
             if (voucherSummary) {
-                voucherSummary.textContent = code;
+                voucherSummary.textContent = currentCode !== ''
+                    ? currentCode
+                    : 'Divalidasi saat checkout';
             }
 
         });
 
     });
-
-    voucherInput.addEventListener('input', function () {
-
-        const currentCode = voucherInput.value.trim().toUpperCase();
-
-        let matchedButton = null;
-
-        voucherButtons.forEach(function (button) {
-
-            const buttonCode = button.dataset.voucherCode.toUpperCase();
-
-            button.classList.remove('is-applied');
-            button.textContent = 'Gunakan Voucher';
-
-            if (buttonCode === currentCode && currentCode !== '') {
-                matchedButton = button;
-            }
-
-        });
-
-        if (matchedButton) {
-            matchedButton.classList.add('is-applied');
-            matchedButton.textContent = 'Kode Dipilih';
-        }
-
-        if (voucherSummary) {
-            voucherSummary.textContent = currentCode !== ''
-                ? currentCode
-                : 'Divalidasi saat checkout';
-        }
-
-    });
-
-});
 </script>
 
 @endpush

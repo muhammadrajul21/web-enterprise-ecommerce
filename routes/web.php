@@ -937,6 +937,10 @@ Route::post(
     [CartController::class, 'store']
 )->name('cart.store');
 Route::post(
+    '/cart/checkout',
+    [CartController::class, 'proceedToCheckout']
+)->name('cart.checkout');
+Route::post(
     '/buy-now',
     [CartController::class, 'buyNow']
 )->name('cart.buy-now');
@@ -1394,7 +1398,7 @@ Route::middleware('auth')
                     '/orders/{order}',
                     [OrderController::class, 'show']
                 )->name('admin.orders.show');
-                                /*
+                /*
                 |--------------------------------------------------------------------------
                 | ORDER COMPLAINTS
                 |--------------------------------------------------------------------------

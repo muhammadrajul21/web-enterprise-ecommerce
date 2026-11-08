@@ -41,7 +41,6 @@ class CheckoutController extends Controller
                 'buy_now',
                 'checkout_mode',
             ]);
-
         } elseif (
             $request->query('mode') === 'buy_now'
             && $request->session()->has('buy_now')
@@ -115,14 +114,13 @@ class CheckoutController extends Controller
                     ],
                 ]),
             ];
-
         } else {
 
             /*
-            |--------------------------------------------------------------------------
-            | NORMAL CART CHECKOUT
-            |--------------------------------------------------------------------------
-            */
+             |--------------------------------------------------------------------------
+             | NORMAL CART CHECKOUT
+             |--------------------------------------------------------------------------
+             */
 
             $cart = Cart::with([
                 'items.variant.product.category',
@@ -133,14 +131,49 @@ class CheckoutController extends Controller
                 ->first();
 
             if (!$cart || $cart->items->isEmpty()) {
+                return redirect()
+                    ->route('cart.index')
+                    ->with('error', 'Keranjang masih kosong.');
+            }
+
+            // Ambil hanya varian yang dipilih dari halaman Cart.
+            $selectedVariantIds = array_values(array_unique(
+                array_map(
+                    'intval',
+                    (array) $request->session()->get(
+                        'checkout_variant_ids',
+                        []
+                    )
+                )
+            ));
+
+            if (empty($selectedVariantIds)) {
+                return redirect()
+                    ->route('cart.index')
+                    ->with(
+                        'error',
+                        'Pilih produk terlebih dahulu sebelum Checkout.'
+                    );
+            }
+
+            // Pastikan semua pilihan masih tersedia di Cart akun.
+            $selectedItems = $cart->items
+                ->whereIn('variant_id', $selectedVariantIds)
+                ->values();
+
+            if ($selectedItems->count() !== count($selectedVariantIds)) {
+                $request->session()->forget('checkout_variant_ids');
 
                 return redirect()
                     ->route('cart.index')
                     ->with(
                         'error',
-                        'Keranjang masih kosong.'
+                        'Pilihan produk tidak valid. Silakan pilih kembali.'
                     );
             }
+
+            // Halaman Checkout hanya menerima produk terpilih.
+            $cart->setRelation('items', $selectedItems);
         }
 
 
@@ -195,7 +228,6 @@ class CheckoutController extends Controller
         $subtotal = $cart->items->sum(function ($item) {
 
             return $item->variant->price * $item->quantity;
-
         });
 
 
@@ -211,19 +243,16 @@ class CheckoutController extends Controller
 
                 $query->whereNull('starts_at')
                     ->orWhere('starts_at', '<=', now());
-
             })
             ->where(function ($query) {
 
                 $query->whereNull('expires_at')
                     ->orWhere('expires_at', '>=', now());
-
             })
             ->where(function ($query) {
 
                 $query->whereNull('usage_limit')
                     ->orWhereColumn('used_count', '<', 'usage_limit');
-
             })
             ->orderBy('expires_at')
             ->get();
@@ -430,7 +459,6 @@ class CheckoutController extends Controller
                     'name',
                     $validated['shipping_province']
                 );
-
             })
             ->exists();
 
@@ -439,7 +467,7 @@ class CheckoutController extends Controller
             throw ValidationException::withMessages([
 
                 'shipping_city' =>
-                    'Kabupaten/kota tidak sesuai dengan provinsi yang dipilih.',
+                'Kabupaten/kota tidak sesuai dengan provinsi yang dipilih.',
 
             ]);
         }
@@ -470,6 +498,7 @@ class CheckoutController extends Controller
         $cart = null;
 
         $checkoutItems = collect();
+        $checkoutVariantIds = [];
 
 
         if ($isBuyNow) {
@@ -513,12 +542,13 @@ class CheckoutController extends Controller
                     'quantity' => $quantity,
                 ],
             ]);
-
         } else {
 
             /*
-             * CART:
-             * Ambil seluruh isi keranjang customer.
+             |--------------------------------------------------------------------------
+             | CART:
+             | Ambil hanya item yang dipilih Customer.
+             |--------------------------------------------------------------------------
              */
 
             $cart = Cart::with([
@@ -528,17 +558,46 @@ class CheckoutController extends Controller
                 ->first();
 
             if (!$cart || $cart->items->isEmpty()) {
+                return redirect()
+                    ->route('cart.index')
+                    ->with('error', 'Keranjang masih kosong.');
+            }
+
+            $checkoutVariantIds = array_values(array_unique(
+                array_map(
+                    'intval',
+                    (array) $request->session()->get(
+                        'checkout_variant_ids',
+                        []
+                    )
+                )
+            ));
+
+            if (empty($checkoutVariantIds)) {
+                return redirect()
+                    ->route('cart.index')
+                    ->with(
+                        'error',
+                        'Pilih produk terlebih dahulu sebelum Checkout.'
+                    );
+            }
+
+            $checkoutItems = $cart->items
+                ->whereIn('variant_id', $checkoutVariantIds)
+                ->values();
+
+            if ($checkoutItems->count() !== count($checkoutVariantIds)) {
+                $request->session()->forget('checkout_variant_ids');
 
                 return redirect()
                     ->route('cart.index')
                     ->with(
                         'error',
-                        'Keranjang masih kosong.'
+                        'Pilihan produk tidak valid. Silakan pilih kembali.'
                     );
             }
-
-            $checkoutItems = $cart->items;
         }
+
 
 
         /*
@@ -550,12 +609,12 @@ class CheckoutController extends Controller
         try {
 
             $order = DB::transaction(
-
                 function () use (
                     $validated,
                     $shipping,
                     $cart,
                     $checkoutItems,
+                    $checkoutVariantIds,
                     $isBuyNow
                 ) {
 
@@ -686,7 +745,6 @@ class CheckoutController extends Controller
                                     $voucher->max_discount_amount
                                 );
                             }
-
                         } else {
 
                             $discountAmount = $voucher->discount_value;
@@ -724,7 +782,6 @@ class CheckoutController extends Controller
                             . now()->format('Ymd')
                             . '-'
                             . strtoupper(Str::random(6));
-
                     } while (
                         Order::where('order_code', $orderCode)->exists()
                     );
@@ -773,10 +830,10 @@ class CheckoutController extends Controller
                         'shipping_method' => $validated['shipping_method'],
 
                         'estimated_delivery_start' =>
-                            $shipping['estimated_delivery_start'],
+                        $shipping['estimated_delivery_start'],
 
                         'estimated_delivery_end' =>
-                            $shipping['estimated_delivery_end'],
+                        $shipping['estimated_delivery_end'],
 
                     ]);
 
@@ -823,9 +880,14 @@ class CheckoutController extends Controller
                     |--------------------------------------------------------------------------
                     */
 
-                    if (!$isBuyNow && $cart) {
-
-                        $cart->items()->delete();
+                    if (
+                        !$isBuyNow
+                        && $cart
+                        && !empty($checkoutVariantIds)
+                    ) {
+                        $cart->items()
+                            ->whereIn('variant_id', $checkoutVariantIds)
+                            ->delete();
                     }
 
 
@@ -854,8 +916,8 @@ class CheckoutController extends Controller
             $request->session()->forget([
                 'buy_now',
                 'checkout_mode',
+                'checkout_variant_ids',
             ]);
-
 
             /*
             |--------------------------------------------------------------------------
@@ -869,7 +931,6 @@ class CheckoutController extends Controller
                     'success',
                     'Order berhasil dibuat. Silakan lakukan pembayaran.'
                 );
-
         } catch (\RuntimeException $exception) {
 
             return back()

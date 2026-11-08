@@ -53,7 +53,7 @@ class AuthController extends Controller
             return back()
                 ->withErrors([
                     'email' =>
-                        'Email atau password salah.',
+                    'Email atau password salah.',
                 ])
                 ->onlyInput('email');
         }
@@ -64,7 +64,7 @@ class AuthController extends Controller
             return back()
                 ->withErrors([
                     'email' =>
-                        'Akun Anda sedang tidak aktif.',
+                    'Akun Anda sedang tidak aktif.',
                 ])
                 ->onlyInput('email');
         }
@@ -87,21 +87,37 @@ class AuthController extends Controller
          * pindahkan guest cart ke
          * database cart customer.
          */
-        if (
-            $user->role?->name
-            === 'customer'
-        ) {
 
-            $this->mergeGuestCart(
-                $request,
-                $user
-            );
+        if ($user->role?->name === 'customer') {
+
+            // Periksa apakah Guest memiliki Cart sebelum login.
+            $hadGuestCart = !empty($request->session()->get('guest_cart', []));
+
+            // Gabungkan Guest Cart dengan Cart akun.
+            $this->mergeGuestCart($request, $user);
+
+            // Periksa jumlah produk setelah penggabungan.
+            if (
+                $hadGuestCart
+                && $request->session()->has('checkout_variant_ids')
+            ) {
+                $cart = Cart::with('items')
+                    ->where('user_id', $user->id)
+                    ->first();
+
+                // Jika ada beberapa produk, beri kesempatan Customer memilih.
+                if ($cart && $cart->items->count() > 1) {
+                    return redirect()
+                        ->route('cart.index')
+                        ->with(
+                            'success',
+                            'Keranjang berhasil digabung. Silakan pilih produk yang ingin dibeli.'
+                        );
+                }
+            }
         }
 
-
-        return $this->redirectByRole(
-            $user
-        );
+        return $this->redirectByRole($user);
     }
 
 
@@ -154,25 +170,25 @@ class AuthController extends Controller
         $user = User::create([
 
             'role_id' =>
-                $customerRole->id,
+            $customerRole->id,
 
             'name' =>
-                $validated['name'],
+            $validated['name'],
 
             'email' =>
-                $validated['email'],
+            $validated['email'],
 
             'phone' =>
-                $validated['phone']
+            $validated['phone']
                 ?? null,
 
             'status' =>
-                'active',
+            'active',
 
             'password' =>
-                Hash::make(
-                    $validated['password']
-                ),
+            Hash::make(
+                $validated['password']
+            ),
 
         ]);
 
@@ -258,7 +274,7 @@ class AuthController extends Controller
 
                 $cart = Cart::firstOrCreate([
                     'user_id' =>
-                        $user->id,
+                    $user->id,
                 ]);
 
 
@@ -280,7 +296,7 @@ class AuthController extends Controller
                     if (
                         !$variant
                         || $variant->status
-                            !== 'active'
+                        !== 'active'
                         || $variant->stock < 1
                     ) {
 
@@ -300,11 +316,11 @@ class AuthController extends Controller
                             'cart_id',
                             $cart->id
                         )
-                            ->where(
-                                'variant_id',
-                                $variant->id
-                            )
-                            ->first();
+                        ->where(
+                            'variant_id',
+                            $variant->id
+                        )
+                        ->first();
 
 
                     /*
@@ -324,10 +340,10 @@ class AuthController extends Controller
                         $cartItem->update([
 
                             'quantity' =>
-                                $newQuantity,
+                            $newQuantity,
 
                             'price' =>
-                                $variant->price,
+                            $variant->price,
 
                         ]);
                     } else {
@@ -341,16 +357,16 @@ class AuthController extends Controller
                         CartItem::create([
 
                             'cart_id' =>
-                                $cart->id,
+                            $cart->id,
 
                             'variant_id' =>
-                                $variant->id,
+                            $variant->id,
 
                             'quantity' =>
-                                $newQuantity,
+                            $newQuantity,
 
                             'price' =>
-                                $variant->price,
+                            $variant->price,
 
                         ]);
                     }
@@ -374,27 +390,25 @@ class AuthController extends Controller
     private function redirectByRole(
         User $user
     ) {
-        return match (
-            $user->role?->name
-        ) {
+        return match ($user->role?->name) {
 
             'admin' =>
-                redirect()
-                    ->route(
-                        'admin.dashboard'
-                    ),
+            redirect()
+                ->route(
+                    'admin.dashboard'
+                ),
 
             'staff_gudang' =>
-                redirect()
-                    ->route(
-                        'staff.dashboard'
-                    ),
+            redirect()
+                ->route(
+                    'staff.dashboard'
+                ),
 
             'owner' =>
-                redirect()
-                    ->route(
-                        'owner.dashboard'
-                    ),
+            redirect()
+                ->route(
+                    'owner.dashboard'
+                ),
 
             /*
              * intended() penting.
@@ -405,17 +419,17 @@ class AuthController extends Controller
              * -> kembali ke checkout.
              */
             'customer' =>
-                redirect()->intended(
-                    route(
-                        'customer.account'
-                    )
-                ),
+            redirect()->intended(
+                route(
+                    'customer.account'
+                )
+            ),
 
             default =>
-                abort(
-                    403,
-                    'Role akun tidak dikenali.'
-                ),
+            abort(
+                403,
+                'Role akun tidak dikenali.'
+            ),
         };
     }
 }

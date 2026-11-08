@@ -107,13 +107,15 @@ class CartController extends Controller
                     $item->price
                     * $item->quantity;
             });
+            $requiresSelection = $cart->items->count() > 1;
 
 
         return view(
             'customer.cart.index',
             compact(
                 'cart',
-                'subtotal'
+                'subtotal',
+                 'requiresSelection'
             )
         );
     }
@@ -291,6 +293,83 @@ class CartController extends Controller
                 'Produk berhasil ditambahkan ke keranjang.'
             );
     }
+
+    /**
+ * Memproses produk yang dipilih untuk Checkout.
+ */
+public function proceedToCheckout(Request $request)
+{
+    $this->ensureCustomerOrGuest();
+
+    // Ambil isi cart sesuai status pengguna.
+    if (auth()->check()) {
+        $cart = Cart::where('user_id', auth()->id())
+            ->first();
+
+        $variantIds = $cart
+            ? $cart->items()->pluck('variant_id')->map(fn ($id) => (int) $id)->all()
+            : [];
+    } else {
+        $guestCart = session('guest_cart', []);
+
+        $variantIds = array_map(
+            'intval',
+            array_keys($guestCart)
+        );
+    }
+
+    $variantIds = array_values(array_unique($variantIds));
+
+    if (empty($variantIds)) {
+        return redirect()
+            ->route('cart.index')
+            ->with('error', 'Keranjang masih kosong.');
+    }
+
+    // Jika hanya ada satu varian, pilih otomatis.
+    if (count($variantIds) === 1) {
+        $selectedIds = $variantIds;
+    } else {
+        // Jika ada beberapa varian, customer wajib memilih.
+        $validated = $request->validate([
+            'selected_variants' => [
+                'required',
+                'array',
+                'min:1',
+            ],
+            'selected_variants.*' => [
+                'required',
+                'integer',
+                'distinct',
+            ],
+        ], [
+            'selected_variants.required' =>
+                'Pilih minimal satu produk untuk Checkout.',
+            'selected_variants.min' =>
+                'Pilih minimal satu produk untuk Checkout.',
+        ]);
+
+        $selectedIds = array_map(
+            'intval',
+            $validated['selected_variants']
+        );
+
+        // Pastikan produk yang dipilih memang ada di cart pengguna.
+        if (count(array_diff($selectedIds, $variantIds)) > 0) {
+            return back()->with(
+                'error',
+                'Pilihan produk tidak valid.'
+            );
+        }
+    }
+
+    // Simpan pilihan untuk digunakan Checkout.
+    session()->put('checkout_variant_ids', $selectedIds);
+    session()->put('checkout_mode', 'cart');
+    session()->forget('buy_now');
+
+    return redirect()->route('checkout.index');
+}
 
     /**
      * Buy Now:
